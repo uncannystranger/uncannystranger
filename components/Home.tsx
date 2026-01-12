@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Section } from '../types';
 import ScrambleText from './ScrambleText';
 import Flipbook from './Flipbook';
@@ -9,38 +9,22 @@ interface HomeProps {
 }
 
 const HERO_IMAGE =
-  'https://res.cloudinary.com/duwhuzkib/image/upload/abdullahi-maxamed-Qa31NNMX9es-unsplash_yogf4o';
+  "https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,dpr_auto,w_2000/abdullahi-maxamed-Qa31NNMX9es-unsplash_yogf4o";
 
-const Home: React.FC<HomeProps> = ({ setSection }) => {
-  const [heroReady, setHeroReady] = useState(false);
-
-  /* preload hero image ONCE */
-  useEffect(() => {
-    const img = new Image();
-    img.src = HERO_IMAGE;
-    img.onload = () => setHeroReady(true);
-  }, []);
-
+const Home = ({ setSection }: HomeProps) => {
   return (
     <>
       {/* ================= HERO ================= */}
-      <section className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden">
-        {/* BACKGROUND IMAGE */}
-        <img
-          src={HERO_IMAGE}
-          alt="Hero background"
-          fetchPriority="high"
-          loading="eager"
-          decoding="async"
-          className="
-            absolute inset-0 w-full h-full
-            object-cover object-top
-            transition-opacity duration-200
-          "
-          style={{ opacity: heroReady ? 1 : 0 }}
-        />
-
-        {/* CINEMATIC TONE (NO vignette, NO grayscale) */}
+      <section
+        className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden"
+        style={{
+          backgroundImage: `url(${HERO_IMAGE})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'top center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        {/* CINEMATIC TONE */}
         <div className="absolute inset-0 bg-black/25 dark:bg-black/45" />
 
         {/* EDITORIAL GRID */}
@@ -62,14 +46,8 @@ const Home: React.FC<HomeProps> = ({ setSection }) => {
         </div>
 
         {/* HERO CONTENT */}
-        <div
-          className="
-            relative z-10 text-center max-w-5xl
-            transition-opacity duration-200
-          "
-          style={{ opacity: heroReady ? 1 : 0 }}
-        >
-          {/* TONAL ANCHOR — editorial, not a card */}
+        <div className="relative z-10 text-center max-w-5xl">
+          {/* TONAL ANCHOR */}
           <div
             className="
               absolute
@@ -92,7 +70,7 @@ const Home: React.FC<HomeProps> = ({ setSection }) => {
               text-black dark:text-bone-primary
             "
           >
-            <ScrambleText text="Abdullahi M." delay={10} />
+            <ScrambleText text="Abdullahi M." delay={120} />
           </h1>
 
           <p
@@ -142,7 +120,6 @@ const Home: React.FC<HomeProps> = ({ setSection }) => {
       <div className="w-full flex justify-center py-16">
         <div className="w-24 h-px bg-current opacity-20" />
       </div>
-
       {/* ================= VIDEO ================= */}
       <section className="relative h-[100svh] w-full overflow-hidden">
         <video
@@ -160,7 +137,6 @@ const Home: React.FC<HomeProps> = ({ setSection }) => {
       <div className="w-full flex justify-center py-16">
         <div className="w-24 h-px bg-current opacity-20" />
       </div>
-
       {/* ================= FLIPBOOK ================= */}
       <section className="py-20 px-6">
         <Flipbook pages={IMAGES.home.flipbook} />
@@ -186,6 +162,7 @@ const Home: React.FC<HomeProps> = ({ setSection }) => {
         </button>
       </section>
     </>
+
   );
 };
 
