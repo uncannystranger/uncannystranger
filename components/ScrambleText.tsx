@@ -1,24 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface ScrambleTextProps {
   text: string;
   className?: string;
-  speed?: number; // ms per frame
 }
 
-const ScrambleText: React.FC<ScrambleTextProps> = ({
-  text,
-  className,
-  speed = 18,
-}) => {
+const ScrambleText = ({ text, className }: ScrambleTextProps) => {
   const [output, setOutput] = useState(text);
+  const hasRun = useRef(false);
 
   useEffect(() => {
+    if (hasRun.current) return;
+    hasRun.current = true;
+
     let frame = 0;
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let rafId: number;
+
+    const chars =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
     const scramble = () => {
-      frame++;
+      frame += 3; // 🔥 FAST
 
       setOutput(
         text
@@ -31,13 +33,16 @@ const ScrambleText: React.FC<ScrambleTextProps> = ({
       );
 
       if (frame < text.length * 2) {
-        requestAnimationFrame(scramble);
+        rafId = requestAnimationFrame(scramble);
       } else {
         setOutput(text);
       }
     };
 
-    scramble();
+    // ✅ Start AFTER first paint — no black screen
+    requestAnimationFrame(scramble);
+
+    return () => cancelAnimationFrame(rafId);
   }, [text]);
 
   return <span className={className}>{output}</span>;

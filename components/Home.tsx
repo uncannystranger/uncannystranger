@@ -1,8 +1,8 @@
 import React from 'react';
 import { Section } from '../types';
 import ScrambleText from './ScrambleText';
-import Flipbook from './Flipbook';
 import { IMAGES } from '../src/assets/images/imageRegistry';
+import PhotoBooth from './PhotoBooth';
 
 interface HomeProps {
   setSection: (section: Section) => void;
@@ -70,7 +70,7 @@ const Home = ({ setSection }: HomeProps) => {
               text-black dark:text-bone-primary
             "
           >
-            <ScrambleText text="Abdullahi M." delay={120} />
+            <ScrambleText text="Abdullahi M." />
           </h1>
 
           <p
@@ -95,9 +95,9 @@ const Home = ({ setSection }: HomeProps) => {
 
       {/* ================= CURRENT EXHIBITION ================= */}
       <section className="py-24 px-6 text-center max-w-3xl mx-auto">
-        <span className="text-[10px] tracking-[0.4em] uppercase opacity-60">
-          Current Exhibition
-        </span>
+        <span className="text-[10px] tracking-[0.4em] uppercase text-accent opacity-80">
+  Current Exhibition
+</span>
 
         <h2 className="text-3xl md:text-4xl font-serif mt-4 mb-4">
           The Pause Between
@@ -137,10 +137,11 @@ const Home = ({ setSection }: HomeProps) => {
       <div className="w-full flex justify-center py-16">
         <div className="w-24 h-px bg-current opacity-20" />
       </div>
-      {/* ================= FLIPBOOK ================= */}
-      <section className="py-20 px-6">
-        <Flipbook pages={IMAGES.home.flipbook} />
-      </section>
+      {/* ================= PHOTO BOOTH ================= */}
+{/* ================= PHOTO BOOTH ================= */}
+<section className="py-24 px-6">
+  <PhotoBooth images={IMAGES.home.flipbook} />
+</section>
       {/* ================= SECTION SEPARATOR ================= */}
       <div className="w-full flex justify-center py-16">
         <div className="w-24 h-px bg-current opacity-20" />
