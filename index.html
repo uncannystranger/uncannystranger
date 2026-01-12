@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Prevent white flash: default background applied to <html> and a dark override when .dark is present -->
+    <style>html{background-color:#FDFCF0}html.dark{background-color:#121110}</style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Uncanny Stranger | Photography Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              beige: '#FDFCF0',
+              accent: '#FF4D00', // Refined orange
+              // Custom warm neutrals for better blending with orange
+              ink: {
+                primary: '#1C1917', // Warm charcoal
+                secondary: '#78716C', // Dusty stone
+              },
+              bone: {
+                primary: '#FAF9F6', // Warm off-white
+                secondary: '#A8A29E', // Muted silver-stone
+              }
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              serif: ['Playfair Display', 'serif'],
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    </style>
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@^19.2.3",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+        "react/": "https://esm.sh/react@^19.2.3/",
+        "framer-motion": "https://esm.sh/framer-motion@^12.25.0"
+      }
+    }
+    </script>
+  <link rel="stylesheet" href="/index.css">
+    <!-- Early script to set/remove the `dark` class on <html> before React mounts -->
+    <script>
+      (function () {
+        try {
+          var mq = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+          var prefersDark = mq ? mq.matches : false;
+          if (prefersDark) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {
+          // no-op
+        }
+      })();
+    </script>
+</head>
+  <body class="text-ink-primary dark:text-bone-primary transition-colors duration-500">
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

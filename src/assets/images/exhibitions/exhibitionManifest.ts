@@ -1,0 +1,58 @@
+import { cld } from '../../../utils/cloudinary';
+
+export const EXHIBITION_IMAGES = [
+  {
+    id: 'ex-1',
+    title: 'The Pause Between',
+    photos: [
+      {
+        id: 'sc-1',
+        src: cld('photo-1731070663512-59d7a0b0629d_d5gwyf', 1200),
+        title: 'Held Still',
+        description: 'A moment caught mid-breath. The body rises, the gaze sharpens, and time slows just enough to notice what usually slips away. This image lives in that narrow space where motion hesitates and meaning quietly appears..',
+      },
+      {
+        id: 'sc-2',
+        src: cld('18_tvp43p', 1200),
+        title: 'Night architecture, warm light',
+        description: 'A quiet monument under borrowed light.',
+      }
+    ],
+  },
+  {
+    id: 'ex-2',
+    title: 'Statue against the blue sky',
+    photos: [
+      {
+        id: 'er-1',
+        src: cld('15_ad2kxb', 1200),
+        title: 'History',
+        description: 'An arm raised toward tomorrow.',
+      }
+    ],
+  },
+  {
+    id: 'ex-3',
+    title: 'Rooted in Memory',
+    photos: [
+      {
+        id: 'er-3',
+        src: cld('16_btfm8c', 1200),
+        title: 'Lines We Leave Behind',
+        description: 'A single mark crosses the sky above a resting city. Some memories do not weigh us down. They pass lightly, leaving direction rather than permanence.',
+      },
+      {
+        id: 'er-4',
+        src: cld('abdullahi-maxamed-Ya4rzj4L6Lo-unsplash_1_gqgftv', 1200),
+        title: 'What the Ground Remembers',
+        description: 'Stone stands where voices once lived. Even in collapse, the land carries traces of lives, holding memory in its cracks and shadows.',
+      },
+      {
+        id: 'er-5',
+        src: cld('17_uqqht9', 1200),
+        title: 'Crowned by Time',
+        description: 'A face emerges beneath layers of leaves and paint, where nature and history overlap. The image speaks of identity shaped by place, memory growing like branches above the mind. What is seen is not just a portrait, but a quiet inheritance carried forward.',
+      }
+    ],
+  }
+];

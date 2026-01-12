@@ -1,0 +1,17 @@
+/* Global smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Scroll snapping helpers */
+.snap-start {
+  scroll-snap-align: start;
+}
+
+.snap-center {
+  scroll-snap-align: center;
+}
+
+.snap-y {
+  scroll-snap-type: y proximity;
+}
