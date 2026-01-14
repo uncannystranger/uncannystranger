@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Analytics } from '@vercel/analytics/react';
 import Navigation from './components/Navigation';
 import Home from './components/Home';
 import Projects from './components/Projects';
@@ -277,6 +278,7 @@ const App: React.FC = () => {
             )}
           </AnimatePresence>
         </main>
+        <Analytics />
         {/* Conditionally rendered footer restricted to Home and Artist sections */}
         {(section === 'home' || section === 'artist') && (
           <footer className="w-full pt-10 pb-28 md:pb-12 text-center select-none flex flex-col items-center gap-6">
