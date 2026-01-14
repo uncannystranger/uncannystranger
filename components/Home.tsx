@@ -19,7 +19,7 @@ interface HomeProps {
 }
 
 const HERO_IMAGE =
-  "https://res.cloudinary.com/duwhuzkib/image/upload/v1768418457/abdullahi-maxamed-LyklJe8ufj8-unsplash_1_smbjcu.jpg";
+  "https://res.cloudinary.com/duwhuzkib/image/upload/v1768417940/_DSC9555.ARW_fm87ao.png";
 
 const Home = ({ setSection }: HomeProps) => {
   const shouldReduceMotion = useReducedMotion();
