@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import Navigation from './components/Navigation';
 import Home from './components/Home';
 import Projects from './components/Projects';
@@ -307,6 +308,7 @@ const App: React.FC = () => {
           </footer>
         )}
       </div>
+      <SpeedInsights />
     </ErrorBoundary>
   );
 };
