@@ -116,7 +116,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentSection, setSection, isD
   <React.Fragment key={item.id}>
     <NavLink item={item} />
     {index < navItems.length - 1 && (
-      <span className="select-none opacity-40 px-1">|</span>
+      <span className="select-none opacity-40 px-0.5">|</span>
     )}
   </React.Fragment>
 ))}
