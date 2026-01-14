@@ -116,11 +116,11 @@ const Navigation: React.FC<NavigationProps> = ({ currentSection, setSection, isD
   <React.Fragment key={item.id}>
     <NavLink item={item} />
     {index < navItems.length - 1 && (
-      <span className="select-none opacity-40 px-0.5">|</span>
+      <div className="w-[1px] h-4 bg-ink-primary/10 dark:bg-bone-primary/10 mx-0.5" />
     )}
   </React.Fragment>
 ))}
-          <div className="w-[1px] h-4 bg-ink-primary/10 dark:bg-bone-primary/10 mx-2" />
+          <div className="w-[1px] h-4 bg-ink-primary/10 dark:bg-bone-primary/10 mx-0.5" />
           <ThemeToggle />
         </div>
       </nav>
