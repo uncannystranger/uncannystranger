@@ -34,7 +34,13 @@ const Navigation: React.FC<NavigationProps> = ({ currentSection, setSection, isD
       data-cursor={item.label}
       className="relative group py-2 px-1 focus:outline-none"
     >
-      <span className={`text-sm md:text-base tracking-[0.2em] uppercase transition-all duration-700 font-sans ${currentSection === item.id ? 'opacity-100 font-medium text-orange-500' : 'opacity-60 dark:opacity-40 group-hover:opacity-100'}`}>
+     <span
+  className={`text-sm md:text-base tracking-[0.12em] capitalize transition-all duration-700 font-serif ${
+    currentSection === item.id
+      ? 'opacity-100 font-medium text-orange-500'
+      : 'opacity-60 dark:opacity-40 group-hover:opacity-100'
+  }`}
+>
         {item.label}
       </span>
       {currentSection === item.id && (
