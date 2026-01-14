@@ -112,9 +112,14 @@ const Navigation: React.FC<NavigationProps> = ({ currentSection, setSection, isD
           shadow-[0_20px_40px_rgba(0,0,0,0.3)]
           transition-all duration-700
         ">
-          {navItems.map((item) => (
-            <NavLink key={item.id} item={item} />
-          ))}
+          {navItems.map((item, index) => (
+  <React.Fragment key={item.id}>
+    <NavLink item={item} />
+    {index < navItems.length - 1 && (
+      <span className="select-none opacity-40 px-2">|</span>
+    )}
+  </React.Fragment>
+))}
           <div className="w-[1px] h-4 bg-ink-primary/10 dark:bg-bone-primary/10 mx-2" />
           <ThemeToggle />
         </div>
