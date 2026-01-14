@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
+
 import Navigation from './components/Navigation';
 import Home from './components/Home';
 import Projects from './components/Projects';
@@ -310,6 +313,8 @@ const App: React.FC = () => {
       </div>
       <SpeedInsights />
     </ErrorBoundary>
+    <Analytics />
+<SpeedInsights />
   );
 };
 
