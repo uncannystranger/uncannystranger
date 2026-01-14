@@ -2,9 +2,18 @@ import React, { useState, useEffect } from 'react';
 import {
   motion,
   AnimatePresence,
+  useReducedMotion
 } from 'framer-motion';
 import { ProjectView, GalleryCategory } from '../types';
 import { PHOTOS, EXHIBITIONS } from '../constants';
+import { useScrollDirection } from '../src/hooks/useScrollDirection';
+
+const LIQUID_SPRING = {
+  type: 'spring',
+  stiffness: 120,
+  damping: 24,
+  mass: 1.2
+};
 
 /* ────────────────────────────────
    Types
@@ -17,14 +26,14 @@ interface ProjectsProps {
 interface GalleryItemProps {
   photo: any;
   index: number;
-  onOpen: (items: any[], index: number) => void;
+  setIsDimmed: (val: boolean) => void;
 }
 
 interface ExhibitionItemProps {
   photo: any;
   index: number;
-  onOpen: (items: any[], index: number) => void;
   autoFocus?: boolean;
+  setIsDimmed: (val: boolean) => void;
 }
 
 /* ────────────────────────────────
@@ -34,13 +43,19 @@ interface ExhibitionItemProps {
 const Projects: React.FC<ProjectsProps> = ({
   initialView = 'gallery',
 }) => {
+  const shouldReduceMotion = useReducedMotion();
+  const direction = useScrollDirection();
+  const getDirectionalY = (baseValue = 30) => {
+    if (direction === 'down') return baseValue;
+    if (direction === 'up') return -baseValue;
+    return baseValue;
+  };
+
   const [view, setView] = useState<ProjectView>(initialView);
   const [category, setCategory] = useState<GalleryCategory>('albums');
 
-  /* Shared ImageView state */
-  const [ivOpen, setIvOpen] = useState(false);
-  const [ivItems, setIvItems] = useState<any[]>([]);
-  const [ivIndex, setIvIndex] = useState(0);
+  /* Lighting & Dimming state */
+  const [isDimmed, setIsDimmed] = useState(false);
 
   /* Deep-link: /projects#exhibition */
   useEffect(() => {
@@ -56,12 +71,6 @@ const Projects: React.FC<ProjectsProps> = ({
   const filteredPhotos = PHOTOS.filter(
     (p) => p.category === category
   );
-
-  const openImage = (items: any[], index: number) => {
-    setIvItems(items);
-    setIvIndex(index);
-    setIvOpen(true);
-  };
 
   return (
     <section className="min-h-screen pt-32 pb-48 px-6 md:px-12">
@@ -91,11 +100,10 @@ const Projects: React.FC<ProjectsProps> = ({
                       : '#'
                   );
                 }}
-                className={`text-xs tracking-widest uppercase transition-opacity ${
-                  view === v
-                    ? 'opacity-100 underline underline-offset-8'
-                    : 'opacity-40 hover:opacity-100'
-                }`}
+                className={`text-xs tracking-widest uppercase transition-opacity ${view === v
+                  ? 'opacity-100 underline underline-offset-8'
+                  : 'opacity-40 hover:opacity-100'
+                  }`}
               >
                 {v}
               </button>
@@ -110,11 +118,10 @@ const Projects: React.FC<ProjectsProps> = ({
                 <button
                   key={cat}
                   onClick={() => setCategory(cat)}
-                  className={`text-[10px] md:text-xs tracking-widest uppercase whitespace-nowrap px-4 py-2 border rounded-full transition-all ${
-                    category === cat
-                      ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 border-transparent'
-                      : 'border-neutral-200 dark:border-neutral-800 opacity-60'
-                  }`}
+                  className={`text-[10px] md:text-xs tracking-widest uppercase whitespace-nowrap px-4 py-2 border rounded-full transition-all ${category === cat
+                    ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 border-transparent'
+                    : 'border-neutral-200 dark:border-neutral-800 opacity-60'
+                    }`}
                 >
                   {cat}
                 </button>
@@ -123,6 +130,13 @@ const Projects: React.FC<ProjectsProps> = ({
           </div>
         )}
       </motion.div>
+
+      {/* Environmental Dimming Backdrop */}
+      <motion.div
+        className="fixed inset-0 bg-black/60 z-0 pointer-events-none mix-blend-multiply transition-opacity duration-1000"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isDimmed ? 1 : 0 }}
+      />
 
       {/* Content */}
       <AnimatePresence mode="wait">
@@ -140,9 +154,7 @@ const Projects: React.FC<ProjectsProps> = ({
                 key={photo.id}
                 photo={photo}
                 index={i}
-                onOpen={(items, index) =>
-                  openImage(items, index)
-                }
+                setIsDimmed={setIsDimmed}
               />
             ))}
           </motion.div>
@@ -168,36 +180,12 @@ const Projects: React.FC<ProjectsProps> = ({
                       photo={p}
                       index={i}
                       autoFocus={i === 0}
-                      onOpen={(items, index) =>
-                        openImage(items, index)
-                      }
+                      setIsDimmed={setIsDimmed}
                     />
                   ))}
                 </div>
               </div>
             ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ImageView Modal */}
-      <AnimatePresence>
-        {ivOpen && (
-          <motion.div
-            className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setIvOpen(false)}
-          >
-            <motion.img
-              src={ivItems[ivIndex]?.url}
-              alt=""
-              initial={{ scale: 0.95 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.4, ease: 'easeOut' }}
-              className="max-w-[90vw] max-h-[90vh] object-contain"
-            />
           </motion.div>
         )}
       </AnimatePresence>
@@ -209,27 +197,47 @@ const Projects: React.FC<ProjectsProps> = ({
    Gallery Item
 ──────────────────────────────── */
 
+interface GalleryItemProps {
+  photo: any;
+  index: number;
+  setIsDimmed: (val: boolean) => void;
+}
+
+import { LightingWrapper } from './LightingWrapper';
+
 const GalleryItem: React.FC<GalleryItemProps> = ({
   photo,
   index,
-  onOpen,
+  setIsDimmed,
 }) => {
+  const [isActive, setIsActive] = useState(false);
+
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.04 }}
-      className={`relative group aspect-[3/4] cursor-pointer ${
-        index % 3 === 1 ? 'md:mt-24' : ''
-      }`}
-      onClick={() => onOpen([photo], 0)}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: false, margin: "-10%" }}
+      onMouseEnter={() => setIsDimmed(true)}
+      onMouseLeave={() => setIsDimmed(false)}
+      transition={{
+        ...LIQUID_SPRING,
+        delay: (index % 3) * 0.1
+      }}
+      className={`relative group aspect-[3/4] cursor-pointer md:max-h-[70vh] md:w-auto mx-auto ${index % 3 === 1 ? 'md:mt-32' : ''}`}
+      onClick={() => setIsActive(!isActive)}
     >
-      <img
-        src={photo.url}
-        alt={photo.title}
-        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
-      />
+      <LightingWrapper className="w-full h-full rounded-sm">
+        <div className="w-full h-full overflow-hidden bg-neutral-100 dark:bg-neutral-800">
+          <motion.img
+            src={photo.url}
+            alt={photo.title}
+            decoding="async"
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+            className={`w-full h-full object-cover transition-all duration-1000 will-change-transform ${isActive ? 'grayscale-0 brightness-100' : 'grayscale brightness-90 group-hover:grayscale-[0.5] group-hover:brightness-95'}`}
+          />
+        </div>
+      </LightingWrapper>
     </motion.div>
   );
 };
@@ -238,44 +246,72 @@ const GalleryItem: React.FC<GalleryItemProps> = ({
    Exhibition Item
 ──────────────────────────────── */
 
+interface ExhibitionItemProps {
+  photo: any;
+  index: number;
+  autoFocus?: boolean;
+  setIsDimmed: (val: boolean) => void;
+}
+
 const ExhibitionItem: React.FC<ExhibitionItemProps> = ({
   photo,
   index,
   autoFocus,
-  onOpen,
+  setIsDimmed,
 }) => {
+  const [isActive, setIsActive] = useState(false);
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.4, ease: 'easeOut' }}
-      className={`flex flex-col gap-6 ${
-        index % 2 === 0 ? 'items-start' : 'items-end'
-      }`}
-    >
-      <div
-        onClick={() => onOpen([photo], 0)}
-        className={`cursor-pointer w-full md:w-[80%] aspect-[16/10] overflow-hidden p-4 bg-white dark:bg-neutral-900 shadow-2xl ${
-          autoFocus
-            ? 'ring-1 ring-neutral-300 dark:ring-neutral-700'
-            : ''
+      viewport={{ once: false, margin: "-10%" }}
+      onMouseEnter={() => setIsDimmed(true)}
+      onMouseLeave={() => setIsDimmed(false)}
+      transition={LIQUID_SPRING}
+      className={`flex flex-col gap-10 ${index % 2 === 0 ? 'items-start' : 'items-end'
         }`}
+    >
+      <motion.div
+        onClick={() => setIsActive(!isActive)}
+        whileHover={{ y: -10 }}
+        className={`cursor-pointer w-full md:w-[85%] aspect-[16/10] md:max-h-[75vh] mx-auto bg-white dark:bg-[#1a1918] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.6)] group halo-glow ${autoFocus
+          ? 'ring-1 ring-accent/20'
+          : ''
+          }`}
       >
-        <img
-          src={photo.url}
-          alt={photo.title}
-          className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
-        />
-      </div>
+        <LightingWrapper className="w-full h-full p-6">
+          <div className="w-full h-full overflow-hidden relative">
+            <motion.img
+              src={photo.url}
+              alt={photo.title}
+              decoding="async"
+              whileHover={{ scale: 1.03 }}
+              transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+              className={`w-full h-full object-cover transition-all duration-1000 will-change-transform ${isActive ? 'grayscale-0 brightness-100' : 'grayscale brightness-90 group-hover:grayscale-[0.5] group-hover:brightness-95'}`}
+            />
+            <div className="absolute inset-0 ring-1 ring-inset ring-black/5 dark:ring-white/5 pointer-events-none" />
+          </div>
+        </LightingWrapper>
+      </motion.div>
 
-      <div className="max-w-xs px-4">
-        <h4 className="text-xl font-serif italic mb-2">
+      <div className={`max-w-md px-4 ${index % 2 === 0 ? 'text-left' : 'text-right'}`}>
+        <motion.h4
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="text-2xl md:text-3xl font-serif italic mb-4 text-ink-primary dark:text-bone-primary"
+        >
           {photo.title}
-        </h4>
-        <p className="text-xs opacity-60 leading-relaxed">
+        </motion.h4>
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="text-xs md:text-sm opacity-60 leading-relaxed font-serif"
+        >
           {photo.description}
-        </p>
+        </motion.p>
       </div>
     </motion.div>
   );

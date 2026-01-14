@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 
 interface ScrambleTextProps {
   text: string;
@@ -45,7 +46,16 @@ const ScrambleText = ({ text, className }: ScrambleTextProps) => {
     return () => cancelAnimationFrame(rafId);
   }, [text]);
 
-  return <span className={className}>{output}</span>;
+  return (
+    <motion.span
+      key={text}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className={className}
+    >
+      {output}
+    </motion.span>
+  );
 };
 
 export default ScrambleText;
