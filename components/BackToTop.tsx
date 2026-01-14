@@ -29,7 +29,7 @@ export const BackToTop: React.FC = () => {
                     whileHover={{ y: -4 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={scrollToTop}
-                    className="fixed right-4 md:right-12 bottom-24 md:bottom-8 z-[60] p-3 bg-accent text-white rounded-full shadow-xl transition-all hover:bg-orange-600 focus:outline-none"
+                    className="fixed right-4 md:right-12 bottom-32 md:bottom-14 z-[60] p-3 bg-accent text-white rounded-full shadow-xl transition-all hover:bg-orange-600 focus:outline-none"
                     aria-label="Back to top"
                 >
                     <svg
