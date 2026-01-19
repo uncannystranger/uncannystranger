@@ -1,0 +1,4 @@
+Sitemap: https://uncannystranger.com/sitemap.xml
+User-agent: *
+Allow: /
+Disallow: /private/
