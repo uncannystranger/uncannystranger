@@ -9,9 +9,9 @@ export const IMAGES = {
     flipbook: [
       {
         id: 1,
-        src: cld('21_ianwgj', 1600),
-        title: 'Frame One',
-        caption: 'A moment before the shutter settles.'
+        src: cld('IMG_2166_copy_uwf1w2', 1600),
+        title: 'A quiet moment between her and the morning tide',
+        caption: 'She stands at the edge of the waking shore, wrapped in the hush of early light. The sea rolls in slowly, like it doesn’t want to break the spell, and the sun reaches her first before it reaches the day. Its warmth brushes her cheek, turning the air golden, turning the moment into something she’ll carry long after the tide pulls back. For a breath of time, it’s just her, the water, and the soft promise of what’s about to begin.'
       },
       {
         id: 2,
@@ -21,7 +21,7 @@ export const IMAGES = {
       },
       {
         id: 3,
-        src: cld('15_dvbg7z', 1600),
+        src: cld('21_ianwgj', 1600),
         title: 'Frame Three',
         caption: 'Where motion pauses long enough to speak.'
       },
