@@ -15,7 +15,7 @@ export const GALLERY_IMAGES = [
   },
   {
     id: 'g2',
-    src: cld('2025-08-14_hepfc0', 800),
+    src: cld('IMG_2166_copy_uwf1w2', 800),
     title: 'Light, shadow, and a quiet exchange.',
     category: 'albums',
     alt: 'Sunset, editing the sky one last time.'
