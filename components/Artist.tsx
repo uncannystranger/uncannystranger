@@ -74,9 +74,16 @@ const Artist: React.FC = () => {
             className="flex flex-wrap gap-x-12 gap-y-6 pt-8 border-t border-neutral-200 dark:border-neutral-800"
           >
             {[
-              { label: 'Instagram', href: 'https://instagram.com/uncannystranger' },
-              { label: 'Unsplash', href: 'https://unsplash.com/uncannystranger' },
-              { label: 'Email', href: 'mailto:abdallahmadm@gmail.com' }
+              { label: "Instagram", href: "https://www.instagram.com/uncannystranger" },
+  { label: "Pexels", href: "https://www.pexels.com/@uncannystranger" },
+  { label: "Unsplash", href: "https://unsplash.com/@uncannystranger" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/uncannystranger/" },
+  { label: "Pinterest", href: "https://www.pinterest.com/uncannystranger/" },
+  { label: "Facebook", href: "https://www.facebook.com/uncannystranger" },
+  { label: "TikTok", href: "https://www.tiktok.com/@uncannystranger" },
+  { label: "GitHub", href: "https://github.com/uncannystranger" },
+  { label: "Medium", href: "https://uncannystranger.medium.com/abdullahi-maxamed-uncannystranger-c0d61a149d75" },
+  { label: "Email", href: "mailto:abdallahmadm@gmail.com" }
             ].map((link) => (
               <a
                 key={link.label}
