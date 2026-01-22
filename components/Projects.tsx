@@ -65,10 +65,6 @@ const Projects: React.FC<ProjectsProps> = ({
     }
   }, []);
 
-  useEffect(() => {
-    setView(initialView);
-  }, [initialView]);
-
   const filteredPhotos = PHOTOS.filter(
     (p) => p.category === category
   );
@@ -176,7 +172,7 @@ const Projects: React.FC<ProjectsProps> = ({
             transition={{ duration: 0.35, ease: 'easeOut' }}
             className="flex flex-col gap-32 max-w-4xl mx-auto"
           >
-            {EXHIBITIONS.map((ex) => (
+            {EXHIBITIONS.map((ex, exIndex) => (
               <div key={ex.id}>
                 <h3 className="text-3xl md:text-5xl font-serif italic mb-12 border-b border-neutral-200 dark:border-neutral-800 pb-4">
                   {ex.title}
@@ -184,17 +180,19 @@ const Projects: React.FC<ProjectsProps> = ({
 
                 <div className="flex flex-col gap-24">
                   {ex.photos.map((p, i) => (
-                    <ExhibitionItem
-                      key={p.id}
-                      photo={p}
-                      index={i}
-                      autoFocus={i === 0}
-                      setIsDimmed={setIsDimmed}
-                    />
-                  ))}
+  <ExhibitionItem
+    key={p.id}
+    photo={p}
+    index={i}
+    exhibitionIndex={exIndex}
+    autoFocus={i === 0}
+    setIsDimmed={setIsDimmed}
+  />
+))}
                 </div>
               </div>
             ))}
+
           </motion.div>
         )}
       </AnimatePresence>
@@ -222,8 +220,9 @@ const GalleryItem: React.FC<GalleryItemProps> = ({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
+       
+  initial={{ opacity: 0, y: 50 }}
+  whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: false, margin: "-10%" }}
       onMouseEnter={() => setIsDimmed(true)}
       onMouseLeave={() => setIsDimmed(false)}
@@ -256,6 +255,7 @@ const GalleryItem: React.FC<GalleryItemProps> = ({
 interface ExhibitionItemProps {
   photo: any;
   index: number;
+  exhibitionIndex: number;
   autoFocus?: boolean;
   setIsDimmed: (val: boolean) => void;
 }
@@ -263,6 +263,7 @@ interface ExhibitionItemProps {
 const ExhibitionItem: React.FC<ExhibitionItemProps> = ({
   photo,
   index,
+  exhibitionIndex,
   autoFocus,
   setIsDimmed,
 }) => {
@@ -288,6 +289,23 @@ const ExhibitionItem: React.FC<ExhibitionItemProps> = ({
           }`}
       >
         <LightingWrapper className="w-full h-full p-6">
+          {exhibitionIndex === 0 && index === 0 && (
+  <a
+    href="https://www.behance.net/gallery/233362335/Between-Shadows-and-Glow"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="absolute inset-6 z-20 flex items-center justify-center border border-neutral-300 dark:border-neutral-700 bg-white/70 dark:bg-black/60 backdrop-blur-md transition hover:bg-white/90 dark:hover:bg-black/80"
+  >
+    <div className="text-center">
+      <p className="text-xs uppercase tracking-widest opacity-60 mb-2">
+        Continue Exhibition
+      </p>
+      <p className="text-lg md:text-xl font-serif italic">
+        The Pause Between
+      </p>
+    </div>
+  </a>
+)}
           <div className="w-full h-full overflow-hidden relative">
             <motion.img
               src={photo.url}

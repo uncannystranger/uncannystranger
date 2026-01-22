@@ -7,15 +7,9 @@ export const EXHIBITION_IMAGES = [
     photos: [
       {
         id: 'sc-1',
-        src: cld('photo-1731070663512-59d7a0b0629d_d5gwyf', 1200),
+        src: cld('abdullahi-maxamed-l8MHcngK4Ww-unsplash_bakhyb', 1200),
         title: 'Held Still',
         description: 'A moment caught mid-breath. The body rises, the gaze sharpens, and time slows just enough to notice what usually slips away. This image lives in that narrow space where motion hesitates and meaning quietly appears..',
-      },
-      {
-        id: 'sc-2',
-        src: cld('18_tvp43p', 1200),
-        title: 'Night architecture, warm light',
-        description: 'A quiet monument under borrowed light.',
       }
     ],
   },

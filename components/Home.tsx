@@ -182,16 +182,40 @@ const Home = ({ setSection }: HomeProps) => {
           >
             A study of stillness, memory, and the quiet tension between motion and pause. Captured through the lens of Mogadishu's shifting landscapes.
           </motion.p>
+          {/* === Exhibition Preview (Behance Embed) === */}
+<motion.div
+  initial={{ opacity: 0, y: getDirectionalY(20) }}
+  whileInView={{ opacity: 1, y: 0 }}
+  viewport={{ once: false, margin: "-10%" }}
+  transition={{ ...LIQUID_SPRING, delay: 0.4 }}
+  className="relative w-full max-w-3xl mx-auto my-14"
+>
+  <div className="relative aspect-[16/10] w-full overflow-hidden rounded-md border border-neutral-900/10 dark:border-white/10 shadow-xl">
+    <iframe
+      src="https://www.behance.net/embed/project/242731413?ilo0=1"
+      className="absolute inset-0 w-full h-full"
+      allowFullScreen
+      loading="lazy"
+      frameBorder="0"
+      allow="clipboard-write"
+      referrerPolicy="strict-origin-when-cross-origin"
+      title="The Pause Between – Behance Preview"
+    />
+  </div>
+</motion.div>
 
           <motion.button
-            onClick={() => setSection('projects:exhibition')}
-            whileHover={{ letterSpacing: '0.6em', scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="mt-12 text-[10px] tracking-[0.4em] uppercase border-b border-accent pb-2 hover:text-accent transition-all duration-500"
-            data-cursor="Explore"
-          >
-            Explore Exhibition
-          </motion.button>
+  onClick={() => {
+    setSection('projects');
+    window.location.hash = 'exhibition';
+  }}
+  whileHover={{ letterSpacing: '0.6em', scale: 1.05 }}
+  whileTap={{ scale: 0.95 }}
+  className="mt-12 text-[10px] tracking-[0.4em] uppercase border-b border-accent pb-2 hover:text-accent transition-all duration-500"
+  data-cursor="Explore"
+>
+  Explore Exhibition
+</motion.button>
         </LightingWrapper>
       </section>
       {/* ================= SECTION SEPARATOR ================= */}
