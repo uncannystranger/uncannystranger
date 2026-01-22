@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
 import { Section } from '../types';
 import ScrambleText from './ScrambleText';
 import { useScrollDirection } from '../src/hooks/useScrollDirection';
@@ -32,6 +33,14 @@ const Home = ({ setSection }: HomeProps) => {
   };
   return (
     <>
+    <Helmet>
+  <title>Abdullahi Maxamed | Photographer & Visual Artist</title>
+  <meta
+    name="description"
+    content="Official portfolio of Abdullahi Maxamed (Uncanny Stranger), a Somali photographer and visual artist exploring memory, motion, and stillness through cinematic imagery."
+  />
+  <link rel="canonical" href="https://uncannystranger.com/" />
+</Helmet>
       {/* ================= HERO ================= */}
       <section
         className="relative min-h-[110vh] flex items-center justify-center px-6 overflow-hidden"

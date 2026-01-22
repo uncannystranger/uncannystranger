@@ -7,6 +7,7 @@ import {
 import { ProjectView, GalleryCategory } from '../types';
 import { PHOTOS, EXHIBITIONS } from '../constants';
 import { useScrollDirection } from '../src/hooks/useScrollDirection';
+import { Helmet } from 'react-helmet-async';
 
 const LIQUID_SPRING = {
   type: 'spring',
@@ -74,6 +75,14 @@ const Projects: React.FC<ProjectsProps> = ({
 
   return (
     <section className="min-h-screen pt-32 pb-48 px-6 md:px-12">
+      <Helmet>
+  <title>Projects | Abdullahi Maxamed</title>
+  <meta
+    name="description"
+    content="Photography projects and exhibitions by Abdullahi Maxamed (Uncanny Stranger), including curated galleries, visual journals, and cinematic exhibitions."
+  />
+  <link rel="canonical" href="https://uncannystranger.com/projects" />
+</Helmet>
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}

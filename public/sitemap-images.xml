@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <url>
+    <loc>https://uncannystranger.com/projects</loc>
+
+    <image:image>
+      <image:loc>
+        https://res.cloudinary.com/duwhuzkib/image/upload/v1768417940/_DSC9555.ARW_fm87ao.png
+      </image:loc>
+      <image:title>Framed by light ✨️ 🧡</image:title>
+      <image:caption>A photo of Uncannystranger himself</image:caption>
+    </image:image>
+
+  </url>
+
+</urlset>

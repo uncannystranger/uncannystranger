@@ -3,6 +3,7 @@ import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { IMAGES } from '../src/assets/images/imageRegistry';
 import { useScrollDirection } from '../src/hooks/useScrollDirection';
+import { Helmet } from 'react-helmet-async';
 
 const LIQUID_SPRING = {
   type: 'spring',
@@ -21,6 +22,17 @@ const Artist: React.FC = () => {
   };
   return (
     <section className="min-h-screen py-32 px-6 md:px-12 flex items-center justify-center">
+      <Helmet>
+  <title>Artist | Abdullahi Maxamed</title>
+  <meta
+    name="description"
+    content="About Abdullahi Maxamed, known as Uncanny Stranger. A Somali photographer documenting quiet moments, light, movement, and personal visual stories."
+  />
+  <link
+    rel="canonical"
+    href="https://uncannystranger.com/artist"
+  />
+</Helmet>
       <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-20 md:gap-32 items-center">
         <motion.div
           initial={{ opacity: 0, x: -50, y: getDirectionalY(20) }}
