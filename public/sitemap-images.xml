@@ -4,7 +4,86 @@
   xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 
   <url>
-    <loc>https://uncannystranger.com/projects</loc>
+  <loc>https://uncannystranger.com/projects</loc>
+
+  <!-- ================= GALLERY IMAGES ================= -->
+
+  <image:image>
+    <image:loc>
+      https://res.cloudinary.com/duwhuzkib/image/upload/v1768090162/abdullahi-maxamed-F_lc9t1GwGU-unsplash_vfakxq.jpg
+    </image:loc>
+    <image:title>A quiet smile, held with grace.</image:title>
+    <image:caption>
+      Albums series photograph by Uncanny Stranger, part of the Projects gallery.
+    </image:caption>
+  </image:image>
+
+  <image:image>
+    <image:loc>
+      https://res.cloudinary.com/duwhuzkib/image/upload/v1768942450/IMG_2166_copy_uwf1w2.jpg
+    </image:loc>
+    <image:title>Light, shadow, and a quiet exchange.</image:title>
+    <image:caption>
+      Albums series photograph by Uncanny Stranger, part of the Projects gallery.
+    </image:caption>
+  </image:image>
+
+  <image:image>
+    <image:loc>
+      https://res.cloudinary.com/duwhuzkib/image/upload/v1768090151/2025-08-14_1_tm1ak4.jpg
+    </image:loc>
+    <image:title>Light, shadow, and a quiet exchange.</image:title>
+    <image:caption>
+      Albums series photograph by Uncanny Stranger, part of the Projects gallery.
+    </image:caption>
+  </image:image>
+
+  <image:image>
+    <image:loc>
+      https://res.cloudinary.com/duwhuzkib/image/upload/v1768082032/4_pfkuzt.jpg
+    </image:loc>
+    <image:title>Light, shadow, and a quiet exchange.</image:title>
+    <image:caption>
+      Collections series photograph by Uncanny Stranger, part of the Projects gallery.
+    </image:caption>
+  </image:image>
+
+  <image:image>
+    <image:loc>
+      https://res.cloudinary.com/duwhuzkib/image/upload/v1768082033/10_lpotua.jpg
+    </image:loc>
+    <image:title>Light, shadow, and a quiet exchange.</image:title>
+    <image:caption>
+      Journal series photograph by Uncanny Stranger, part of the Projects gallery.
+    </image:caption>
+  </image:image>
+
+  <!-- ================= EXHIBITION IMAGES ================= -->
+
+  <image:image>
+    <image:loc>
+      https://res.cloudinary.com/duwhuzkib/image/upload/v1768082917/photo-1731070663512-59d7a0b0629d_d5gwyf.jpg
+    </image:loc>
+    <image:title>The Pause Between — Exhibition</image:title>
+    <image:caption>
+      Exhibition photograph from The Pause Between series by Uncanny Stranger
+    </image:caption>
+  </image:image>
+
+  <image:image>
+    <image:loc>
+      https://res.cloudinary.com/duwhuzkib/image/upload/v1768078875/18_tvp43p.jpg
+    </image:loc>
+    <image:title>The Pause Between — Mogadishu</image:title>
+    <image:caption>
+      Fine art exhibition photography exploring stillness and memory in Mogadishu
+    </image:caption>
+  </image:image>
+
+</url>
+
+  <url>
+    <loc>https://uncannystranger.com/artist</loc>
 
     <image:image>
       <image:loc>
