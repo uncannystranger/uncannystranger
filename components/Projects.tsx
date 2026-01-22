@@ -301,7 +301,7 @@ const ExhibitionItem: React.FC<ExhibitionItemProps> = ({
         Continue Exhibition
       </p>
       <p className="text-lg md:text-xl font-serif italic">
-        The Pause Between
+        Between Shadows and Glow
       </p>
     </div>
   </a>

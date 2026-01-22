@@ -3,13 +3,13 @@ import { cld } from '../../../utils/cloudinary';
 export const EXHIBITION_IMAGES = [
   {
     id: 'ex-1',
-    title: 'The Pause Between',
+    title: 'Between Shadows and Glow',
     photos: [
       {
         id: 'sc-1',
         src: cld('abdullahi-maxamed-l8MHcngK4Ww-unsplash_bakhyb', 1200),
-        title: 'Held Still',
-        description: 'A moment caught mid-breath. The body rises, the gaze sharpens, and time slows just enough to notice what usually slips away. This image lives in that narrow space where motion hesitates and meaning quietly appears..',
+        title: 'Warm humanity → Vibrant city → Quiet dialogue → Self-reflection',
+        description: '“Between Shadows and Glow” opens with four moments, each caught in the delicate tension of light and absence.',
       }
     ],
   },
