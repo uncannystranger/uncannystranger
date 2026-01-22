@@ -22,7 +22,7 @@ const Artist: React.FC = () => {
   return (
     <section className="min-h-screen py-32 px-6 md:px-12 flex items-center justify-center">
       <app>
-  <title>Abdullahi Maxamed</title>
+  <title>Artist | Abdullahi Maxamed</title>
   <meta
     name="description"
     content="About Abdullahi Maxamed, known as Uncanny Stranger. A Somali photographer documenting quiet moments, light, movement, and personal visual stories."
