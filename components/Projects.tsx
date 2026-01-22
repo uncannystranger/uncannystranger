@@ -7,6 +7,7 @@ import {
 import { ProjectView, GalleryCategory } from '../types';
 import { PHOTOS, EXHIBITIONS } from '../constants';
 import { useScrollDirection } from '../src/hooks/useScrollDirection';
+import { LightingWrapper } from './LightingWrapper';
 
 const LIQUID_SPRING = {
   type: 'spring',
@@ -211,7 +212,6 @@ interface GalleryItemProps {
   setIsDimmed: (val: boolean) => void;
 }
 
-import { LightingWrapper } from './LightingWrapper';
 
 const GalleryItem: React.FC<GalleryItemProps> = ({
   photo,
@@ -249,7 +249,6 @@ const GalleryItem: React.FC<GalleryItemProps> = ({
     </motion.div>
   );
 };
-
 /* ────────────────────────────────
    Exhibition Item
 ──────────────────────────────── */

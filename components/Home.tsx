@@ -33,7 +33,7 @@ const Home = ({ setSection }: HomeProps) => {
   return (
     <>
     <app>
-  <title>Abdullahi Maxamed | Photographer & Visual Artist</title>
+  <title>Abdullahi Maxamed</title>
   <meta
     name="description"
     content="Official portfolio of Abdullahi Maxamed (Uncanny Stranger), a Somali photographer and visual artist exploring memory, motion, and stillness through cinematic imagery."

@@ -15,21 +15,57 @@ export const IMAGES = {
       },
       {
         id: 2,
-        src: cld('18_hbconn', 1600),
-        title: 'Frame Two',
-        caption: 'Light finding its way through memory.'
+        src: cld('abdullahi-maxamed-oY_sXKTsFCw-unsplash_1_lkrahb', 1600),
+        title: 'Silver of Belonging',
+        caption: 'A quiet declaration rests against the chest. The Somali Flag in silver reflects not just light, but lineage, memory, and the unspoken weight of home carried close to the heart.'
       },
       {
         id: 3,
         src: cld('21_ianwgj', 1600),
-        title: 'Frame Three',
-        caption: 'Where motion pauses long enough to speak.'
+        title: 'The Shoreline’s Keepers',
+        caption: 'Lined along the water, the boats form a quiet procession. They speak of endurance, routine, and lives shaped by tides rather than clocks.'
       },
       {
         id: 4,
+        src: cld('18_hbconn', 1600),
+        title: 'Silent Architecture',
+        caption: 'Where sound once carried across open space, only the night remains. The cathedral endures as a pause in the city’s long and unfolding story.'
+      },
+      {
+        id: 5,
+        src: cld('2025-02-28_074910_s7plwj', 1600),
+        title: 'The Hour Before Movement',
+        caption: 'A street rests under soft daylight, untouched by urgency. The space becomes a pause, where the city breathes before the day begins to shape it.'
+      },
+      {
+        id: 6,
+        src: cld('2025-08-14_6_lblngg', 1600),
+        title: 'Measured Descent',
+        caption: 'Layers of railings and walls guide the eye inward. A single figure below turns architecture into a map of distance, scale, and quiet human presence.'
+      },
+      {
+        id: 7,
+        src: cld('abdullahi-maxamed-QxGO4oZm67U-unsplash_zn62tv', 1600),
+        title: 'Color Against the Dark',
+        caption: 'Electric light cuts through shadow, turning a moment of play into a study of contrast. The figure stands between glow and silence, suspended in both.'
+      },
+      {
+        id: 8,
+        src: cld('3_nj7tqq', 1600),
+        title: 'City Under Open Sky',
+        caption: 'White rooftops stretch toward the horizon, framed by an endless blue. The city appears both dense and open, held gently beneath the vastness above.'
+      },
+      {
+        id: 9,
+        src: cld('2023-04-05_151130_jd6w2i', 1600),
+        title: 'Watching the Work of the Sea',
+        caption: 'Three figures sit at the edge of land and water, facing ships and cranes in the distance. Childhood meets industry, and the future unfolds across the waterline.'
+      },
+      {
+        id: 10,
         src: cld('2023-02-02_170135_1_dy77md', 1600),
-        title: 'Frame Four',
-        caption: 'A step forward, framed by wind and color.'
+        title: 'Step Into the Wind',
+        caption: 'Fabric lifts as the body moves forward, caught between sky and ground. The frame holds motion as a quiet declaration of direction and presence.'
       }
     ]
   },

@@ -4,9 +4,9 @@ import { useScrollDirection } from '../src/hooks/useScrollDirection';
 
 const LIQUID_SPRING = {
   type: 'spring',
-  stiffness: 100,
-  damping: 20,
-  mass: 1
+  stiffness: 90,
+  damping: 18,
+  mass: 1,
 };
 
 interface BoothImage {
@@ -25,6 +25,10 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
   const [activeId, setActiveId] = useState<number | null>(null);
   const direction = useScrollDirection();
 
+  const isDarkMode =
+    typeof document !== 'undefined' &&
+    document.documentElement.classList.contains('dark');
+
   const getDirectionalY = (baseValue = 40) => {
     if (direction === 'down') return baseValue;
     if (direction === 'up') return -baseValue;
@@ -32,93 +36,96 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
   };
 
   return (
-    <section className="max-w-6xl mx-auto flex flex-col gap-40">
-      {images.map((img, index) => {
-        const isActive = activeId === img.id;
-        const isSpread = index % 3 === 0;
+    <section className="max-w-7xl mx-auto flex flex-col gap-48">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-24 gap-y-40">
+        {images.map((img, index) => {
+          const isActive = activeId === img.id;
 
-        return (
-          <motion.article
-            key={img.id}
-            initial={{ opacity: 0, y: getDirectionalY() }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, margin: "-10%" }}
-            transition={LIQUID_SPRING}
-            className={`
-              grid
-              grid-cols-1
-              md:grid-cols-2
-              gap-16
-              items-center
-            `}
-          >
-            {/* IMAGE */}
-            <motion.figure
-              onClick={() => setActiveId(isActive ? null : img.id)}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
+          const imageClass = isDarkMode
+            ? isActive
+              ? 'grayscale-0'
+              : 'grayscale'
+            : isActive
+            ? 'grayscale'
+            : 'grayscale-0';
+
+          return (
+            <motion.article
+              key={img.id}
+              initial={{ opacity: 0, y: getDirectionalY() }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, margin: '-10%' }}
               transition={LIQUID_SPRING}
               className={`
-                relative
-                cursor-pointer
-                overflow-hidden
-                will-change-transform
-                ${isActive
-                  ? 'dark:grayscale-0 grayscale scale-[1.01]'
-                  : 'grayscale-0 dark:grayscale'
-                }
-                ${isSpread ? 'md:col-span-2' : ''}
+                flex flex-col items-center
+                ${index % 3 === 1 ? 'lg:mt-24' : ''}
+                ${index % 3 === 2 ? 'lg:mt-12' : ''}
               `}
             >
-              <motion.img
-                src={img.src}
-                alt={img.title || ''}
-                loading="lazy"
-                decoding="async"
-                layoutId={`img-${img.id}`}
+              <motion.figure
+                onClick={() => setActiveId(isActive ? null : img.id)}
+                whileHover={{ y: shouldReduceMotion ? 0 : -4 }}
+                transition={LIQUID_SPRING}
                 className="
-                  w-full
-                  h-auto
-                  md:max-h-[80vh]
-                  object-cover
-                  mx-auto
+                  relative
+                  cursor-pointer
+                  bg-black
+                  dark:bg-[#4a2a12]
+                  p-[5px]
+                  shadow-[0_18px_40px_rgba(0,0,0,0.35)]
+                  dark:shadow-[0_18px_40px_rgba(0,0,0,0.65)]
                 "
-              />
-
-              {/* SOFT DEPTH */}
-              <div
-                className="
-                  pointer-events-none
-                  absolute inset-0
-                  shadow-[inset_0_-40px_80px_rgba(0,0,0,0.15)]
-                  opacity-0
-                  group-hover:opacity-100
-                  transition-opacity duration-700
-                "
-              />
-            </motion.figure>
-
-            {/* OPTIONAL TEXT BLOCK */}
-            {(img.title || img.caption) && (
-              <motion.div
-                initial={{ opacity: 0, x: index % 2 === 0 ? 20 : -20 }}
-                whileInView={{ opacity: 0.75, x: 0 }}
-                transition={{ ...LIQUID_SPRING, delay: 0.2 }}
-                className="max-w-md text-sm leading-relaxed"
               >
-                {img.title && (
-                  <h4 className="font-serif italic mb-4 text-base">
-                    {img.title}
-                  </h4>
-                )}
-                {img.caption && (
-                  <p className="leading-loose">{img.caption}</p>
-                )}
-              </motion.div>
-            )}
-          </motion.article>
-        );
-      })}
+                <div className="bg-white p-[10px] flex items-center justify-center">
+                  <motion.img
+                    src={img.src}
+                    alt={img.title || ''}
+                    loading="lazy"
+                    decoding="async"
+                    layoutId={`img-${img.id}`}
+                    className={`
+                      max-w-full
+                      max-h-[75vh]
+                      object-contain
+                      transition-all
+                      duration-700
+                      ${imageClass}
+                    `}
+                  />
+                </div>
+              </motion.figure>
+
+              {(img.title || img.caption) && (
+                <motion.figcaption
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 0.75, y: 0 }}
+                  transition={{ ...LIQUID_SPRING, delay: 0.2 }}
+                  className="
+                    mt-6
+                    max-w-xs
+                    text-center
+                    text-xs
+                    leading-relaxed
+                    text-neutral-600
+                    dark:text-neutral-400
+                  "
+                >
+                  {img.title && (
+                    <div className="font-serif italic text-sm mb-1 text-neutral-800 dark:text-neutral-200">
+                      {img.title}
+                    </div>
+                  )}
+                  {img.caption && (
+                    <div className="tracking-wide">
+                      {img.caption}
+                    </div>
+                  )}
+                </motion.figcaption>
+              )}
+            </motion.article>
+          );
+        })}
+      </div>
     </section>
   );
 };
