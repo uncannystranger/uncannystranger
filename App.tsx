@@ -122,8 +122,12 @@ const App: React.FC = () => {
 
   /* ================= SCROLL RESET (ORIGINAL BEHAVIOR) ================= */
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'auto' });
-  }, [section]);
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: 'auto', // important: no smooth scrolling
+  });
+}, [location.pathname]);
 
   /* ================= THEME (ORIGINAL LOGIC, UNCHANGED) ================= */
   const applyTheme = (dark: boolean) => {
