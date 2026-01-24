@@ -95,7 +95,8 @@ const Artist: React.FC = () => {
   { label: "GitHub", href: "https://github.com/uncannystranger" },
   { label: "Medium", href: "https://uncannystranger.medium.com/abdullahi-maxamed-uncannystranger-c0d61a149d75" },
   { label: "Email", href: "mailto:abdallahmadm@gmail.com" },
-            { label: "X", href: "https://x.com/uncannystranger" }
+            { label: "X", href: "https://x.com/uncannystranger" },
+            { label: "Glass.Photo", href: "https://glass.photo/uncannystranger" }
             ].map((link) => (
               <a
                 key={link.label}
