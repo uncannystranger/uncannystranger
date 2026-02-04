@@ -117,8 +117,6 @@ const App: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [themeOverride, setThemeOverride] = useState<'system' | 'dark' | 'light'>('system');
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [timecode, setTimecode] = useState('00:00:00:00');
-  const [frameCount, setFrameCount] = useState(0);
   const [recActive, setRecActive] = useState(false);
   const audioRef = useRef<AudioContext | null>(null);
   const gradeRafRef = useRef<number | null>(null);
@@ -489,35 +487,6 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    let rafId: number | null = null;
-    const updateTimecode = () => {
-      rafId = null;
-      const maxScroll =
-        document.documentElement.scrollHeight - window.innerHeight;
-      const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
-      const totalSeconds = progress * 120;
-      const minutes = Math.floor(totalSeconds / 60);
-      const seconds = Math.floor(totalSeconds % 60);
-      const frames = Math.floor((totalSeconds % 1) * 24);
-      const tc = `00:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}:${String(frames).padStart(2, '0')}`;
-      setTimecode(tc);
-      setFrameCount(Math.floor(totalSeconds * 24));
-    };
-
-    const handleScroll = () => {
-      if (rafId !== null) return;
-      rafId = requestAnimationFrame(updateTimecode);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    updateTimecode();
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      if (rafId !== null) cancelAnimationFrame(rafId);
-    };
-  }, []);
-
-  useEffect(() => {
     const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-chapter]'));
     if (!sections.length) return;
     const sectionMeta = sections.map((section) => ({
@@ -587,15 +556,8 @@ const App: React.FC = () => {
         <div className="vignette-overlay" />
         <div className="film-edge-overlay" />
         <div className="grain-overlay" />
-        <div className="anamorphic-guides" />
-        <div className="timecode-overlay">{timecode}</div>
         <div className={`rec-indicator ${recActive ? 'is-active' : ''}`}>
           REC <span className="rec-dot" />
-        </div>
-        <div className="tape-counter">
-          <span className="tape-label">TCR</span>
-          <span className="tape-time">{timecode}</span>
-          <span className="tape-frames">F:{String(frameCount).padStart(5, '0')}</span>
         </div>
         <div className="meter-strip">
           {Array.from({ length: 8 }).map((_, index) => (

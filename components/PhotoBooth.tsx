@@ -5,9 +5,9 @@ import { useDeviceTier } from '../src/hooks/useDeviceTier';
 
 const LIQUID_SPRING = {
   type: 'spring',
-  stiffness: 90,
-  damping: 18,
-  mass: 1,
+  stiffness: 180,
+  damping: 20,
+  mass: 0.9,
 };
 
 interface BoothImage {
@@ -34,7 +34,7 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
     typeof document !== 'undefined' &&
     document.documentElement.classList.contains('dark');
 
-  const getDirectionalY = (baseValue = 40) => {
+  const getDirectionalY = (baseValue = 28) => {
     const scaled = baseValue * motionScale;
     if (direction === 'down') return scaled;
     if (direction === 'up') return -scaled;
@@ -75,9 +75,9 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
           return (
             <motion.article
               key={img.id}
-              initial={{ opacity: 0, y: getDirectionalY() }}
+              initial={{ opacity: 0.4, y: getDirectionalY() }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, margin: '-10%' }}
+              viewport={{ once: false, margin: '40% 0px' }}
               transition={LIQUID_SPRING}
               className={`
                 flex flex-col items-center
@@ -114,7 +114,7 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
                       max-h-[75vh]
                       object-contain
                       transition-all
-                      duration-700
+                      duration-400
                       focus-reveal
                       ${imageClass}
                     `}
@@ -126,7 +126,7 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
                 <motion.figcaption
                   initial={{ opacity: 0, y: reduceMotion ? 6 : 12 }}
                   whileInView={{ opacity: 0.75, y: 0 }}
-                  transition={{ ...LIQUID_SPRING, delay: 0.2 }}
+                  transition={{ ...LIQUID_SPRING, delay: 0.1 }}
                   className="
                     mt-6
                     max-w-xs

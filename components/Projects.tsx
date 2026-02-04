@@ -13,9 +13,9 @@ import { useDeviceTier } from '../src/hooks/useDeviceTier';
 
 const LIQUID_SPRING = {
   type: 'spring',
-  stiffness: 120,
-  damping: 24,
-  mass: 1.2
+  stiffness: 190,
+  damping: 22,
+  mass: 0.9
 };
 
 /* ────────────────────────────────
@@ -247,18 +247,18 @@ const GalleryItem: React.FC<GalleryItemProps> = ({
   return (
     <motion.div
       initial={{
-        opacity: 0,
-        y: 50 * motionScale,
-        scale: 0.98,
-        filter: `blur(${isLowPower ? 4 : 8}px)`,
+        opacity: 0.4,
+        y: 24 * motionScale,
+        scale: 0.995,
+        filter: `blur(${isLowPower ? 2 : 3}px)`,
       }}
       whileInView={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-      viewport={{ once: false, margin: "-10%" }}
+      viewport={{ once: false, margin: "40% 0px" }}
       onMouseEnter={() => setIsDimmed(true)}
       onMouseLeave={() => setIsDimmed(false)}
       transition={{
         ...revealSpring,
-        delay: (index % 3) * 0.08
+        delay: (index % 3) * 0.02
       }}
       data-sound="shutter"
       className={`relative group aspect-[3/4] cursor-pointer md:max-h-[70vh] md:w-auto mx-auto ${index % 3 === 1 ? 'md:mt-32' : ''}`}
@@ -274,7 +274,7 @@ const GalleryItem: React.FC<GalleryItemProps> = ({
             data-loaded="false"
             onLoad={handleFocusLoad}
             whileHover={{ scale: 1.05 }}
-            transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             className={`w-full h-full object-cover transition-all duration-1000 will-change-transform focus-reveal ${
               isDarkMode
                 ? isActive
@@ -327,13 +327,13 @@ const ExhibitionItem: React.FC<ExhibitionItemProps> = ({
   return (
     <motion.div
       initial={{
-        opacity: 0,
-        y: 40 * motionScale,
-        scale: 0.98,
-        filter: `blur(${isLowPower ? 4 : 8}px)`,
+        opacity: 0.4,
+        y: 20 * motionScale,
+        scale: 0.995,
+        filter: `blur(${isLowPower ? 2 : 3}px)`,
       }}
       whileInView={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-      viewport={{ once: false, margin: "-10%" }}
+      viewport={{ once: false, margin: "40% 0px" }}
       onMouseEnter={() => setIsDimmed(true)}
       onMouseLeave={() => setIsDimmed(false)}
       transition={revealSpring}
@@ -377,7 +377,7 @@ const ExhibitionItem: React.FC<ExhibitionItemProps> = ({
               data-loaded="false"
               onLoad={handleFocusLoad}
               whileHover={{ scale: 1.03 }}
-              transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
               className={`w-full h-full object-cover transition-all duration-1000 will-change-transform focus-reveal ${
                 isDarkMode
                   ? isActive

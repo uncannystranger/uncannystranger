@@ -13,9 +13,9 @@ const LazyPhotoBooth = lazy(() => import('./PhotoBooth'));
 
 const LIQUID_SPRING = {
   type: 'spring',
-  stiffness: 120,
-  damping: 24,
-  mass: 1.2
+  stiffness: 200,
+  damping: 22,
+  mass: 0.9
 };
 
 interface HomeProps {
@@ -40,14 +40,13 @@ const Home = ({ setSection }: HomeProps) => {
   const isDarkMode =
     typeof document !== 'undefined' &&
     document.documentElement.classList.contains('dark');
-  const videoSectionRef = useRef<HTMLElement | null>(null);
   const heroRef = useRef<HTMLElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const photoBoothRef = useRef<HTMLElement | null>(null);
-  const [isVideoActive, setIsVideoActive] = useState(false);
   const behanceRef = useRef<HTMLDivElement | null>(null);
   const [shouldLoadBehance, setShouldLoadBehance] = useState(false);
   const [shouldLoadPhotoBooth, setShouldLoadPhotoBooth] = useState(false);
+  const [isBehanceActive, setIsBehanceActive] = useState(false);
   const motionScale = isLowPower ? 0.7 : 1;
   const liquidSpring = isLowPower
     ? { ...LIQUID_SPRING, stiffness: 100, damping: 26 }
@@ -61,6 +60,16 @@ const Home = ({ setSection }: HomeProps) => {
     [0, 1],
     [0, isLowPower ? -10 : -30]
   );
+  const heroScale = useTransform(
+    heroProgress,
+    [0, 0.35, 1],
+    [isLowPower ? 1.06 : 1.12, 1.02, isLowPower ? 0.97 : 0.92]
+  );
+  const heroShift = useTransform(
+    heroProgress,
+    [0, 1],
+    [0, isLowPower ? -18 : -60]
+  );
 
   const handleFocusLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
     event.currentTarget.setAttribute('data-loaded', 'true');
@@ -73,36 +82,25 @@ const Home = ({ setSection }: HomeProps) => {
     return scaled;
   };
 
-  useEffect(() => {
-    if (!videoSectionRef.current) return;
-    const section = videoSectionRef.current;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsVideoActive(entry.isIntersecting);
-      },
-      {
-        root: null,
-        threshold: 0.25,
-        rootMargin: '200px 0px',
-      }
-    );
-
-    observer.observe(section);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
+  const attemptVideoPlay = () => {
     const video = videoRef.current;
     if (!video) return;
-    if (isVideoActive) {
-      const playPromise = video.play();
-      if (playPromise && typeof playPromise.catch === 'function') {
-        playPromise.catch(() => {});
-      }
-    } else {
-      video.pause();
+    const playPromise = video.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise.catch(() => {});
     }
-  }, [isVideoActive]);
+  };
+
+  useEffect(() => {
+    attemptVideoPlay();
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        attemptVideoPlay();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => document.removeEventListener('visibilitychange', onVisibility);
+  }, []);
 
   useEffect(() => {
     if (shouldLoadBehance || !behanceRef.current) return;
@@ -137,8 +135,8 @@ const Home = ({ setSection }: HomeProps) => {
       },
       {
         root: null,
-        threshold: 0.2,
-        rootMargin: '200px 0px',
+        threshold: 0.15,
+        rootMargin: '500px 0px',
       }
     );
 
@@ -177,10 +175,7 @@ const Home = ({ setSection }: HomeProps) => {
           fetchPriority="high"
           alt="Artist Hero Background"
           className="absolute inset-0 z-0 w-full h-full object-cover will-change-transform"
-          initial={{ scale: isLowPower ? 1.05 : 1.1 }}
-          style={{ y: 0 }}
-          whileInView={{ scale: 1 }}
-          transition={{ duration: isLowPower ? 1.4 : 2, ease: [0.16, 1, 0.3, 1] }}
+          style={{ y: heroShift, scale: heroScale }}
         />
         {/* CINEMATIC TONE */}
         <div className="absolute inset-0 bg-black/25 dark:bg-black/45" />
@@ -343,7 +338,10 @@ const Home = ({ setSection }: HomeProps) => {
     ) : (
       <button
         type="button"
-        onClick={() => setShouldLoadBehance(true)}
+        onClick={() => {
+          setShouldLoadBehance(true);
+          setIsBehanceActive(true);
+        }}
         aria-label="Load exhibition preview"
         data-sound="shutter"
         className="absolute inset-0 group"
@@ -356,7 +354,13 @@ const Home = ({ setSection }: HomeProps) => {
           data-loaded="false"
           onLoad={handleFocusLoad}
           className={`absolute inset-0 w-full h-full object-cover focus-reveal ${
-            isDarkMode ? 'grayscale' : 'grayscale-0'
+            isDarkMode
+              ? isBehanceActive
+                ? 'grayscale-0'
+                : 'grayscale'
+              : isBehanceActive
+              ? 'grayscale'
+              : 'grayscale-0'
           }`}
         />
         <div className="absolute inset-0 bg-black/30 dark:bg-black/45" />
@@ -391,29 +395,30 @@ const Home = ({ setSection }: HomeProps) => {
       </div>
       {/* ================= VIDEO ================= */}
       <section
-        ref={videoSectionRef}
         data-chapter="Motion"
         className="relative h-[100svh] w-full overflow-hidden cursor-pointer"
         data-cursor="Play"
       >
-        <motion.div
-          initial={{ scale: 1.1, opacity: 0 }}
-          whileInView={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
-          className="absolute inset-0 w-full h-full"
-        >
-          <video
-            ref={videoRef}
-            src="https://res.cloudinary.com/duwhuzkib/video/upload/v1768131908/Reshoot_stationary_up_1080p_20260111140_oxixev.mp4"
-            poster="https://res.cloudinary.com/duwhuzkib/video/upload/v1768131908/Reshoot_stationary_up_1080p_20260111140_oxixev.jpg"
-            autoPlay={isVideoActive}
-            loop
-            muted
-            playsInline
-            preload="metadata"
-            className="absolute inset-0 w-full h-full object-cover dark:grayscale contrast-125"
-          />
-        </motion.div>
+          <motion.div
+            initial={{ scale: 1.08, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute inset-0 w-full h-full"
+          >
+            <video
+              ref={videoRef}
+              src="https://res.cloudinary.com/duwhuzkib/video/upload/v1768131908/Reshoot_stationary_up_1080p_20260111140_oxixev.mp4"
+              poster="https://res.cloudinary.com/duwhuzkib/video/upload/v1768131908/Reshoot_stationary_up_1080p_20260111140_oxixev.jpg"
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              onCanPlay={attemptVideoPlay}
+              onLoadedData={attemptVideoPlay}
+              className="absolute inset-0 w-full h-full object-cover dark:grayscale contrast-125"
+            />
+          </motion.div>
 
         {/* Overlay */}
         <div className="absolute inset-0 bg-black/30 dark:bg-black/50" />

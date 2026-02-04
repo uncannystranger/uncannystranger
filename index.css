@@ -101,51 +101,6 @@ body {
   opacity: 0.45;
 }
 
-/* Videographic HUD */
-.anamorphic-guides {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9993;
-}
-
-.anamorphic-guides::before,
-.anamorphic-guides::after {
-  content: "";
-  position: absolute;
-  left: 6%;
-  right: 6%;
-  height: 1px;
-  background: rgba(0, 0, 0, 0.16);
-}
-
-.anamorphic-guides::before {
-  top: 12%;
-}
-
-.anamorphic-guides::after {
-  bottom: 12%;
-}
-
-.dark .anamorphic-guides::before,
-.dark .anamorphic-guides::after {
-  background: rgba(255, 255, 255, 0.18);
-}
-
-.timecode-overlay {
-  position: fixed;
-  top: 18px;
-  left: 20px;
-  z-index: 9992;
-  font-size: 10px;
-  letter-spacing: 0.35em;
-  text-transform: uppercase;
-  opacity: 0.6;
-  font-family: "Times New Roman", Times, serif;
-  color: rgba(0, 0, 0, 0.7);
-  pointer-events: none;
-}
-
 .rec-indicator {
   position: fixed;
   top: 18px;
@@ -181,26 +136,6 @@ body {
   51%, 100% { opacity: 0.2; }
 }
 
-.tape-counter {
-  position: fixed;
-  left: 20px;
-  bottom: 24px;
-  z-index: 9992;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 10px;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  opacity: 0.6;
-  color: rgba(0, 0, 0, 0.7);
-  pointer-events: none;
-}
-
-.tape-label {
-  font-weight: 600;
-}
-
 .meter-strip {
   position: fixed;
   right: 20px;
@@ -222,15 +157,11 @@ body {
   transition: transform 0.12s ease;
 }
 
-.dark .timecode-overlay,
-.dark .rec-indicator,
-.dark .tape-counter {
+.dark .rec-indicator {
   color: rgba(255, 255, 255, 0.7);
 }
 
 @media (max-width: 768px) {
-  .timecode-overlay,
-  .tape-counter,
   .rec-indicator {
     font-size: 9px;
     letter-spacing: 0.25em;
@@ -326,13 +257,13 @@ h4,
 
 /* Soft focus reveal */
 .focus-reveal {
-  filter: blur(10px);
-  opacity: 0.65;
-  transition: filter 1.1s ease, opacity 1.1s ease;
+  --tw-blur: blur(3px);
+  opacity: 0.9;
+  transition: filter 0.25s ease, opacity 0.25s ease;
 }
 
 .focus-reveal[data-loaded="true"] {
-  filter: blur(0px);
+  --tw-blur: blur(0px);
   opacity: 1;
 }
 

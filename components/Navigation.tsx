@@ -15,9 +15,9 @@ interface NavigationProps {
 
 const LIQUID_SPRING = {
   type: 'spring',
-  stiffness: 150,
-  damping: 25,
-  mass: 1,
+  stiffness: 220,
+  damping: 22,
+  mass: 0.85,
 };
 
 const Navigation: React.FC<NavigationProps> = ({

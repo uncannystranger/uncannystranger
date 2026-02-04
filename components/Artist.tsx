@@ -6,9 +6,9 @@ import { useDeviceTier } from '../src/hooks/useDeviceTier';
 
 const LIQUID_SPRING = {
   type: 'spring',
-  stiffness: 120,
-  damping: 24,
-  mass: 1.2
+  stiffness: 190,
+  damping: 22,
+  mass: 0.9
 };
 
 const Artist: React.FC = () => {
