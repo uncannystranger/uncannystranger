@@ -1,8 +1,8 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { IMAGES } from '../src/assets/images/imageRegistry';
 import { useScrollDirection } from '../src/hooks/useScrollDirection';
+import { useDeviceTier } from '../src/hooks/useDeviceTier';
 
 const LIQUID_SPRING = {
   type: 'spring',
@@ -13,38 +13,65 @@ const LIQUID_SPRING = {
 
 const Artist: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [isPortraitActive, setIsPortraitActive] = useState(false);
   const direction = useScrollDirection();
+  const { isLowPower } = useDeviceTier();
+  const reduceMotion = shouldReduceMotion || isSmallScreen || isLowPower;
+  const motionScale = reduceMotion ? 0.5 : 1;
+  const isDarkMode =
+    typeof document !== 'undefined' &&
+    document.documentElement.classList.contains('dark');
   const getDirectionalY = (baseValue = 30) => {
-    if (direction === 'down') return baseValue;
-    if (direction === 'up') return -baseValue;
-    return baseValue;
+    const scaled = baseValue * motionScale;
+    if (direction === 'down') return scaled;
+    if (direction === 'up') return -scaled;
+    return scaled;
   };
+
+  const handleFocusLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
+    event.currentTarget.setAttribute('data-loaded', 'true');
+  };
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(max-width: 768px)');
+    const update = () => setIsSmallScreen(mq.matches);
+    update();
+    if (mq.addEventListener) {
+      mq.addEventListener('change', update);
+      return () => mq.removeEventListener('change', update);
+    }
+    mq.addListener(update);
+    return () => mq.removeListener(update);
+  }, []);
   return (
-    <section className="min-h-screen py-32 px-6 md:px-12 flex items-center justify-center">
-      <app>
-  <title>Artist | Abdullahi Maxamed</title>
-  <meta
-    name="description"
-    content="About Abdullahi Maxamed, known as Uncanny Stranger. A Somali photographer documenting quiet moments, light, movement, and personal visual stories."
-  />
-  <link
-    rel="canonical"
-    href="https://uncannystranger.com/artist"
-  />
-</app>
-      <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-20 md:gap-32 items-center">
+    <section data-chapter="Artist" className="min-h-screen py-32 px-6 md:px-12 flex items-center justify-center">
+      <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-32 items-center">
         <motion.div
-          initial={{ opacity: 0, x: -50, y: getDirectionalY(20) }}
+          initial={{ opacity: 0, x: reduceMotion ? -20 : -50, y: getDirectionalY(20) }}
           whileInView={{ opacity: 1, x: 0, y: 0 }}
           viewport={{ once: false, margin: "-10%" }}
           transition={LIQUID_SPRING}
           className="aspect-[4/5] md:max-h-[75vh] md:w-auto mx-auto bg-neutral-200 dark:bg-neutral-900 overflow-hidden shadow-2xl relative group cursor-pointer"
           data-cursor="Artist"
+          onClick={() => setIsPortraitActive(!isPortraitActive)}
+          data-sound="shutter"
         >
           <img
             src={IMAGES.artist.profile.src}
             alt={IMAGES.artist.profile.alt}
-            className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000 ease-in-out"
+            data-loaded="false"
+            onLoad={handleFocusLoad}
+            className={`w-full h-full object-cover transition-all duration-1000 ease-in-out focus-reveal ${
+              isDarkMode
+                ? isPortraitActive
+                  ? 'grayscale-0'
+                  : 'grayscale'
+                : isPortraitActive
+                ? 'grayscale'
+                : 'grayscale-0'
+            }`}
           />
           <div className="absolute inset-0 ring-1 ring-inset ring-black/5 pointer-events-none" />
         </motion.div>
@@ -63,7 +90,6 @@ const Artist: React.FC = () => {
             <h2 className="text-5xl md:text-8xl font-serif italic mb-12 text-ink-primary dark:text-bone-primary leading-tight">
               Abdullahi Maxamed
             </h2>
-
             <div className="space-y-8 text-lg md:text-xl leading-relaxed font-serif text-ink-primary/80 dark:text-bone-primary/80 max-w-xl">
               <p>
                 Photography is something I come back to out of love, not obligation. It started as curiosity and slowly became a habit. A way to notice light, movement, and small details that usually pass without attention.
@@ -81,7 +107,7 @@ const Artist: React.FC = () => {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.8, duration: 1 }}
+            transition={reduceMotion ? { delay: 0.2, duration: 0.6 } : { delay: 0.8, duration: 1 }}
             className="flex flex-wrap gap-x-12 gap-y-6 pt-8 border-t border-neutral-200 dark:border-neutral-800"
           >
             {[

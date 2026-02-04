@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
@@ -6,13 +6,15 @@ import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 
 import Navigation from './components/Navigation';
 import Home from './components/Home';
-import Projects from './components/Projects';
-import Artist from './components/Artist';
 import { Section } from './types';
 import { ScrollIndicator } from './components/ScrollIndicator';
 import { ScrollProgress } from './components/ScrollProgress';
 import { SectionLabel } from './components/SectionLabel';
 import { BackToTop } from './components/BackToTop';
+import { useDeviceTier } from './src/hooks/useDeviceTier';
+
+const Projects = lazy(() => import('./components/Projects'));
+const Artist = lazy(() => import('./components/Artist'));
 
 /* ================= SAFETY: ERROR BOUNDARY ================= */
 type ErrorBoundaryProps = {
@@ -109,9 +111,43 @@ const CustomCursor: React.FC = () => {
 const App: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { isLowPower } = useDeviceTier();
 
   const [section, setSection] = useState<Section>('home');
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [themeOverride, setThemeOverride] = useState<'system' | 'dark' | 'light'>('system');
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [timecode, setTimecode] = useState('00:00:00:00');
+  const [frameCount, setFrameCount] = useState(0);
+  const [recActive, setRecActive] = useState(false);
+  const audioRef = useRef<AudioContext | null>(null);
+  const gradeRafRef = useRef<number | null>(null);
+  const leakRafRef = useRef<number | null>(null);
+  const meterRafRef = useRef<number | null>(null);
+  const meterLevelRef = useRef(0);
+  const lastSectionRef = useRef('');
+  const recTimeoutRef = useRef<number | null>(null);
+
+  const SEO = {
+    home: {
+      title: 'Abdullahi Maxamed',
+      description:
+        "Official portfolio of Abdullahi Maxamed (Uncanny Stranger). A study of stillness, memory, and visual storytelling through the lens of Mogadishu's shifting landscapes.",
+      canonical: 'https://uncannystranger.com',
+    },
+    projects: {
+      title: 'Projects | Abdullahi Maxamed',
+      description:
+        'Photography projects and exhibitions by Abdullahi Maxamed (Uncanny Stranger), including curated galleries, visual journals, and cinematic exhibitions.',
+      canonical: 'https://uncannystranger.com/projects',
+    },
+    artist: {
+      title: 'Artist | Abdullahi Maxamed',
+      description:
+        'About Abdullahi Maxamed, known as Uncanny Stranger. A Somali photographer documenting quiet moments, light, movement, and personal visual stories.',
+      canonical: 'https://uncannystranger.com/artist',
+    },
+  } as const;
 
   /* ================= URL → SECTION (ON LOAD & REFRESH) ================= */
   useEffect(() => {
@@ -119,6 +155,55 @@ const App: React.FC = () => {
     else if (location.pathname === '/artist') setSection('artist');
     else setSection('home');
   }, [location.pathname]);
+
+  /* ================= SEO HEAD INJECTION ================= */
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const resolvedSection =
+      section === 'projects:exhibition' ? 'projects' : section;
+    const data = SEO[resolvedSection];
+    if (!data) return;
+
+    const setMeta = (name: string, content: string) => {
+      let el = document.querySelector<HTMLMetaElement>(`meta[name="${name}"]`);
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute('name', name);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', content);
+    };
+
+    const setMetaProperty = (property: string, content: string) => {
+      let el = document.querySelector<HTMLMetaElement>(`meta[property="${property}"]`);
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute('property', property);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', content);
+    };
+
+    const setCanonical = (href: string) => {
+      let link = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+      if (!link) {
+        link = document.createElement('link');
+        link.setAttribute('rel', 'canonical');
+        document.head.appendChild(link);
+      }
+      link.setAttribute('href', href);
+    };
+
+    document.title = data.title;
+    setMeta('description', data.description);
+    setCanonical(data.canonical);
+    setMetaProperty('og:title', data.title);
+    setMetaProperty('og:description', data.description);
+    setMetaProperty('og:url', data.canonical);
+    setMetaProperty('twitter:title', data.title);
+    setMetaProperty('twitter:description', data.description);
+    setMetaProperty('twitter:url', data.canonical);
+  }, [section]);
 
   /* ================= SCROLL RESET (ORIGINAL BEHAVIOR) ================= */
   useEffect(() => {
@@ -142,12 +227,18 @@ const App: React.FC = () => {
     if (!window.matchMedia) return;
 
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    setIsDarkMode(mq.matches);
-    applyTheme(mq.matches);
+
+    const applyFromMode = (mode: 'system' | 'dark' | 'light', matches: boolean) => {
+      const nextIsDark = mode === 'system' ? matches : mode === 'dark';
+      setIsDarkMode(nextIsDark);
+      applyTheme(nextIsDark);
+    };
+
+    applyFromMode(themeOverride, mq.matches);
 
     const onChange = (e: MediaQueryListEvent) => {
-      setIsDarkMode(e.matches);
-      applyTheme(e.matches);
+      if (themeOverride !== 'system') return;
+      applyFromMode('system', e.matches);
     };
 
     mq.addEventListener?.('change', onChange);
@@ -157,27 +248,364 @@ const App: React.FC = () => {
       mq.removeEventListener?.('change', onChange);
       mq.removeListener?.(onChange);
     };
-  }, []);
+  }, [themeOverride]);
 
   const toggleTheme = () => {
-    setIsDarkMode((prev) => {
-      const next = !prev;
-      applyTheme(next);
-      return next;
+    setThemeOverride((prev) => {
+      if (prev === 'system') {
+        return isDarkMode ? 'light' : 'dark';
+      }
+      if (prev === 'dark') return 'light';
+      return 'system';
     });
   };
+
+  const toggleSound = () => {
+    setSoundEnabled((prev) => !prev);
+  };
+
+  const playTap = useCallback((soundType: string) => {
+    if (!soundEnabled) return;
+    const AudioContextClass =
+      window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContextClass) return;
+
+    if (!audioRef.current) {
+      audioRef.current = new AudioContextClass();
+    }
+
+    const ctx = audioRef.current;
+    if (ctx.state === 'suspended') {
+      ctx.resume();
+    }
+
+    const createNoiseBuffer = (duration: number) => {
+      const length = Math.floor(ctx.sampleRate * duration);
+      const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < length; i += 1) {
+        data[i] = (Math.random() * 2 - 1) * (1 - i / length);
+      }
+      return buffer;
+    };
+
+    if (soundType === 'shutter') {
+      const duration = 0.08;
+      const buffer = createNoiseBuffer(duration);
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 900;
+      filter.Q.value = 0.6;
+      const gain = ctx.createGain();
+      gain.gain.value = 0.18;
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration + 0.02);
+
+      const thump = ctx.createOscillator();
+      const thumpGain = ctx.createGain();
+      thump.type = 'sine';
+      thump.frequency.setValueAtTime(180, ctx.currentTime);
+      thump.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.06);
+      thumpGain.gain.value = 0.06;
+      thumpGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.09);
+      thump.connect(thumpGain);
+      thumpGain.connect(ctx.destination);
+      source.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      source.start();
+      source.stop(ctx.currentTime + duration);
+      thump.start();
+      thump.stop(ctx.currentTime + 0.1);
+      return;
+    }
+
+    if (soundType === 'tone') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = 420;
+      gain.gain.value = 0.08;
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.16);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.16);
+      return;
+    }
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const texture = ctx.createBufferSource();
+    texture.buffer = createNoiseBuffer(0.06);
+    const textureFilter = ctx.createBiquadFilter();
+    textureFilter.type = 'lowpass';
+    textureFilter.frequency.value = 1200;
+    const textureGain = ctx.createGain();
+    textureGain.gain.value = 0.04;
+    textureGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.08);
+
+    osc.type = 'triangle';
+    osc.frequency.value = 150;
+    gain.gain.value = 0.06;
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.1);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.1);
+    texture.connect(textureFilter);
+    textureFilter.connect(textureGain);
+    textureGain.connect(ctx.destination);
+    texture.start();
+    texture.stop(ctx.currentTime + 0.08);
+  }, [soundEnabled]);
 
   /* ================= SECTION → URL (SEO) ================= */
   useEffect(() => {
     if (section === 'home') navigate('/', { replace: false });
     if (section === 'projects') navigate('/projects', { replace: false });
+    if (section === 'projects:exhibition') navigate('/projects', { replace: false });
     if (section === 'artist') navigate('/artist', { replace: false });
   }, [section, navigate]);
+
+  useEffect(() => {
+    const handlePointer = (event: PointerEvent) => {
+      if (!soundEnabled) return;
+      const target = event.target as HTMLElement | null;
+      if (!target) return;
+      const interactive = target.closest(
+        'a, button, [role="button"], .cursor-pointer'
+      );
+      if (!interactive) return;
+      if (interactive.getAttribute('data-sound-off') === 'true') return;
+      const soundType = interactive.getAttribute('data-sound') || 'reel';
+      playTap(soundType);
+    };
+
+    window.addEventListener('pointerdown', handlePointer);
+    return () => window.removeEventListener('pointerdown', handlePointer);
+  }, [soundEnabled, playTap]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const gradeMap: Record<string, { warm: number; cool: number; opacity: number }> = {
+      Introduction: { warm: 0.14, cool: 0.08, opacity: 0.16 },
+      Exhibition: { warm: 0.18, cool: 0.06, opacity: 0.18 },
+      Motion: { warm: 0.08, cool: 0.16, opacity: 0.16 },
+      'Photo Booth': { warm: 0.12, cool: 0.1, opacity: 0.15 },
+      Projects: { warm: 0.1, cool: 0.12, opacity: 0.15 },
+      Artist: { warm: 0.16, cool: 0.07, opacity: 0.17 },
+    };
+
+    const animateGrade = (target: { warm: number; cool: number; opacity: number }) => {
+      if (gradeRafRef.current !== null) {
+        cancelAnimationFrame(gradeRafRef.current);
+      }
+      const startWarm = parseFloat(getComputedStyle(root).getPropertyValue('--grade-warm')) || 0.12;
+      const startCool = parseFloat(getComputedStyle(root).getPropertyValue('--grade-cool')) || 0.1;
+      const startOpacity = parseFloat(getComputedStyle(root).getPropertyValue('--grade-opacity')) || 0.16;
+      const duration = isLowPower ? 320 : 560;
+      const startTime = performance.now();
+
+      const step = (now: number) => {
+        const t = Math.min(1, (now - startTime) / duration);
+        const ease = t * (2 - t);
+        const warm = startWarm + (target.warm - startWarm) * ease;
+        const cool = startCool + (target.cool - startCool) * ease;
+        const opacity = startOpacity + (target.opacity - startOpacity) * ease;
+        root.style.setProperty('--grade-warm', warm.toFixed(3));
+        root.style.setProperty('--grade-cool', cool.toFixed(3));
+        root.style.setProperty('--grade-opacity', opacity.toFixed(3));
+        if (t < 1) {
+          gradeRafRef.current = requestAnimationFrame(step);
+        } else {
+          gradeRafRef.current = null;
+        }
+      };
+
+      gradeRafRef.current = requestAnimationFrame(step);
+    };
+
+    const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-chapter]'));
+    if (!sections.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const label = entry.target.getAttribute('data-chapter') || 'Introduction';
+          const target = gradeMap[label] || gradeMap.Introduction;
+          animateGrade(target);
+        });
+      },
+      { threshold: 0.6 }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    const initialLabel = sections[0]?.getAttribute('data-chapter') || 'Introduction';
+    animateGrade(gradeMap[initialLabel] || gradeMap.Introduction);
+    return () => {
+      observer.disconnect();
+      if (gradeRafRef.current !== null) {
+        cancelAnimationFrame(gradeRafRef.current);
+      }
+    };
+  }, [isLowPower]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const mq = window.matchMedia('(pointer: fine)');
+
+    const setStaticLeak = () => {
+      root.style.setProperty('--leak-x', '62%');
+      root.style.setProperty('--leak-y', '30%');
+    };
+
+    if (!mq.matches) {
+      setStaticLeak();
+      return;
+    }
+
+    const handlePointer = (event: PointerEvent) => {
+      if (leakRafRef.current !== null) return;
+      const { clientX, clientY } = event;
+      leakRafRef.current = requestAnimationFrame(() => {
+        leakRafRef.current = null;
+        const x = (clientX / window.innerWidth) * 100;
+        const y = (clientY / window.innerHeight) * 100;
+        root.style.setProperty('--leak-x', `${x.toFixed(2)}%`);
+        root.style.setProperty('--leak-y', `${y.toFixed(2)}%`);
+      });
+    };
+
+    window.addEventListener('pointermove', handlePointer);
+    return () => {
+      window.removeEventListener('pointermove', handlePointer);
+      if (leakRafRef.current !== null) {
+        cancelAnimationFrame(leakRafRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    let rafId: number | null = null;
+    const updateTimecode = () => {
+      rafId = null;
+      const maxScroll =
+        document.documentElement.scrollHeight - window.innerHeight;
+      const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+      const totalSeconds = progress * 120;
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = Math.floor(totalSeconds % 60);
+      const frames = Math.floor((totalSeconds % 1) * 24);
+      const tc = `00:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}:${String(frames).padStart(2, '0')}`;
+      setTimecode(tc);
+      setFrameCount(Math.floor(totalSeconds * 24));
+    };
+
+    const handleScroll = () => {
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(updateTimecode);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    updateTimecode();
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafId !== null) cancelAnimationFrame(rafId);
+    };
+  }, []);
+
+  useEffect(() => {
+    const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-chapter]'));
+    if (!sections.length) return;
+    const sectionMeta = sections.map((section) => ({
+      section,
+      label: section.dataset.chapter || 'Scene',
+    }));
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const meta = sectionMeta.find((item) => item.section === entry.target);
+          if (!meta) return;
+          if (meta.label === lastSectionRef.current) return;
+          lastSectionRef.current = meta.label;
+          setRecActive(true);
+          if (recTimeoutRef.current) window.clearTimeout(recTimeoutRef.current);
+          recTimeoutRef.current = window.setTimeout(() => setRecActive(false), 900);
+        });
+      },
+      { threshold: 0.6 }
+    );
+
+    sectionMeta.forEach((item) => observer.observe(item.section));
+    return () => {
+      observer.disconnect();
+      if (recTimeoutRef.current) window.clearTimeout(recTimeoutRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    let lastY = window.scrollY;
+    let lastTime = performance.now();
+    const tick = () => {
+      meterLevelRef.current *= 0.92;
+      root.style.setProperty('--meter-level', meterLevelRef.current.toFixed(3));
+      meterRafRef.current = requestAnimationFrame(tick);
+    };
+
+    const handleScroll = () => {
+      const now = performance.now();
+      const dy = Math.abs(window.scrollY - lastY);
+      const dt = Math.max(16, now - lastTime);
+      const velocity = dy / dt;
+      const level = Math.min(1, velocity * 0.9);
+      if (level > meterLevelRef.current) {
+        meterLevelRef.current = level;
+      }
+      lastY = window.scrollY;
+      lastTime = now;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    meterRafRef.current = requestAnimationFrame(tick);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (meterRafRef.current !== null) cancelAnimationFrame(meterRafRef.current);
+    };
+  }, []);
 
   return (
     <ErrorBoundary>
       <div className="min-h-screen selection:bg-accent selection:text-white transition-colors duration-500 flex flex-col relative overflow-hidden">
+        <div className="grade-overlay" />
+        <div className="light-leak-overlay" />
+        <div className="vignette-overlay" />
+        <div className="film-edge-overlay" />
         <div className="grain-overlay" />
+        <div className="anamorphic-guides" />
+        <div className="timecode-overlay">{timecode}</div>
+        <div className={`rec-indicator ${recActive ? 'is-active' : ''}`}>
+          REC <span className="rec-dot" />
+        </div>
+        <div className="tape-counter">
+          <span className="tape-label">TCR</span>
+          <span className="tape-time">{timecode}</span>
+          <span className="tape-frames">F:{String(frameCount).padStart(5, '0')}</span>
+        </div>
+        <div className="meter-strip">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <span
+              key={index}
+              className="meter-bar"
+              style={{ ['--bar-mult' as any]: 0.4 + index * 0.08 }}
+            />
+          ))}
+        </div>
         <CustomCursor />
         <ScrollProgress />
         <SectionLabel currentSection={section} />
@@ -187,7 +615,10 @@ const App: React.FC = () => {
           currentSection={section}
           setSection={setSection}
           isDarkMode={isDarkMode}
+          themeMode={themeOverride}
           toggleTheme={toggleTheme}
+          isSoundEnabled={soundEnabled}
+          toggleSound={toggleSound}
         />
 
         <ScrollIndicator />
@@ -195,15 +626,21 @@ const App: React.FC = () => {
         <main className="relative z-10 flex-grow">
           {section === 'home' && <Home setSection={setSection} />}
           {(section === 'projects' || section === 'projects:exhibition') && (
-            <Projects
-              initialView={
-                section === 'projects:exhibition'
-                  ? 'exhibition'
-                  : 'gallery'
-              }
-            />
+            <Suspense fallback={null}>
+              <Projects
+                initialView={
+                  section === 'projects:exhibition'
+                    ? 'exhibition'
+                    : 'gallery'
+                }
+              />
+            </Suspense>
           )}
-          {section === 'artist' && <Artist />}
+          {section === 'artist' && (
+            <Suspense fallback={null}>
+              <Artist />
+            </Suspense>
+          )}
         </main>
         {/* Conditionally rendered footer restricted to Home and Artist sections */}
         {(section === 'home' || section === 'artist') && (

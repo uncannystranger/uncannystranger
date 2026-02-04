@@ -1,18 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const BackToTop: React.FC = () => {
     const [isVisible, setIsVisible] = useState(false);
+    const visibleRef = useRef(false);
 
     useEffect(() => {
-        const handleScroll = () => {
+        let rafId: number | null = null;
+
+        const updateVisibility = () => {
+            rafId = null;
             const scrolled = window.scrollY;
             const height = document.documentElement.scrollHeight - window.innerHeight;
-            setIsVisible(scrolled > height * 0.4);
+            const nextVisible = scrolled > height * 0.4;
+            if (nextVisible !== visibleRef.current) {
+                visibleRef.current = nextVisible;
+                setIsVisible(nextVisible);
+            }
+        };
+
+        const handleScroll = () => {
+            if (rafId !== null) return;
+            rafId = requestAnimationFrame(updateVisibility);
         };
 
         window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
+        handleScroll();
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            if (rafId !== null) cancelAnimationFrame(rafId);
+        };
     }, []);
 
     const scrollToTop = () => {

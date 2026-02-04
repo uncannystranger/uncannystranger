@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useScrollDirection } from '../src/hooks/useScrollDirection';
+import { useDeviceTier } from '../src/hooks/useDeviceTier';
 
 const LIQUID_SPRING = {
   type: 'spring',
@@ -23,17 +24,39 @@ interface PhotoBoothProps {
 const PhotoBooth = ({ images }: PhotoBoothProps) => {
   const shouldReduceMotion = useReducedMotion();
   const [activeId, setActiveId] = useState<number | null>(null);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
   const direction = useScrollDirection();
+  const { isLowPower } = useDeviceTier();
+  const reduceMotion = shouldReduceMotion || isSmallScreen || isLowPower;
+  const motionScale = reduceMotion ? 0.55 : 1;
 
   const isDarkMode =
     typeof document !== 'undefined' &&
     document.documentElement.classList.contains('dark');
 
   const getDirectionalY = (baseValue = 40) => {
-    if (direction === 'down') return baseValue;
-    if (direction === 'up') return -baseValue;
-    return baseValue;
+    const scaled = baseValue * motionScale;
+    if (direction === 'down') return scaled;
+    if (direction === 'up') return -scaled;
+    return scaled;
   };
+
+  const handleFocusLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
+    event.currentTarget.setAttribute('data-loaded', 'true');
+  };
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(max-width: 768px)');
+    const update = () => setIsSmallScreen(mq.matches);
+    update();
+    if (mq.addEventListener) {
+      mq.addEventListener('change', update);
+      return () => mq.removeEventListener('change', update);
+    }
+    mq.addListener(update);
+    return () => mq.removeListener(update);
+  }, []);
 
   return (
     <section className="max-w-7xl mx-auto flex flex-col gap-48">
@@ -64,8 +87,9 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
             >
               <motion.figure
                 onClick={() => setActiveId(isActive ? null : img.id)}
-                whileHover={{ y: shouldReduceMotion ? 0 : -4 }}
+                whileHover={{ y: reduceMotion ? 0 : -4 }}
                 transition={LIQUID_SPRING}
+                data-sound="shutter"
                 className="
                   relative
                   cursor-pointer
@@ -82,6 +106,8 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
                     alt={img.title || ''}
                     loading="lazy"
                     decoding="async"
+                    data-loaded="false"
+                    onLoad={handleFocusLoad}
                     layoutId={`img-${img.id}`}
                     className={`
                       max-w-full
@@ -89,6 +115,7 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
                       object-contain
                       transition-all
                       duration-700
+                      focus-reveal
                       ${imageClass}
                     `}
                   />
@@ -97,7 +124,7 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
 
               {(img.title || img.caption) && (
                 <motion.figcaption
-                  initial={{ opacity: 0, y: 12 }}
+                  initial={{ opacity: 0, y: reduceMotion ? 6 : 12 }}
                   whileInView={{ opacity: 0.75, y: 0 }}
                   transition={{ ...LIQUID_SPRING, delay: 0.2 }}
                   className="

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useScrollDirection } from '../src/hooks/useScrollDirection';
 
@@ -10,29 +10,42 @@ import { useScrollDirection } from '../src/hooks/useScrollDirection';
 export const ScrollIndicator: React.FC = () => {
     const direction = useScrollDirection();
     const [visible, setVisible] = useState(false);
-    const [offset, setOffset] = useState(0);
+    const visibleRef = useRef(false);
+    const hideTimerRef = useRef<number | null>(null);
+    const rafRef = useRef<number | null>(null);
 
     // Show indicator on any scroll activity
     useEffect(() => {
         const handle = () => {
-            setVisible(true);
-            // Reset hide timer
-            clearTimeout((handle as any).hideTimer);
-            (handle as any).hideTimer = setTimeout(() => setVisible(false), 2000);
+            if (rafRef.current !== null) return;
+            rafRef.current = requestAnimationFrame(() => {
+                rafRef.current = null;
+                if (!visibleRef.current) {
+                    visibleRef.current = true;
+                    setVisible(true);
+                }
+                if (hideTimerRef.current !== null) {
+                    window.clearTimeout(hideTimerRef.current);
+                }
+                hideTimerRef.current = window.setTimeout(() => {
+                    visibleRef.current = false;
+                    setVisible(false);
+                }, 2000);
+            });
         };
         window.addEventListener('scroll', handle, { passive: true });
         return () => {
             window.removeEventListener('scroll', handle);
-            clearTimeout((handle as any).hideTimer);
+            if (hideTimerRef.current !== null) {
+                window.clearTimeout(hideTimerRef.current);
+            }
+            if (rafRef.current !== null) {
+                cancelAnimationFrame(rafRef.current);
+            }
         };
     }, []);
 
-    // Update slight offset based on direction for visual cue
-    useEffect(() => {
-        if (direction === 'down') setOffset(4);
-        else if (direction === 'up') setOffset(-4);
-        else setOffset(0);
-    }, [direction]);
+    const offset = direction === 'down' ? 4 : direction === 'up' ? -4 : 0;
 
     return (
         <AnimatePresence>
