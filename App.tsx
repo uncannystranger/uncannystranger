@@ -468,14 +468,35 @@ const App: React.FC = () => {
     };
   }, [isPerfLow]);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    let rafId: number | null = null;
+
+    const update = () => {
+      const maxScroll =
+        document.documentElement.scrollHeight - window.innerHeight;
+      const progress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
+      root.style.setProperty('--scroll-progress', progress.toFixed(3));
+      rafId = null;
+    };
+
+    const handleScroll = () => {
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(update);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    update();
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafId !== null) cancelAnimationFrame(rafId);
+    };
+  }, []);
+
   return (
     <ErrorBoundary>
       <div className="min-h-screen selection:bg-accent selection:text-white transition-colors duration-500 flex flex-col relative overflow-hidden">
-        <div className="grade-overlay" />
-        {!isPerfLow && <div className="light-leak-overlay" />}
-        <div className="vignette-overlay" />
-        {!isPerfLow && <div className="film-edge-overlay" />}
-        {!isPerfLow && <div className="grain-overlay" />}
+        <div className="grid-overlay" />
         {!isPerfLow && (
           <div className={`rec-indicator ${recActive ? 'is-active' : ''}`}>
             REC <span className="rec-dot" />
@@ -493,7 +514,7 @@ const App: React.FC = () => {
           </div>
         )}
         {!isPerfLow && <CustomCursor />}
-        {!isPerfLow && <ScrollProgress />}
+        <ScrollProgress />
         <SectionLabel currentSection={section} />
         <BackToTop />
 

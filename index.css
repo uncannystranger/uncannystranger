@@ -1,7 +1,7 @@
 /* Global smooth scrolling */
 html {
   scroll-behavior: auto;
-  background-color: #FDFCF0;
+  background-color: #f4efe4;
   -webkit-tap-highlight-color: transparent;
   --grade-warm: 0.12;
   --grade-cool: 0.10;
@@ -9,16 +9,20 @@ html {
   --leak-x: 62%;
   --leak-y: 30%;
   --meter-level: 0;
+  --scroll-progress: 0;
+  color-scheme: light;
 }
 
 html.dark {
-  background-color: #121110;
+  background-color: #000000;
+  color-scheme: dark;
 }
 
 body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  background-color: inherit;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -45,6 +49,7 @@ body {
 
 /* Cinematic overlays */
 .grade-overlay,
+.grid-overlay,
 .light-leak-overlay,
 .vignette-overlay,
 .film-edge-overlay {
@@ -60,6 +65,17 @@ body {
   background:
     radial-gradient(1200px circle at 20% 10%, rgba(255, 190, 140, var(--grade-warm)), transparent 60%),
     radial-gradient(900px circle at 80% 80%, rgba(120, 170, 255, var(--grade-cool)), transparent 65%);
+}
+
+.grid-overlay {
+  z-index: 0;
+  opacity: 0.35;
+  background-image: linear-gradient(
+    to right,
+    rgba(255, 92, 0, 0.28) 1px,
+    rgba(0, 0, 0, 0) 1px
+  );
+  background-size: 8.333% 100%;
 }
 
 .light-leak-overlay {
@@ -99,6 +115,15 @@ body {
 
 .dark .vignette-overlay {
   opacity: 0.45;
+}
+
+.dark .grid-overlay {
+  opacity: 0.3;
+  background-image: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.1) 1px,
+    rgba(0, 0, 0, 0) 1px
+  );
 }
 
 .rec-indicator {
@@ -176,6 +201,12 @@ body {
   [data-chapter] {
     content-visibility: auto;
     contain-intrinsic-size: 1px 900px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .grid-overlay {
+    display: none;
   }
 }
 
@@ -342,4 +373,30 @@ h4,
 
 .bg-neutral-100 {
   background-color: rgba(0, 0, 0, 0.03) !important;
+}
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  z-index: 10001;
+  pointer-events: none;
+}
+
+.scroll-progress__bar {
+  position: absolute;
+  inset: 0;
+  background: #FF4D00;
+  transform-origin: left;
+  transform: scaleX(var(--scroll-progress));
+  transition: transform 0.06s linear;
+}
+
+.scroll-progress__stop {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 1px;
+  background: rgba(255, 77, 0, 0.4);
 }
