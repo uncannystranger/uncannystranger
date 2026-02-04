@@ -172,6 +172,13 @@ body {
   }
 }
 
+@media (max-width: 768px) {
+  [data-chapter] {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 900px;
+  }
+}
+
 /* Scroll snapping helpers */
 .snap-start {
   scroll-snap-align: start;

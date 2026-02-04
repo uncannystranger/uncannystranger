@@ -118,6 +118,8 @@ const App: React.FC = () => {
   const [themeOverride, setThemeOverride] = useState<'system' | 'dark' | 'light'>('system');
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [recActive, setRecActive] = useState(false);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const audioRef = useRef<AudioContext | null>(null);
   const gradeRafRef = useRef<number | null>(null);
   const leakRafRef = useRef<number | null>(null);
@@ -125,6 +127,7 @@ const App: React.FC = () => {
   const meterLevelRef = useRef(0);
   const lastSectionRef = useRef('');
   const recTimeoutRef = useRef<number | null>(null);
+  const isPerfLow = isLowPower || isSmallScreen || prefersReducedMotion;
 
   const SEO = {
     home: {
@@ -247,6 +250,35 @@ const App: React.FC = () => {
       mq.removeListener?.(onChange);
     };
   }, [themeOverride]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const screenMq = window.matchMedia('(max-width: 768px)');
+    const motionMq = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    const updateScreen = () => setIsSmallScreen(screenMq.matches);
+    const updateMotion = () => setPrefersReducedMotion(motionMq.matches);
+
+    updateScreen();
+    updateMotion();
+
+    screenMq.addEventListener?.('change', updateScreen);
+    screenMq.addListener?.(updateScreen);
+    motionMq.addEventListener?.('change', updateMotion);
+    motionMq.addListener?.(updateMotion);
+
+    return () => {
+      screenMq.removeEventListener?.('change', updateScreen);
+      screenMq.removeListener?.(updateScreen);
+      motionMq.removeEventListener?.('change', updateMotion);
+      motionMq.removeListener?.(updateMotion);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    document.documentElement.setAttribute('data-perf', isPerfLow ? 'low' : 'high');
+  }, [isPerfLow]);
 
   const toggleTheme = () => {
     setThemeOverride((prev) => {
@@ -372,12 +404,11 @@ const App: React.FC = () => {
       if (!soundEnabled) return;
       const target = event.target as HTMLElement | null;
       if (!target) return;
-      const interactive = target.closest(
-        'a, button, [role="button"], .cursor-pointer'
-      );
+      const interactive = target.closest('[data-sound]');
       if (!interactive) return;
       if (interactive.getAttribute('data-sound-off') === 'true') return;
-      const soundType = interactive.getAttribute('data-sound') || 'reel';
+      const soundType = interactive.getAttribute('data-sound');
+      if (!soundType) return;
       playTap(soundType);
     };
 
@@ -386,6 +417,7 @@ const App: React.FC = () => {
   }, [soundEnabled, playTap]);
 
   useEffect(() => {
+    if (isPerfLow) return;
     const root = document.documentElement;
     const gradeMap: Record<string, { warm: number; cool: number; opacity: number }> = {
       Introduction: { warm: 0.14, cool: 0.08, opacity: 0.16 },
@@ -449,9 +481,15 @@ const App: React.FC = () => {
         cancelAnimationFrame(gradeRafRef.current);
       }
     };
-  }, [isLowPower]);
+  }, [isLowPower, isPerfLow]);
 
   useEffect(() => {
+    if (isPerfLow) {
+      const root = document.documentElement;
+      root.style.setProperty('--leak-x', '62%');
+      root.style.setProperty('--leak-y', '30%');
+      return;
+    }
     const root = document.documentElement;
     const mq = window.matchMedia('(pointer: fine)');
 
@@ -484,9 +522,10 @@ const App: React.FC = () => {
         cancelAnimationFrame(leakRafRef.current);
       }
     };
-  }, []);
+  }, [isPerfLow]);
 
   useEffect(() => {
+    if (isPerfLow) return;
     const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-chapter]'));
     if (!sections.length) return;
     const sectionMeta = sections.map((section) => ({
@@ -515,9 +554,10 @@ const App: React.FC = () => {
       observer.disconnect();
       if (recTimeoutRef.current) window.clearTimeout(recTimeoutRef.current);
     };
-  }, []);
+  }, [isPerfLow]);
 
   useEffect(() => {
+    if (isPerfLow) return;
     const root = document.documentElement;
     let lastY = window.scrollY;
     let lastTime = performance.now();
@@ -546,30 +586,34 @@ const App: React.FC = () => {
       window.removeEventListener('scroll', handleScroll);
       if (meterRafRef.current !== null) cancelAnimationFrame(meterRafRef.current);
     };
-  }, []);
+  }, [isPerfLow]);
 
   return (
     <ErrorBoundary>
       <div className="min-h-screen selection:bg-accent selection:text-white transition-colors duration-500 flex flex-col relative overflow-hidden">
         <div className="grade-overlay" />
-        <div className="light-leak-overlay" />
+        {!isPerfLow && <div className="light-leak-overlay" />}
         <div className="vignette-overlay" />
-        <div className="film-edge-overlay" />
-        <div className="grain-overlay" />
-        <div className={`rec-indicator ${recActive ? 'is-active' : ''}`}>
-          REC <span className="rec-dot" />
-        </div>
-        <div className="meter-strip">
-          {Array.from({ length: 8 }).map((_, index) => (
-            <span
-              key={index}
-              className="meter-bar"
-              style={{ ['--bar-mult' as any]: 0.4 + index * 0.08 }}
-            />
-          ))}
-        </div>
-        <CustomCursor />
-        <ScrollProgress />
+        {!isPerfLow && <div className="film-edge-overlay" />}
+        {!isPerfLow && <div className="grain-overlay" />}
+        {!isPerfLow && (
+          <div className={`rec-indicator ${recActive ? 'is-active' : ''}`}>
+            REC <span className="rec-dot" />
+          </div>
+        )}
+        {!isPerfLow && (
+          <div className="meter-strip">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <span
+                key={index}
+                className="meter-bar"
+                style={{ ['--bar-mult' as any]: 0.4 + index * 0.08 }}
+              />
+            ))}
+          </div>
+        )}
+        {!isPerfLow && <CustomCursor />}
+        {!isPerfLow && <ScrollProgress />}
         <SectionLabel currentSection={section} />
         <BackToTop />
 
@@ -583,7 +627,7 @@ const App: React.FC = () => {
           toggleSound={toggleSound}
         />
 
-        <ScrollIndicator />
+        {!isPerfLow && <ScrollIndicator />}
 
         <main className="relative z-10 flex-grow">
           {section === 'home' && <Home setSection={setSection} />}
