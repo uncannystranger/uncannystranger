@@ -53,8 +53,8 @@ export const ScrollIndicator: React.FC = () => {
                 <motion.div
                     className="fixed right-4 top-1/2 w-2 h-12 bg-orange-500 rounded"
                     initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 0.8, y: offset, transition: { duration: 0.3 } }}
-                    exit={{ opacity: 0, transition: { duration: 0.2 } }}
+                    animate={{ opacity: 0.8, y: offset, transition: { duration: 0.2 } }}
+                    exit={{ opacity: 0, transition: { duration: 0.15 } }}
                 />
             )}
         </AnimatePresence>

@@ -9,15 +9,13 @@ interface NavigationProps {
   isDarkMode: boolean;
   themeMode: 'system' | 'dark' | 'light';
   toggleTheme: () => void;
-  isSoundEnabled: boolean;
-  toggleSound: () => void;
 }
 
 const LIQUID_SPRING = {
   type: 'spring',
-  stiffness: 220,
-  damping: 22,
-  mass: 0.85,
+  stiffness: 260,
+  damping: 20,
+  mass: 0.8,
 };
 
 const Navigation: React.FC<NavigationProps> = ({
@@ -26,8 +24,6 @@ const Navigation: React.FC<NavigationProps> = ({
   isDarkMode,
   themeMode,
   toggleTheme,
-  isSoundEnabled,
-  toggleSound,
 }) => {
   const shouldReduceMotion = useReducedMotion();
   const navigate = useNavigate();
@@ -58,7 +54,6 @@ const Navigation: React.FC<NavigationProps> = ({
       whileHover={{ y: -2, scale: 1.02 }}
       whileTap={{ y: 0, scale: 0.98 }}
       data-cursor={item.label}
-      data-sound="reel"
       className="relative group py-2 px-1 focus:outline-none"
     >
       <span
@@ -90,7 +85,6 @@ const Navigation: React.FC<NavigationProps> = ({
       whileHover={{ scale: 1.15, rotate: 10 }}
       whileTap={{ scale: 0.85, rotate: -10 }}
       data-cursor="Theme"
-      data-sound="tone"
       className="relative p-2 opacity-60 hover:opacity-100 transition-all duration-500 hover:text-orange-500"
       aria-label={`Theme: ${modeLabel}`}
     >
@@ -119,43 +113,6 @@ const Navigation: React.FC<NavigationProps> = ({
   );
   };
 
-  const SoundToggle = () => (
-    <motion.button
-      onClick={toggleSound}
-      whileHover={{ scale: 1.1, rotate: isSoundEnabled ? 0 : -8 }}
-      whileTap={{ scale: 0.9 }}
-      data-cursor="Sound"
-      data-sound-off="true"
-      className="p-2 opacity-60 hover:opacity-100 transition-all duration-500 hover:text-orange-500"
-      aria-label={isSoundEnabled ? 'Disable sound' : 'Enable sound'}
-      aria-pressed={isSoundEnabled}
-    >
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.div
-          key={isSoundEnabled ? 'sound-on' : 'sound-off'}
-          initial={{ opacity: 0, rotate: -90, scale: 0.5, filter: 'blur(4px)' }}
-          animate={{ opacity: 1, rotate: 0, scale: 1, filter: 'blur(0px)' }}
-          exit={{ opacity: 0, rotate: 90, scale: 0.5, filter: 'blur(4px)' }}
-          transition={LIQUID_SPRING}
-        >
-          {isSoundEnabled ? (
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M11.536 14.01a.5.5 0 0 1-.316-.948 5.5 5.5 0 0 0 0-8.124.5.5 0 1 1 .632-.776 6.5 6.5 0 0 1 0 9.676.5.5 0 0 1-.316.172z" />
-              <path d="M10.162 12.636a.5.5 0 0 1-.316-.948 3.5 3.5 0 0 0 0-5.376.5.5 0 1 1 .632-.776 4.5 4.5 0 0 1 0 6.928.5.5 0 0 1-.316.172z" />
-              <path d="M8.707 11.293A.5.5 0 0 1 8 10.887V5.113a.5.5 0 0 1 .807-.392L11 6.5H14.5a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H11l-2.293 1.793z" />
-              <path d="M3 6.5a.5.5 0 0 1 .5-.5H6l2.293-1.793A.5.5 0 0 1 9 4.113v7.774a.5.5 0 0 1-.807.392L6 10.5H3.5a.5.5 0 0 1-.5-.5v-3z" />
-            </svg>
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M9.717 3.55A.5.5 0 0 1 10 4.0v8a.5.5 0 0 1-.807.392L6 10.5H3.5a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5H6l2.193-1.792a.5.5 0 0 1 .524-.058z" />
-              <path d="M13.354 5.646a.5.5 0 0 1 0 .708L12.207 7.5l1.147 1.146a.5.5 0 0 1-.708.708L11.5 8.207l-1.146 1.147a.5.5 0 0 1-.708-.708L10.793 7.5 9.646 6.354a.5.5 0 0 1 .708-.708L11.5 6.793l1.146-1.147a.5.5 0 0 1 .708 0z" />
-            </svg>
-          )}
-        </motion.div>
-      </AnimatePresence>
-    </motion.button>
-  );
-
   return (
     <>
       {/* Desktop Navigation */}
@@ -167,7 +124,6 @@ const Navigation: React.FC<NavigationProps> = ({
         </div>
 
         <div className="flex items-center gap-8">
-          <SoundToggle />
           <ThemeToggle />
           <motion.div
             initial={{ opacity: 0, x: 20 }}
@@ -192,7 +148,6 @@ const Navigation: React.FC<NavigationProps> = ({
             </React.Fragment>
           ))}
           <div className="w-[1px] h-4 bg-orange-500/60 mx-0.5" />
-          <SoundToggle />
           <ThemeToggle />
         </div>
       </nav>

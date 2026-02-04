@@ -13,9 +13,9 @@ const LazyPhotoBooth = lazy(() => import('./PhotoBooth'));
 
 const LIQUID_SPRING = {
   type: 'spring',
-  stiffness: 200,
-  damping: 22,
-  mass: 0.9
+  stiffness: 240,
+  damping: 20,
+  mass: 0.85
 };
 
 interface HomeProps {
@@ -59,16 +59,6 @@ const Home = ({ setSection }: HomeProps) => {
     heroProgress,
     [0, 1],
     [0, isLowPower ? -10 : -30]
-  );
-  const heroScale = useTransform(
-    heroProgress,
-    [0, 0.35, 1],
-    [isLowPower ? 1.06 : 1.12, 1.02, isLowPower ? 0.97 : 0.92]
-  );
-  const heroShift = useTransform(
-    heroProgress,
-    [0, 1],
-    [0, isLowPower ? -18 : -60]
   );
 
   const handleFocusLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
@@ -175,7 +165,6 @@ const Home = ({ setSection }: HomeProps) => {
           fetchPriority="high"
           alt="Artist Hero Background"
           className="absolute inset-0 z-0 w-full h-full object-cover will-change-transform"
-          style={{ y: heroShift, scale: heroScale }}
         />
         {/* CINEMATIC TONE */}
         <div className="absolute inset-0 bg-black/25 dark:bg-black/45" />
@@ -343,7 +332,6 @@ const Home = ({ setSection }: HomeProps) => {
           setIsBehanceActive(true);
         }}
         aria-label="Load exhibition preview"
-        data-sound="shutter"
         className="absolute inset-0 group"
       >
         <img
@@ -383,7 +371,6 @@ const Home = ({ setSection }: HomeProps) => {
   whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
   className="mt-12 text-[10px] tracking-[0.4em] uppercase border-b border-accent pb-2 hover:text-accent transition-all duration-500"
   data-cursor="Explore"
-  data-sound="shutter"
 >
   Explore Exhibition
 </motion.button>
@@ -480,7 +467,6 @@ const Home = ({ setSection }: HomeProps) => {
           whileHover={shouldReduceMotion ? undefined : { letterSpacing: '0.7em', color: '#FF4D00' }}
           whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
           data-cursor="Projects"
-          data-sound="reel"
           className="
             text-xs tracking-[0.5em] uppercase
             text-ink-secondary dark:text-bone-secondary

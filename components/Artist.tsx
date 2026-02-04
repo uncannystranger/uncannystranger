@@ -6,9 +6,9 @@ import { useDeviceTier } from '../src/hooks/useDeviceTier';
 
 const LIQUID_SPRING = {
   type: 'spring',
-  stiffness: 190,
-  damping: 22,
-  mass: 0.9
+  stiffness: 230,
+  damping: 20,
+  mass: 0.85
 };
 
 const Artist: React.FC = () => {
@@ -56,7 +56,6 @@ const Artist: React.FC = () => {
           className="aspect-[4/5] md:max-h-[75vh] md:w-auto mx-auto bg-neutral-200 dark:bg-neutral-900 overflow-hidden shadow-2xl relative group cursor-pointer"
           data-cursor="Artist"
           onClick={() => setIsPortraitActive(!isPortraitActive)}
-          data-sound="shutter"
         >
           <img
             src={IMAGES.artist.profile.src}

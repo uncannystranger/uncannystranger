@@ -5,9 +5,9 @@ import { useDeviceTier } from '../src/hooks/useDeviceTier';
 
 const LIQUID_SPRING = {
   type: 'spring',
-  stiffness: 180,
-  damping: 20,
-  mass: 0.9,
+  stiffness: 220,
+  damping: 18,
+  mass: 0.85,
 };
 
 interface BoothImage {
@@ -89,7 +89,6 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
                 onClick={() => setActiveId(isActive ? null : img.id)}
                 whileHover={{ y: reduceMotion ? 0 : -4 }}
                 transition={LIQUID_SPRING}
-                data-sound="shutter"
                 className="
                   relative
                   cursor-pointer

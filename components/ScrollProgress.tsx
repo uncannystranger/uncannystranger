@@ -4,8 +4,8 @@ import { motion, useScroll, useSpring } from 'framer-motion';
 export const ScrollProgress: React.FC = () => {
     const { scrollYProgress } = useScroll();
     const scaleX = useSpring(scrollYProgress, {
-        stiffness: 100,
-        damping: 30,
+        stiffness: 140,
+        damping: 26,
         restDelta: 0.001
     });
     const [chapterStops, setChapterStops] = useState<Array<{ label: string; left: number }>>([]);

@@ -13,9 +13,9 @@ import { useDeviceTier } from '../src/hooks/useDeviceTier';
 
 const LIQUID_SPRING = {
   type: 'spring',
-  stiffness: 190,
-  damping: 22,
-  mass: 0.9
+  stiffness: 230,
+  damping: 20,
+  mass: 0.85
 };
 
 /* ────────────────────────────────
@@ -105,7 +105,6 @@ const Projects: React.FC<ProjectsProps> = ({
                       : '#'
                   );
                 }}
-                data-sound="reel"
                 className={`text-xs tracking-widest uppercase transition-opacity ${view === v
                   ? 'opacity-100 underline underline-offset-8'
                   : 'opacity-40 hover:opacity-100'
@@ -124,7 +123,6 @@ const Projects: React.FC<ProjectsProps> = ({
                 <button
                   key={cat}
                   onClick={() => setCategory(cat)}
-                  data-sound="reel"
                   className={`text-[10px] md:text-xs tracking-widest uppercase whitespace-nowrap px-4 py-2 border rounded-full transition-all ${category === cat
                     ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 border-transparent'
                     : 'border-neutral-200 dark:border-neutral-800 opacity-60'
@@ -260,7 +258,6 @@ const GalleryItem: React.FC<GalleryItemProps> = ({
         ...revealSpring,
         delay: (index % 3) * 0.02
       }}
-      data-sound="shutter"
       className={`relative group aspect-[3/4] cursor-pointer md:max-h-[70vh] md:w-auto mx-auto ${index % 3 === 1 ? 'md:mt-32' : ''}`}
       onClick={() => setIsActive(!isActive)}
     >
@@ -343,7 +340,6 @@ const ExhibitionItem: React.FC<ExhibitionItemProps> = ({
       <motion.div
         onClick={() => setIsActive(!isActive)}
         whileHover={{ y: -10 }}
-        data-sound="shutter"
         className={`cursor-pointer w-full md:w-[85%] aspect-[16/10] md:max-h-[75vh] mx-auto bg-white dark:bg-[#1a1918] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.6)] group halo-glow ${autoFocus
           ? 'ring-1 ring-accent/20'
           : ''
@@ -355,7 +351,6 @@ const ExhibitionItem: React.FC<ExhibitionItemProps> = ({
     href="https://www.behance.net/gallery/233362335/Between-Shadows-and-Glow"
     target="_blank"
     rel="noopener noreferrer"
-    data-sound="reel"
     className="absolute inset-6 z-20 flex items-center justify-center border border-neutral-300 dark:border-neutral-700 bg-white/70 dark:bg-black/60 backdrop-blur-md transition hover:bg-white/90 dark:hover:bg-black/80"
   >
     <div className="text-center">

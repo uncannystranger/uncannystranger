@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
@@ -116,11 +116,9 @@ const App: React.FC = () => {
   const [section, setSection] = useState<Section>('home');
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [themeOverride, setThemeOverride] = useState<'system' | 'dark' | 'light'>('system');
-  const [soundEnabled, setSoundEnabled] = useState(true);
   const [recActive, setRecActive] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  const audioRef = useRef<AudioContext | null>(null);
   const gradeRafRef = useRef<number | null>(null);
   const leakRafRef = useRef<number | null>(null);
   const meterRafRef = useRef<number | null>(null);
@@ -290,107 +288,6 @@ const App: React.FC = () => {
     });
   };
 
-  const toggleSound = () => {
-    setSoundEnabled((prev) => !prev);
-  };
-
-  const playTap = useCallback((soundType: string) => {
-    if (!soundEnabled) return;
-    const AudioContextClass =
-      window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioContextClass) return;
-
-    if (!audioRef.current) {
-      audioRef.current = new AudioContextClass();
-    }
-
-    const ctx = audioRef.current;
-    if (ctx.state === 'suspended') {
-      ctx.resume();
-    }
-
-    const createNoiseBuffer = (duration: number) => {
-      const length = Math.floor(ctx.sampleRate * duration);
-      const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < length; i += 1) {
-        data[i] = (Math.random() * 2 - 1) * (1 - i / length);
-      }
-      return buffer;
-    };
-
-    if (soundType === 'shutter') {
-      const duration = 0.08;
-      const buffer = createNoiseBuffer(duration);
-      const source = ctx.createBufferSource();
-      source.buffer = buffer;
-      const filter = ctx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.value = 900;
-      filter.Q.value = 0.6;
-      const gain = ctx.createGain();
-      gain.gain.value = 0.18;
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration + 0.02);
-
-      const thump = ctx.createOscillator();
-      const thumpGain = ctx.createGain();
-      thump.type = 'sine';
-      thump.frequency.setValueAtTime(180, ctx.currentTime);
-      thump.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.06);
-      thumpGain.gain.value = 0.06;
-      thumpGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.09);
-      thump.connect(thumpGain);
-      thumpGain.connect(ctx.destination);
-      source.connect(filter);
-      filter.connect(gain);
-      gain.connect(ctx.destination);
-      source.start();
-      source.stop(ctx.currentTime + duration);
-      thump.start();
-      thump.stop(ctx.currentTime + 0.1);
-      return;
-    }
-
-    if (soundType === 'tone') {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.value = 420;
-      gain.gain.value = 0.08;
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.16);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.16);
-      return;
-    }
-
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    const texture = ctx.createBufferSource();
-    texture.buffer = createNoiseBuffer(0.06);
-    const textureFilter = ctx.createBiquadFilter();
-    textureFilter.type = 'lowpass';
-    textureFilter.frequency.value = 1200;
-    const textureGain = ctx.createGain();
-    textureGain.gain.value = 0.04;
-    textureGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.08);
-
-    osc.type = 'triangle';
-    osc.frequency.value = 150;
-    gain.gain.value = 0.06;
-    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.1);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.1);
-    texture.connect(textureFilter);
-    textureFilter.connect(textureGain);
-    textureGain.connect(ctx.destination);
-    texture.start();
-    texture.stop(ctx.currentTime + 0.08);
-  }, [soundEnabled]);
-
   /* ================= SECTION → URL (SEO) ================= */
   useEffect(() => {
     if (section === 'home') navigate('/', { replace: false });
@@ -398,23 +295,6 @@ const App: React.FC = () => {
     if (section === 'projects:exhibition') navigate('/projects', { replace: false });
     if (section === 'artist') navigate('/artist', { replace: false });
   }, [section, navigate]);
-
-  useEffect(() => {
-    const handlePointer = (event: PointerEvent) => {
-      if (!soundEnabled) return;
-      const target = event.target as HTMLElement | null;
-      if (!target) return;
-      const interactive = target.closest('[data-sound]');
-      if (!interactive) return;
-      if (interactive.getAttribute('data-sound-off') === 'true') return;
-      const soundType = interactive.getAttribute('data-sound');
-      if (!soundType) return;
-      playTap(soundType);
-    };
-
-    window.addEventListener('pointerdown', handlePointer);
-    return () => window.removeEventListener('pointerdown', handlePointer);
-  }, [soundEnabled, playTap]);
 
   useEffect(() => {
     if (isPerfLow) return;
@@ -623,8 +503,6 @@ const App: React.FC = () => {
           isDarkMode={isDarkMode}
           themeMode={themeOverride}
           toggleTheme={toggleTheme}
-          isSoundEnabled={soundEnabled}
-          toggleSound={toggleSound}
         />
 
         {!isPerfLow && <ScrollIndicator />}
