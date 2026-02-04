@@ -118,10 +118,10 @@ body {
 }
 
 .dark .grid-overlay {
-  opacity: 0.3;
+  opacity: 0.32;
   background-image: linear-gradient(
     to right,
-    rgba(255, 255, 255, 0.1) 1px,
+    rgba(244, 239, 228, 0.16) 1px,
     rgba(0, 0, 0, 0) 1px
   );
 }
@@ -206,7 +206,11 @@ body {
 
 @media (max-width: 1024px) {
   .grid-overlay {
-    display: none;
+    background-size: 12.5% 100%;
+  }
+
+  .dark .grid-overlay {
+    background-size: 12.5% 100%;
   }
 }
 

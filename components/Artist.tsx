@@ -107,7 +107,7 @@ const Artist: React.FC = () => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={reduceMotion ? { delay: 0.2, duration: 0.6 } : { delay: 0.8, duration: 1 }}
-            className="flex flex-wrap gap-x-12 gap-y-6 pt-8 border-t border-neutral-200 dark:border-neutral-800"
+            className="flex flex-wrap gap-x-12 gap-y-6 pt-8 border-t border-neutral-200 dark:border-[#f4efe4]/40"
           >
             {[
               { label: "Instagram", href: "https://www.instagram.com/uncannystranger" },
