@@ -45,6 +45,19 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
     event.currentTarget.setAttribute('data-loaded', 'true');
   };
 
+  const buildCloudinarySrc = (src: string, width: number) => {
+    if (!src.includes('/upload/')) return src;
+    if (src.includes('w_')) {
+      return src.replace(/w_\d+/, `w_${width}`);
+    }
+    return src.replace('/upload/', `/upload/w_${width},`);
+  };
+
+  const buildSrcSet = (src: string) =>
+    [480, 720, 960, 1200, 1600]
+      .map((w) => `${buildCloudinarySrc(src, w)} ${w}w`)
+      .join(', ');
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const mq = window.matchMedia('(max-width: 768px)');
@@ -101,10 +114,13 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
               >
                 <div className="bg-white p-[10px] flex items-center justify-center">
                   <motion.img
-                    src={img.src}
+                    src={buildCloudinarySrc(img.src, 1200)}
+                    srcSet={buildSrcSet(img.src)}
+                    sizes="(max-width: 768px) 86vw, (max-width: 1200px) 45vw, 30vw"
                     alt={img.title || ''}
-                    loading="lazy"
+                    loading={index < 2 ? 'eager' : 'lazy'}
                     decoding="async"
+                    fetchPriority={index < 2 ? 'high' : 'auto'}
                     data-loaded="false"
                     onLoad={handleFocusLoad}
                     layoutId={`img-${img.id}`}
