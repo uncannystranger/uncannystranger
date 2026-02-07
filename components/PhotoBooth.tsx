@@ -18,14 +18,14 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   /* ------------------------------
-     Detect dark mode (correctly)
+     Detect dark mode (robust)
   ------------------------------ */
   useEffect(() => {
     if (typeof document === 'undefined') return;
 
     const updateTheme = () => {
       setIsDarkMode(document.documentElement.classList.contains('dark'));
-      setActiveId(null); // reset selection when theme changes
+      setActiveId(null);
     };
 
     updateTheme();
@@ -40,7 +40,7 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
   }, []);
 
   /* ------------------------------
-     Cloudinary helpers (fast)
+     Cloudinary helpers
   ------------------------------ */
   const buildCloudinarySrc = (src: string, width: number) => {
     if (!src.includes('/upload/')) return src;
@@ -60,19 +60,24 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
   };
 
   return (
-    <section className="max-w-7xl mx-auto py-24">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-16 gap-y-32">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <div
+        className="
+          grid
+          grid-cols-1
+          sm:grid-cols-2
+          lg:grid-cols-3
+          gap-x-6
+          gap-y-24
+          lg:gap-x-16
+          lg:gap-y-32
+        "
+      >
         {images.map((img, index) => {
           const isActive = activeId === img.id;
 
           /* ------------------------------
-             GRAYSCALE LOGIC (CORRECT)
-             Dark mode:
-               - default = grayscale
-               - clicked = color
-             Light mode:
-               - default = color
-               - clicked = grayscale
+             GRAYSCALE LOGIC
           ------------------------------ */
           const imageClass = isDarkMode
             ? isActive
@@ -103,16 +108,17 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
                   cursor-pointer
                   bg-black
                   dark:bg-[#4a2a12]
-                  p-[5px]
-                  shadow-[0_18px_40px_rgba(0,0,0,0.35)]
-                  dark:shadow-[0_18px_40px_rgba(0,0,0,0.65)]
+                  p-[4px]
+                  sm:p-[5px]
+                  shadow-[0_14px_32px_rgba(0,0,0,0.3)]
+                  dark:shadow-[0_18px_40px_rgba(0,0,0,0.6)]
                 "
               >
-                <div className="relative w-full h-full bg-white md:p-[10px] p-0">
+                <div className="relative w-full h-full bg-white sm:p-[8px] p-0">
                   <img
                     src={buildCloudinarySrc(img.src, 1200)}
                     srcSet={buildSrcSet(img.src)}
-                    sizes="(max-width: 768px) 90vw, (max-width: 1200px) 45vw, 30vw"
+                    sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 30vw"
                     alt={img.title || ''}
                     loading={index < 2 ? 'eager' : 'lazy'}
                     decoding="async"
