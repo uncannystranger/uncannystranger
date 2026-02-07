@@ -23,7 +23,7 @@ interface PhotoBoothProps {
 
 const PhotoBooth = ({ images }: PhotoBoothProps) => {
   const shouldReduceMotion = useReducedMotion();
-  const [activeId, setActiveId] = useState<number | null>(null);
+  const [activeId, setActiveId] = useState<number | null>(undefined as any);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const direction = useScrollDirection();
   const { isLowPower } = useDeviceTier();
@@ -33,6 +33,13 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
   const isDarkMode =
     typeof document !== 'undefined' &&
     document.documentElement.classList.contains('dark');
+    useEffect(() => {
+  if (isDarkMode) {
+    setActiveId(null);
+  } else {
+    setActiveId(-1);
+  }
+}, [isDarkMode]);
 
   const getDirectionalY = (baseValue = 28) => {
     const scaled = baseValue * motionScale;

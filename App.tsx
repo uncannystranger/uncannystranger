@@ -13,8 +13,8 @@ import { SectionLabel } from './components/SectionLabel';
 import { BackToTop } from './components/BackToTop';
 import { useDeviceTier } from './src/hooks/useDeviceTier';
 
-const Projects = lazy(() => import('./components/Projects'));
-const Artist = lazy(() => import('./components/Artist'));
+import Projects from './components/Projects';
+import Artist from './components/Artist';
 
 /* ================= SAFETY: ERROR BOUNDARY ================= */
 type ErrorBoundaryProps = {
@@ -531,21 +531,15 @@ const App: React.FC = () => {
         <main className="relative z-10 flex-grow">
           {section === 'home' && <Home setSection={setSection} />}
           {(section === 'projects' || section === 'projects:exhibition') && (
-            <Suspense fallback={null}>
-              <Projects
-                initialView={
-                  section === 'projects:exhibition'
-                    ? 'exhibition'
-                    : 'gallery'
-                }
-              />
-            </Suspense>
-          )}
-          {section === 'artist' && (
-            <Suspense fallback={null}>
-              <Artist />
-            </Suspense>
-          )}
+  <Projects
+    initialView={
+      section === 'projects:exhibition'
+        ? 'exhibition'
+        : 'gallery'
+    }
+  />
+)}
+          {section === 'artist' && <Artist />}
         </main>
         {/* Conditionally rendered footer restricted to Home and Artist sections */}
         {(section === 'home' || section === 'artist') && (
