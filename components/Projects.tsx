@@ -153,14 +153,10 @@ const Projects: React.FC<ProjectsProps> = ({
       {/* Content */}
       <AnimatePresence mode="wait">
         {view === 'gallery' ? (
-          <motion.div
-            key="gallery"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.35, ease: 'easeOut' }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 max-w-7xl mx-auto"
-          >
+          <div
+  key="gallery"
+  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 max-w-7xl mx-auto"
+>
             {filteredPhotos.map((photo, i) => (
               <GalleryItem
                 key={photo.id}
@@ -171,16 +167,12 @@ const Projects: React.FC<ProjectsProps> = ({
                 isLowPower={isLowPower}
               />
             ))}
-          </motion.div>
+          </div>
         ) : (
-          <motion.div
-            key="exhibition"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.35, ease: 'easeOut' }}
-            className="flex flex-col gap-32 max-w-4xl mx-auto"
-          >
+          <div
+  key="exhibition"
+  className="flex flex-col gap-32 max-w-4xl mx-auto"
+>
             {EXHIBITIONS.map((ex, exIndex) => (
               <div key={ex.id}>
                 <h3 className="text-3xl md:text-5xl font-serif italic mb-12 border-b border-neutral-200 dark:border-neutral-800 pb-4">
@@ -204,7 +196,7 @@ const Projects: React.FC<ProjectsProps> = ({
               </div>
             ))}
 
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </section>
@@ -248,9 +240,9 @@ const GalleryItem: React.FC<GalleryItemProps> = ({
         opacity: 0.4,
         y: 24 * motionScale,
         scale: 0.995,
-        filter: `blur(${isLowPower ? 2 : 3}px)`,
+        
       }}
-      whileInView={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      whileInView={{ opacity: 1, y: 0, scale: 1,  }}
       viewport={{ once: false, margin: "40% 0px" }}
       onMouseEnter={() => setIsDimmed(true)}
       onMouseLeave={() => setIsDimmed(false)}
@@ -258,7 +250,7 @@ const GalleryItem: React.FC<GalleryItemProps> = ({
         ...revealSpring,
         delay: (index % 3) * 0.02
       }}
-      className={`relative group aspect-[3/4] cursor-pointer md:max-h-[70vh] md:w-auto mx-auto ${index % 3 === 1 ? 'md:mt-32' : ''}`}
+      className={`relative group w-full max-w-[420px] aspect-[3/4] cursor-pointer mx-auto ${index % 3 === 1 ? 'md:mt-32' : ''}`}
       onClick={() => setIsActive(!isActive)}
     >
       <LightingWrapper className="w-full h-full rounded-sm">
@@ -327,9 +319,9 @@ const ExhibitionItem: React.FC<ExhibitionItemProps> = ({
         opacity: 0.4,
         y: 20 * motionScale,
         scale: 0.995,
-        filter: `blur(${isLowPower ? 2 : 3}px)`,
+        
       }}
-      whileInView={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      whileInView={{ opacity: 1, y: 0, scale: 1,  }}
       viewport={{ once: false, margin: "40% 0px" }}
       onMouseEnter={() => setIsDimmed(true)}
       onMouseLeave={() => setIsDimmed(false)}

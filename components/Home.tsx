@@ -9,6 +9,7 @@ import { Intertitle } from './Intertitle';
 import { useDeviceTier } from '../src/hooks/useDeviceTier';
 import { cld } from '../src/utils/cloudinary';
 
+const shouldSkipIntro = true;
 const LazyPhotoBooth = lazy(() => import('./PhotoBooth'));
 
 const LIQUID_SPRING = {
@@ -193,7 +194,7 @@ const Home = ({ setSection }: HomeProps) => {
         {/* HERO CONTENT */}
         <div className="relative z-10 text-center max-w-5xl">
           <motion.div
-            initial={{ opacity: 0, scaleX: 0 }}
+            initial={false}
             animate={{ opacity: 1, scaleX: 1 }}
             transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1], delay: 0.5 }}
             className="
@@ -223,7 +224,7 @@ const Home = ({ setSection }: HomeProps) => {
           </h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 10 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...liquidSpring, delay: isLowPower ? 0.8 : 1.2 }}
             className="
