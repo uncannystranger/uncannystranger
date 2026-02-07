@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type SyntheticEvent } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useScrollDirection } from '../src/hooks/useScrollDirection';
 import { useDeviceTier } from '../src/hooks/useDeviceTier';
@@ -41,7 +41,9 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
     return scaled;
   };
 
-  const handleFocusLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
+  const handleFocusLoad = (
+  event: SyntheticEvent<HTMLImageElement>
+) => {
     event.currentTarget.setAttribute('data-loaded', 'true');
   };
 
@@ -153,9 +155,9 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
                   "
                 >
                   {img.title && (
-                    <div className="font-serif italic text-sm mb-1 text-neutral-800 dark:text-neutral-200">
-                      {img.title}
-                    </div>
+  <div className="font-serif italic text-sm mb-1 text-orange-600">
+    {img.title}
+  </div>
                   )}
                   {img.caption && (
                     <div className="tracking-wide">

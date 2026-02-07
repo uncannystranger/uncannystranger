@@ -137,11 +137,11 @@ const Projects: React.FC<ProjectsProps> = ({
       </motion.div>
 
       <Intertitle
-        text={view === 'gallery' ? 'Still Light' : 'Viewing Room'}
-        subtext={view === 'gallery' ? 'Curated sequences and journals' : 'Immersive exhibition flow'}
-        align="left"
-        className="mb-16"
-      />
+  text={view === 'gallery' ? '' : 'Yours Truly '}
+  subtext={view === 'gallery' ? 'Curated sequences and journals' : 'Immersive exhibition flow'}
+  align="left"
+  className="mb-16 text-orange-500"
+ />
 
       {/* Environmental Dimming Backdrop */}
       <motion.div

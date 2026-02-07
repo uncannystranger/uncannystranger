@@ -437,10 +437,10 @@ const Home = ({ setSection }: HomeProps) => {
         <div className="w-24 h-px bg-neutral-900/10 dark:bg-white/10" />
       </div>
       <Intertitle
-        text="Still Light"
-        subtext="Light, gesture, repetition"
-        className="py-6 md:py-10"
-      />
+  text="RECENT PHOTOGRAPHS"
+  subtext="A quiet study of light and presence"
+  className="py-6 md:py-10 text-orange-500"
+ />
       {/* ================= PHOTO BOOTH ================= */}
       <section
         ref={photoBoothRef}
