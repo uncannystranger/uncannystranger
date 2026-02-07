@@ -23,7 +23,7 @@ interface PhotoBoothProps {
 
 const PhotoBooth = ({ images }: PhotoBoothProps) => {
   const shouldReduceMotion = useReducedMotion();
-  const [activeId, setActiveId] = useState<number | null>(undefined as any);
+  const [activeId, setActiveId] = useState<number | null>(null);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const direction = useScrollDirection();
   const { isLowPower } = useDeviceTier();
@@ -33,13 +33,6 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
   const isDarkMode =
     typeof document !== 'undefined' &&
     document.documentElement.classList.contains('dark');
-    useEffect(() => {
-  if (isDarkMode) {
-    setActiveId(null);
-  } else {
-    setActiveId(-1);
-  }
-}, [isDarkMode]);
 
   const getDirectionalY = (baseValue = 28) => {
     const scaled = baseValue * motionScale;
@@ -86,13 +79,13 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
         {images.map((img, index) => {
           const isActive = activeId === img.id;
 
-          const imageClass = isDarkMode
-            ? isActive
-              ? 'grayscale-0'
-              : 'grayscale'
-            : isActive
-            ? 'grayscale'
-            : 'grayscale-0';
+const imageClass = isDarkMode
+  ? isActive
+    ? 'grayscale-0'
+    : 'grayscale'
+  : isActive
+  ? 'grayscale'
+  : 'grayscale-0';
 
           return (
             <motion.article
@@ -108,7 +101,9 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
               `}
             >
               <motion.figure
-                onClick={() => setActiveId(isActive ? null : img.id)}
+                onClick={() =>
+  setActiveId(isActive ? null : img.id)
+}
                 whileHover={{ y: reduceMotion ? 0 : -4 }}
                 transition={LIQUID_SPRING}
                 className="
