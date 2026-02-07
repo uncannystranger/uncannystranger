@@ -129,14 +129,14 @@ const imageClass = isDarkMode
                     onLoad={handleFocusLoad}
                     layoutId={`img-${img.id}`}
                     className={`
-                      max-w-full
-                      max-h-[75vh]
-                      object-contain
-                      transition-all
-                      duration-400
-                      focus-reveal
-                      ${imageClass}
-                    `}
+  w-full
+  h-full
+  object-cover
+  transition-all
+  duration-400
+  focus-reveal
+  ${imageClass}
+`}
                   />
                 </div>
               </motion.figure>
