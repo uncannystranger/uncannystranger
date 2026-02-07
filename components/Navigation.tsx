@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Section } from '../types';
@@ -22,11 +22,28 @@ const Navigation: React.FC<NavigationProps> = ({
   currentSection,
   setSection,
   isDarkMode,
-  themeMode,
   toggleTheme,
 }) => {
   const shouldReduceMotion = useReducedMotion();
   const navigate = useNavigate();
+  const [isFullscreen, setIsFullscreen] = useState(
+    typeof document !== 'undefined' && !!document.fullscreenElement
+  );
+
+  /* ------------------------------
+     FULLSCREEN TOGGLE
+  ------------------------------ */
+  const toggleFullscreen = useCallback(() => {
+    if (typeof document === 'undefined') return;
+
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen?.();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen?.();
+      setIsFullscreen(false);
+    }
+  }, []);
 
   const navItems: { label: string; id: Section }[] = [
     { label: 'Home', id: 'home' },
@@ -34,120 +51,145 @@ const Navigation: React.FC<NavigationProps> = ({
     { label: 'Artist', id: 'artist' },
   ];
 
-  const NavLink = ({
-    item,
-    ...props
-  }: {
-    item: { label: string; id: Section };
-  } & React.ComponentPropsWithoutRef<typeof motion.button>) => (
+  const NavLink = ({ item }: { item: { label: string; id: Section } }) => (
     <motion.button
-      {...props}
       onClick={() => {
-        // ✅ restore original behavior
         setSection(item.id);
-
-        // ✅ add routing without breaking state
         if (item.id === 'home') navigate('/');
         if (item.id === 'projects') navigate('/projects');
         if (item.id === 'artist') navigate('/artist');
       }}
-      whileHover={{ y: -2, scale: 1.02 }}
-      whileTap={{ y: 0, scale: 0.98 }}
+      whileHover={shouldReduceMotion ? undefined : { y: -2, scale: 1.02 }}
+      whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
       data-cursor={item.label}
-      className="relative group py-2 px-1 focus:outline-none"
+      className="relative group py-1.5 px-1 focus:outline-none"
     >
       <span
-        className={`text-sm md:text-base tracking-[0.12em] capitalize transition-all duration-700 font-serif ${
-          currentSection === item.id
-            ? 'opacity-100 font-medium text-orange-500'
-            : 'opacity-60 dark:opacity-40 group-hover:opacity-100'
-        }`}
-      >
+  className={`text-sm md:text-base tracking-[0.12em] capitalize transition-all duration-500 font-serif ${
+    currentSection === item.id
+      ? 'opacity-100 font-semibold md:text-black-500'
+      : 'opacity-60 md:text-orange-500/80 md:hover:text-orange-500 dark:md:text-white/40 dark:md:hover:text-white'
+  }`}
+>
         {item.label}
       </span>
 
       {currentSection === item.id && (
         <motion.div
           layoutId="nav-underline"
-          className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-orange-500"
+          className="absolute -bottom-1 left-0 right-0 h-[1.5px] bg-orange-500"
           transition={LIQUID_SPRING}
         />
       )}
     </motion.button>
   );
 
-  const ThemeToggle = () => {
-    const modeLabel =
-      themeMode === 'system' ? 'System' : themeMode === 'dark' ? 'Dark' : 'Light';
-    return (
+  const IconButton = ({
+    onClick,
+    label,
+    children,
+  }: {
+    onClick: () => void;
+    label: string;
+    children: React.ReactNode;
+  }) => (
     <motion.button
-      onClick={toggleTheme}
-      whileHover={{ scale: 1.15, rotate: 10 }}
-      whileTap={{ scale: 0.85, rotate: -10 }}
-      data-cursor="Theme"
-      className="relative p-2 opacity-60 hover:opacity-100 transition-all duration-500 hover:text-orange-500"
-      aria-label={`Theme: ${modeLabel}`}
+      onClick={onClick}
+      whileHover={shouldReduceMotion ? undefined : { scale: 1.1 }}
+      whileTap={shouldReduceMotion ? undefined : { scale: 0.9 }}
+      data-cursor={label}
+      aria-label={label}
+      className="relative p-2 opacity-70 hover:opacity-100 transition-all duration-300 hover:text-orange-500 md:text-neutral-900 md:dark:text-white"
     >
+      {children}
+    </motion.button>
+  );
+
+  /* ------------------------------
+     THEME TOGGLE (REAL ICONS)
+  ------------------------------ */
+  const ThemeToggle = () => (
+    <IconButton onClick={toggleTheme} label="Theme">
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
-          key={`${themeMode}-${isDarkMode ? 'dark' : 'light'}`}
-          initial={{ opacity: 0, rotate: -90, scale: 0.5, filter: 'blur(4px)' }}
-          animate={{ opacity: 1, rotate: 0, scale: 1, filter: 'blur(0px)' }}
-          exit={{ opacity: 0, rotate: 90, scale: 0.5, filter: 'blur(4px)' }}
+          key={isDarkMode ? 'dark' : 'light'}
+          initial={{ opacity: 0, rotate: -90, scale: 0.6 }}
+          animate={{ opacity: 1, rotate: 0, scale: 1 }}
+          exit={{ opacity: 0, rotate: 90, scale: 0.6 }}
           transition={LIQUID_SPRING}
         >
           {isDarkMode ? (
-  // 🌙 DARK MODE → show SUN icon
-  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-    <path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z" />
-  </svg>
-) : (
-  // 🌞 LIGHT MODE → show MOON icon
-  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-    <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z" />
-  </svg>
-)}
+            /* SUN */
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+            </svg>
+          ) : (
+            /* MOON */
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M21 12.8A9 9 0 1111.2 3 7 7 0 0021 12.8z" />
+            </svg>
+          )}
         </motion.div>
       </AnimatePresence>
-    </motion.button>
+    </IconButton>
   );
-  };
+
+  /* ------------------------------
+     FULLSCREEN TOGGLE (REAL ICON)
+  ------------------------------ */
+  const FullscreenToggle = () => (
+    <IconButton onClick={toggleFullscreen} label="Fullscreen">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        {isFullscreen ? (
+          <>
+            <path d="M9 14H5v5h5M15 10h4V5h-5" />
+          </>
+        ) : (
+          <>
+            <path d="M9 3H5v4M15 21h4v-4M5 21v-4M19 3v4" />
+          </>
+        )}
+      </svg>
+    </IconButton>
+  );
 
   return (
     <>
-      {/* Desktop Navigation */}
-      <nav className="hidden md:flex fixed top-0 left-0 right-0 z-50 h-24 items-center justify-between px-12 mix-blend-difference">
-        <div className="flex gap-16">
+      {/* ================= DESKTOP ================= */}
+      <nav className="hidden md:flex fixed top-0 left-0 right-0 z-50 h-24 px-12 items-center justify-between">
+        
+
+        <div className="relative flex gap-16">
           {navItems.map((item) => (
-            <NavLink key={item.id} item={item} />
-          ))}
+  <React.Fragment key={item.id}>
+    <NavLink item={item} />
+  </React.Fragment>
+))}
         </div>
 
-        <div className="flex items-center gap-8">
+        <div className="relative flex items-center gap-6">
+          <FullscreenToggle />
           <ThemeToggle />
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ ...LIQUID_SPRING, delay: 0.5 }}
-            className="text-[10px] tracking-[0.5em] uppercase text-white/40"
-          >
+          <div className="text-[10px] tracking-[0.5em] uppercase md:text-neutral-700 md:dark:text-white/50">
             Mogadishu, SO
-          </motion.div>
+          </div>
         </div>
       </nav>
 
-      {/* Mobile Navigation */}
-      <nav className="md:hidden fixed bottom-8 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-sm">
-        <div className="bg-white/30 dark:bg-black/40 backdrop-blur-2xl border border-white/20 dark:border-white/10 rounded-[2.5rem] px-8 py-4 flex items-center justify-between shadow-[0_20px_40px_rgba(0,0,0,0.3)] transition-all duration-700">
+      {/* ================= MOBILE (UNCHANGED) ================= */}
+      <nav className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-sm">
+        <div className="bg-white/25 dark:bg-black/40 backdrop-blur-xl border border-white/15 dark:border-white/10 rounded-[2rem] px-6 py-3 flex items-center justify-between shadow-[0_16px_32px_rgba(0,0,0,0.25)]">
           {navItems.map((item, index) => (
             <React.Fragment key={item.id}>
               <NavLink item={item} />
               {index < navItems.length - 1 && (
-                <div className="w-[1px] h-4 bg-orange-500/60 mx-0.5" />
+                <div className="w-px h-4 bg-orange-500/50 mx-1" />
               )}
             </React.Fragment>
           ))}
-          <div className="w-[1px] h-4 bg-orange-500/60 mx-0.5" />
+          <div className="w-px h-4 bg-orange-500/50 mx-1" />
+          <FullscreenToggle />
           <ThemeToggle />
         </div>
       </nav>

@@ -18,7 +18,7 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   /* ------------------------------
-     Detect dark mode (robust)
+     Detect dark mode
   ------------------------------ */
   useEffect(() => {
     if (typeof document === 'undefined') return;
@@ -44,9 +44,7 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
   ------------------------------ */
   const buildCloudinarySrc = (src: string, width: number) => {
     if (!src.includes('/upload/')) return src;
-    if (src.includes('w_')) {
-      return src.replace(/w_\d+/, `w_${width}`);
-    }
+    if (src.includes('w_')) return src.replace(/w_\d+/, `w_${width}`);
     return src.replace('/upload/', `/upload/w_${width},`);
   };
 
@@ -60,7 +58,13 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
   };
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+      {/* HANGING RAIL */}
+      <div className="relative mb-20 hidden lg:block">
+        <div className="absolute left-0 right-0 top-0 h-[2px] bg-neutral-900/20 dark:bg-white/15" />
+      </div>
+
+      {/* WALL PERSPECTIVE */}
       <div
         className="
           grid
@@ -69,15 +73,16 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
           lg:grid-cols-3
           gap-x-6
           gap-y-24
-          lg:gap-x-16
-          lg:gap-y-32
+          lg:gap-x-20
+          lg:gap-y-40
+          [perspective:1800px]
         "
       >
         {images.map((img, index) => {
           const isActive = activeId === img.id;
 
           /* ------------------------------
-             GRAYSCALE LOGIC
+             GRAYSCALE LOGIC (UNCHANGED)
           ------------------------------ */
           const imageClass = isDarkMode
             ? isActive
@@ -87,21 +92,34 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
             ? 'grayscale'
             : 'grayscale-0';
 
+          /* ------------------------------
+             STRONG MUSEUM TILT
+          ------------------------------ */
+          const tilt =
+            isLowPower
+              ? ''
+              : index % 3 === 0
+              ? 'lg:rotate-y-[-10deg] lg:rotate-x-[2deg]'
+              : index % 3 === 2
+              ? 'lg:rotate-y-[10deg] lg:rotate-x-[2deg]'
+              : 'lg:rotate-y-[0deg] lg:rotate-x-[1deg]';
+
           return (
             <article
               key={img.id}
               className={`
                 flex flex-col items-center
-                ${index % 3 === 1 ? 'lg:mt-24' : ''}
-                ${index % 3 === 2 ? 'lg:mt-12' : ''}
+                ${index % 3 === 1 ? 'lg:mt-28' : ''}
+                ${index % 3 === 2 ? 'lg:mt-16' : ''}
               `}
             >
-              {/* IMAGE FRAME */}
+              {/* HANGING STRING */}
+              <div className="hidden lg:block relative h-10 w-px bg-neutral-900/30 dark:bg-white/20 mb-1" />
+
+              {/* FRAME */}
               <figure
-                onClick={() =>
-                  setActiveId(isActive ? null : img.id)
-                }
-                className="
+                onClick={() => setActiveId(isActive ? null : img.id)}
+                className={`
                   relative
                   w-full
                   aspect-[3/4]
@@ -110,11 +128,22 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
                   dark:bg-[#4a2a12]
                   p-[4px]
                   sm:p-[5px]
-                  shadow-[0_14px_32px_rgba(0,0,0,0.3)]
-                  dark:shadow-[0_18px_40px_rgba(0,0,0,0.6)]
-                "
+                  shadow-[0_22px_50px_rgba(0,0,0,0.4)]
+                  dark:shadow-[0_28px_70px_rgba(0,0,0,0.7)]
+                  transform-gpu
+                  ${tilt}
+                `}
+                style={{
+                  transformStyle: 'preserve-3d',
+                }}
               >
-                <div className="relative w-full h-full bg-white sm:p-[8px] p-0">
+                {/* INNER MAT */}
+                <div
+                  className="relative w-full h-full bg-white sm:p-[8px] p-0"
+                  style={{
+                    transform: 'translateZ(18px)',
+                  }}
+                >
                   <img
                     src={buildCloudinarySrc(img.src, 1200)}
                     srcSet={buildSrcSet(img.src)}
