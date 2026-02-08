@@ -1,9 +1,7 @@
-import React, { useCallback, useState, useRef, useEffect } from 'react';
+import React, { useCallback, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Section } from '../types';
-
-
 
 interface NavigationProps {
   currentSection: Section;
@@ -13,13 +11,6 @@ interface NavigationProps {
   toggleTheme: () => void;
 }
 
-const LIQUID_SPRING = {
-  type: 'spring',
-  stiffness: 260,
-  damping: 20,
-  mass: 0.8,
-};
-
 const Navigation: React.FC<NavigationProps> = ({
   currentSection,
   setSection,
@@ -28,86 +19,24 @@ const Navigation: React.FC<NavigationProps> = ({
 }) => {
   const shouldReduceMotion = useReducedMotion();
   const navigate = useNavigate();
-  const location = useLocation();
-
-useEffect(() => {
-  if (location.pathname === '/') setSection('home');
-  if (location.pathname === '/projects') setSection('projects');
-  if (location.pathname === '/artist') setSection('artist');
-}, [location.pathname, setSection]);
-
-  const fullscreenRef = useRef<HTMLDivElement | null>(null);
-
-  const isMobile =
-    typeof window !== 'undefined' &&
-    window.matchMedia('(max-width: 768px)').matches;
 
   const [isFullscreen, setIsFullscreen] = useState(
     typeof document !== 'undefined' && !!document.fullscreenElement
   );
 
   /* ------------------------------
-     FULLSCREEN TOGGLE (FIXED)
+     FULLSCREEN TOGGLE (ORIGINAL & FAST)
   ------------------------------ */
-  const toggleFullscreen = useCallback(async () => {
+  const toggleFullscreen = useCallback(() => {
     if (typeof document === 'undefined') return;
 
-    const target = isMobile
-      ? fullscreenRef.current
-      : document.documentElement;
-
-    if (!target) return;
-
-    try {
-      if (!document.fullscreenElement) {
-        await target.requestFullscreen();
-
-        if (isMobile && 'orientation' in screen) {
-  const orientation = screen.orientation as ScreenOrientation & {
-    lock?: (orientation: 'portrait' | 'landscape') => Promise<void>;
-  };
-
-  if (typeof orientation.lock === 'function') {
-    const current =
-      window.innerWidth > window.innerHeight
-        ? 'landscape'
-        : 'portrait';
-
-    await orientation.lock(current);
-  }
-}
-
-        setIsFullscreen(true);
-      } else {
-        await document.exitFullscreen();
-
-        if (isMobile && 'orientation' in screen) {
-  const orientation = screen.orientation as ScreenOrientation & {
-    unlock?: () => void;
-  };
-
-  if (typeof orientation.unlock === 'function') {
-    orientation.unlock();
-  }
-}
-
-        setIsFullscreen(false);
-      }
-    } catch (err) {
-      console.warn('Fullscreen error:', err);
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen?.();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen?.();
+      setIsFullscreen(false);
     }
-  }, [isMobile]);
-
-  /* ------------------------------
-     FULLSCREEN STATE SYNC
-  ------------------------------ */
-  useEffect(() => {
-    const handleChange = () =>
-      setIsFullscreen(!!document.fullscreenElement);
-
-    document.addEventListener('fullscreenchange', handleChange);
-    return () =>
-      document.removeEventListener('fullscreenchange', handleChange);
   }, []);
 
   const navItems: { label: string; id: Section }[] = [
@@ -116,6 +45,9 @@ useEffect(() => {
     { label: 'Artist', id: 'artist' },
   ];
 
+  /* ------------------------------
+     NAV LINK (NO SECTION ANIMATION)
+  ------------------------------ */
   const NavLink = ({ item }: { item: { label: string; id: Section } }) => (
     <motion.button
       onClick={() => {
@@ -124,28 +56,25 @@ useEffect(() => {
         if (item.id === 'projects') navigate('/projects');
         if (item.id === 'artist') navigate('/artist');
       }}
-      whileHover={shouldReduceMotion ? undefined : { y: -2, scale: 1.02 }}
+      whileHover={shouldReduceMotion ? undefined : { y: -2 }}
       whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
       data-cursor={item.label}
       className="relative group py-1.5 px-1 focus:outline-none"
     >
       <span
-        className={`text-sm md:text-base tracking-[0.12em] capitalize transition-all duration-500 font-serif ${
+        className={`text-sm md:text-base tracking-[0.12em] capitalize font-serif ${
           currentSection === item.id
-            ? 'opacity-100 font-semibold md:text-black-500'
-            : 'opacity-60 md:text-orange-500/80 md:hover:text-orange-500 dark:md:text-white/40 dark:md:hover:text-white'
+            ? 'opacity-100 font-semibold'
+            : 'opacity-60 md:text-orange-500/80 dark:md:text-white/40'
         }`}
       >
         {item.label}
       </span>
 
+      {/* INSTANT ORANGE UNDERLINE (NO ANIMATION) */}
       {currentSection === item.id && (
-  <motion.div
-    layoutId="nav-underline"
-    className="absolute -bottom-1 left-0 right-0 h-[1.5px] bg-orange-400"
-    transition={LIQUID_SPRING}
-  />
-)}
+        <div className="absolute -bottom-1 left-0 right-0 h-[1.5px] bg-orange-500" />
+      )}
     </motion.button>
   );
 
@@ -160,28 +89,27 @@ useEffect(() => {
   }) => (
     <motion.button
       onClick={onClick}
-      whileHover={shouldReduceMotion ? undefined : { scale: 1.1 }}
-      whileTap={shouldReduceMotion ? undefined : { scale: 0.9 }}
+      whileHover={shouldReduceMotion ? undefined : { scale: 1.05 }}
+      whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
       data-cursor={label}
       aria-label={label}
-      className="relative p-2 opacity-70 hover:opacity-100 transition-all duration-300 hover:text-orange-500 md:text-neutral-900 md:dark:text-white"
+      className="relative p-2 opacity-70 hover:opacity-100 transition-all duration-200 hover:text-orange-500 md:text-neutral-900 md:dark:text-white"
     >
       {children}
     </motion.button>
   );
 
   /* ------------------------------
-     THEME TOGGLE
+     THEME TOGGLE (UNCHANGED)
   ------------------------------ */
   const ThemeToggle = () => (
     <IconButton onClick={toggleTheme} label="Theme">
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={isDarkMode ? 'dark' : 'light'}
-          initial={{ opacity: 0, rotate: -90, scale: 0.6 }}
-          animate={{ opacity: 1, rotate: 0, scale: 1 }}
-          exit={{ opacity: 0, rotate: 90, scale: 0.6 }}
-          transition={LIQUID_SPRING}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
         >
           {isDarkMode ? (
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -198,9 +126,6 @@ useEffect(() => {
     </IconButton>
   );
 
-  /* ------------------------------
-     FULLSCREEN TOGGLE ICON
-  ------------------------------ */
   const FullscreenToggle = () => (
     <IconButton onClick={toggleFullscreen} label="Fullscreen">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -214,7 +139,7 @@ useEffect(() => {
   );
 
   return (
-    <div ref={fullscreenRef}>
+    <>
       {/* ================= DESKTOP ================= */}
       <nav className="hidden md:flex fixed top-0 left-0 right-0 z-50 h-24 px-12 items-center justify-between">
         <div className="relative flex gap-16">
@@ -250,7 +175,7 @@ useEffect(() => {
           <ThemeToggle />
         </div>
       </nav>
-    </div>
+    </>
   );
 };
 
