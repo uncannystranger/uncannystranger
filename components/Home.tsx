@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { motion, useReducedMotion, useScroll, useTransform, useAnimation } from 'framer-motion';
 import { Section } from '../types';
 import ScrambleText from './ScrambleText';
 import { useScrollDirection } from '../src/hooks/useScrollDirection';
@@ -8,7 +8,7 @@ import { LightingWrapper } from './LightingWrapper';
 import { Intertitle } from './Intertitle';
 import { useDeviceTier } from '../src/hooks/useDeviceTier';
 import { cld } from '../src/utils/cloudinary';
-
+import { Orb } from './Orb';
 const shouldSkipIntro = true;
 const LazyPhotoBooth = lazy(() => import('./PhotoBooth'));
 
@@ -33,7 +33,6 @@ const HERO_IMAGE_SET = [
   `${heroImage(2000)} 2000w`,
 ].join(', ');
 const EXHIBITION_POSTER = IMAGES.home?.flipbook?.[0]?.src ?? HERO_IMAGE;
-
 const Home = ({ setSection }: HomeProps) => {
   const shouldReduceMotion = useReducedMotion();
   const direction = useScrollDirection();
@@ -242,22 +241,52 @@ const Home = ({ setSection }: HomeProps) => {
         </div>
       </section>
 
-      {/* ================= SECTION SEPARATOR ================= */}
-      <motion.div
-        initial={{ opacity: 0, scaleY: 0.5 }}
-        whileInView={{ opacity: 1, scaleY: 1 }}
-        viewport={{ once: false }}
-        transition={liquidSpring}
-        className="w-full flex justify-center py-24"
-      >
-        <div className="w-px h-24 bg-gradient-to-b from-transparent via-neutral-900/20 dark:via-white/20 to-transparent" />
-      </motion.div>
+       {/* ================= SECTION SEPARATOR (RECORDING CUE) ================= */}
+      <section className="py-32 flex justify-center">
+  <Orb />
+</section>
 
-      <Intertitle
-        text="The Frame"
-        subtext="A quiet opening sequence"
-        className="py-6 md:py-12"
-      />
+
+      {/* ================= THE FRAME (VIDEO REPLACEMENT) ================= */}
+      <section
+  data-chapter="The Frame"
+  className="relative w-full h-[80svh] md:h-[90vh] overflow-hidden flex items-center justify-center"
+>
+  {/* Background Video */}
+  <video
+    ref={videoRef}
+    src="https://res.cloudinary.com/duwhuzkib/video/upload/v1770553602/aurora_glow_remix_vljdwy.mp4"
+    autoPlay
+    loop
+    muted
+    playsInline
+    preload="auto"
+    className="
+      absolute inset-0
+      w-full h-full
+      object-cover
+      object-center
+    "
+  />
+
+  {/* Dark Overlay */}
+  <div className="absolute inset-0 bg-black/45 dark:bg-black/60" />
+
+  {/* Center Text */}
+  <div className="relative z-10 text-center px-6">
+    <p
+      className="
+        text-orange-500
+        text-xs md:text-sm
+        tracking-[0.5em]
+        uppercase
+        font-medium
+      "
+    >
+      HELLO STRANGER!
+    </p>
+  </div>
+</section>
 
       {/* ================= CURRENT EXHIBITION ================= */}
       <section data-chapter="Exhibition" className="py-32 px-6 text-center max-w-4xl mx-auto">
