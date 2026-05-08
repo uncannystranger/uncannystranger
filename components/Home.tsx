@@ -302,34 +302,35 @@ const Home = ({ setSection }: HomeProps) => {
           >
             A study of stillness, memory, and the quiet tension between motion and pause. Captured through the lens of Mogadishu's shifting landscapes.
           </motion.p>
-          {/* === Exhibition Preview (Behance Embed) === */}
+          {/* === Exhibition Preview (Responsive Image) === */}
 <motion.div
   ref={behanceRef}
   initial={{ opacity: 0, y: getDirectionalY(20) }}
   whileInView={{ opacity: 1, y: 0 }}
   viewport={{ once: false, margin: "-10%" }}
   transition={{ ...liquidSpring, delay: 0.4 }}
-  className="relative w-full max-w-3xl mx-auto my-14"
+  className="relative w-full mx-auto my-14"
 >
   <div className="relative w-full overflow-hidden rounded-md border border-neutral-900/10 dark:border-white/10 shadow-xl">
-    {/* Responsive image: portrait on mobile, landscape crop on md+ */}
-    <div className="w-full aspect-[4/5] md:aspect-[16/9]">
+    {/* Fully responsive adaptive image: portrait on mobile (<768px), landscape on desktop */}
+    <div className="w-full max-w-full">
       <img
         src="https://res.cloudinary.com/duwhuzkib/image/upload/e_blur:200,q_auto,w_100/v1778229782/IMG_2767_gcjpnw.jpg"
         srcSet={
-          "https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_400/v1778229782/IMG_2767_gcjpnw.jpg 400w, " +
+          "https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_500/v1778229782/IMG_2767_gcjpnw.jpg 500w, " +
           "https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_800/v1778229782/IMG_2767_gcjpnw.jpg 800w, " +
           "https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_1200/v1778229782/IMG_2767_gcjpnw.jpg 1200w, " +
+          "https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_1600/v1778229782/IMG_2767_gcjpnw.jpg 1600w, " +
           "https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_2000/v1778229782/IMG_2767_gcjpnw.jpg 2000w"
         }
-        sizes="(max-width: 640px) 90vw, (max-width: 1024px) 90vw, 1200px"
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 95vw, min(90vw, 1000px)"
         alt="Portrait scene in Mogadishu by Abdullahi Maxamed (Uncanny Stranger)"
         loading="lazy"
         decoding="async"
         data-loaded="false"
         onLoad={handleFocusLoad}
-        className="w-full h-full object-contain md:object-cover focus-reveal transition-opacity duration-500 ease-out will-change-transform"
-        style={{ display: 'block' }}
+        className="w-full h-auto block focus-reveal transition-opacity duration-500 ease-out will-change-transform"
+        style={{ display: 'block', maxWidth: '100%' }}
       />
     </div>
   </div>
