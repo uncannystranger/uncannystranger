@@ -133,18 +133,21 @@ const App: React.FC = () => {
       description:
         "Official portfolio of Abdullahi Maxamed (Uncanny Stranger). A study of stillness, memory, and visual storytelling through the lens of Mogadishu's shifting landscapes.",
       canonical: 'https://uncannystranger.com',
+      keywords: 'Abdullahi Maxamed, Uncanny Stranger, photographer, visual artist, Mogadishu, photography portfolio'
     },
     projects: {
       title: 'Projects | Abdullahi Maxamed',
       description:
         'Photography projects and exhibitions by Abdullahi Maxamed (Uncanny Stranger), including curated galleries, visual journals, and cinematic exhibitions.',
       canonical: 'https://uncannystranger.com/projects',
+      keywords: 'projects, exhibitions, photography, galleries, visual storytelling'
     },
     artist: {
       title: 'Artist | Abdullahi Maxamed',
       description:
         'About Abdullahi Maxamed, known as Uncanny Stranger. A Somali photographer documenting quiet moments, light, movement, and personal visual stories.',
       canonical: 'https://uncannystranger.com/artist',
+      keywords: 'about, artist, biography, photographer, Somalia, Mogadishu'
     },
   } as const;
 
@@ -195,6 +198,7 @@ const App: React.FC = () => {
 
     document.title = data.title;
     setMeta('description', data.description);
+    setMeta('keywords', data.keywords);
     setCanonical(data.canonical);
     setMetaProperty('og:title', data.title);
     setMetaProperty('og:description', data.description);

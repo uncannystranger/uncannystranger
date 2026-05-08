@@ -93,7 +93,7 @@ const Navigation: React.FC<NavigationProps> = ({
       whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
       data-cursor={label}
       aria-label={label}
-      className="relative p-2 opacity-70 hover:opacity-100 transition-all duration-200 hover:text-orange-500 md:text-neutral-900 md:dark:text-white"
+      className="relative p-3 md:p-2 opacity-70 hover:opacity-100 transition-all duration-200 hover:text-orange-500 md:text-neutral-900 md:dark:text-white min-w-[44px] min-h-[44px] md:min-w-auto md:min-h-auto flex items-center justify-center"
     >
       {children}
     </motion.button>
@@ -160,8 +160,8 @@ const Navigation: React.FC<NavigationProps> = ({
       </nav>
 
       {/* ================= MOBILE ================= */}
-      <nav className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-sm">
-        <div className="bg-white/25 dark:bg-black/40 backdrop-blur-xl border border-white/15 dark:border-white/10 rounded-[2rem] px-6 py-3 flex items-center justify-between shadow-[0_16px_32px_rgba(0,0,0,0.25)]">
+      <nav className="md:hidden fixed bottom-0 left-1/2 -translate-x-1/2 z-50 w-full">
+        <div className="w-[90%] max-w-sm mx-auto mb-6 bg-white/25 dark:bg-black/40 backdrop-blur-xl border border-white/15 dark:border-white/10 rounded-[2rem] px-6 py-3 flex items-center justify-between shadow-[0_16px_32px_rgba(0,0,0,0.25)]" style={{ marginBottom: 'max(1.5rem, calc(1.5rem + env(safe-area-inset-bottom)))' }}>
           {navItems.map((item, index) => (
             <React.Fragment key={item.id}>
               <NavLink item={item} />

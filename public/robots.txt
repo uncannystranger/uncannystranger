@@ -1,4 +1,43 @@
-Sitemap: https://uncannystranger.com/sitemap.xml
 User-agent: *
 Allow: /
 Disallow: /private/
+Disallow: /.well-known/
+
+# Crawl delay for responsible crawling
+Crawl-delay: 1
+
+# Allow fast crawlers
+Allow: Googlebot
+Allow: Googlebot-Image
+Allow: Googlebot-Mobile
+Allow: Bingbot
+Allow: Slurp
+Allow: DuckDuckBot
+
+Sitemap: https://uncannystranger.com/sitemap.xml
+Sitemap: https://uncannystranger.com/sitemap-images.xml
+
+# Specific rules for Google
+User-agent: Googlebot
+Allow: /
+Disallow:
+
+# Social crawlers
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: Slackbot
+Allow: /
+
+# Pinterest
+User-agent: Pinterestbot
+Allow: /

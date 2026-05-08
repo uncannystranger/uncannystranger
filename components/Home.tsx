@@ -8,7 +8,7 @@ import { LightingWrapper } from './LightingWrapper';
 import { Intertitle } from './Intertitle';
 import { useDeviceTier } from '../src/hooks/useDeviceTier';
 import { cld } from '../src/utils/cloudinary';
-const shouldSkipIntro = true;
+
 const LazyPhotoBooth = lazy(() => import('./PhotoBooth'));
 
 const LIQUID_SPRING = {
@@ -311,53 +311,27 @@ const Home = ({ setSection }: HomeProps) => {
   transition={{ ...liquidSpring, delay: 0.4 }}
   className="relative w-full max-w-3xl mx-auto my-14"
 >
-  <div className="relative aspect-[16/10] w-full overflow-hidden rounded-md border border-neutral-900/10 dark:border-white/10 shadow-xl">
-    {shouldLoadBehance ? (
-      <iframe
-        src="https://www.behance.net/embed/project/242731413?ilo0=1"
-        className="absolute inset-0 w-full h-full"
-        allowFullScreen
+  <div className="relative w-full overflow-hidden rounded-md border border-neutral-900/10 dark:border-white/10 shadow-xl">
+    {/* Responsive image: portrait on mobile, landscape crop on md+ */}
+    <div className="w-full aspect-[4/5] md:aspect-[16/9]">
+      <img
+        src="https://res.cloudinary.com/duwhuzkib/image/upload/e_blur:200,q_auto,w_100/v1778229782/IMG_2767_gcjpnw.jpg"
+        srcSet={
+          "https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_400/v1778229782/IMG_2767_gcjpnw.jpg 400w, " +
+          "https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_800/v1778229782/IMG_2767_gcjpnw.jpg 800w, " +
+          "https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_1200/v1778229782/IMG_2767_gcjpnw.jpg 1200w, " +
+          "https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_2000/v1778229782/IMG_2767_gcjpnw.jpg 2000w"
+        }
+        sizes="(max-width: 640px) 90vw, (max-width: 1024px) 90vw, 1200px"
+        alt="Portrait scene in Mogadishu by Abdullahi Maxamed (Uncanny Stranger)"
         loading="lazy"
-        frameBorder="0"
-        allow="clipboard-write"
-        referrerPolicy="strict-origin-when-cross-origin"
-        title="The Pause Between – Behance Preview"
+        decoding="async"
+        data-loaded="false"
+        onLoad={handleFocusLoad}
+        className="w-full h-full object-contain md:object-cover focus-reveal transition-opacity duration-500 ease-out will-change-transform"
+        style={{ display: 'block' }}
       />
-    ) : (
-      <button
-        type="button"
-        onClick={() => {
-          setShouldLoadBehance(true);
-          setIsBehanceActive(true);
-        }}
-        aria-label="Load exhibition preview"
-        className="absolute inset-0 group"
-      >
-        <img
-          src={EXHIBITION_POSTER}
-          alt="The Pause Between exhibition preview"
-          loading="lazy"
-          decoding="async"
-          data-loaded="false"
-          onLoad={handleFocusLoad}
-          className={`absolute inset-0 w-full h-full object-cover focus-reveal ${
-            isDarkMode
-              ? isBehanceActive
-                ? 'grayscale-0'
-                : 'grayscale'
-              : isBehanceActive
-              ? 'grayscale'
-              : 'grayscale-0'
-          }`}
-        />
-        <div className="absolute inset-0 bg-black/30 dark:bg-black/45" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="px-5 py-3 border border-white/40 dark:border-white/20 bg-black/40 dark:bg-black/50 backdrop-blur-md text-[10px] tracking-[0.4em] uppercase text-white/90">
-            Tap to Enter Exhibition
-          </div>
-        </div>
-      </button>
-    )}
+    </div>
   </div>
 </motion.div>
 

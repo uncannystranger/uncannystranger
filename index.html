@@ -15,6 +15,11 @@
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Abdullahi Maxamed" />
+  <meta name="theme-color" content="#FDFCF0" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#121110" media="(prefers-color-scheme: dark)" />
   <title>Abdullahi Maxamed</title>
 
   <meta name="description"
@@ -47,33 +52,34 @@
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://www.facebook.com/uncannystranger" />
-  <meta property="og:site_name" content="Facebook" />
+  <meta property="og:url" content="https://uncannystranger.com" />
+  <meta property="og:site_name" content="Abdullahi Maxamed" />
   <meta property="og:title" content="Abdullahi Maxamed" />
   <meta property="og:description"
-    content="A cinematic archive of Mogadishu's atmosphere, captured by Abdullahi Maxamed." />
+    content="Official portfolio of Abdullahi Maxamed (Uncanny Stranger). A study of stillness, memory, and visual storytelling through the lens of Mogadishu's shifting landscapes." />
   <meta property="og:image"
-    content="https://res.cloudinary.com/duwhuzkib/image/upload/v1768932837/WhatsApp_Image_2025-09-16_at_12.10.24_qkle3u.jpg" />
+    content="https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_1200/abdullahi-maxamed-Qa31NNMX9es-unsplash_yogf4o" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="en_US" />
 
-  <!-- Twitter -->
+  <!-- Twitter / X Card -->
   <meta property="twitter:card" content="summary_large_image" />
-  <meta property="twitter:url" content="https://x.com/uncannystranger" />
-  <meta property="twitter:title" content="Uncanny Stranger | Abdullahi Maxamed" />
-  <meta property="twitter:description" content="Cinematic visual storytelling by Abdullahi Maxamed." />
+  <meta property="twitter:url" content="https://uncannystranger.com" />
+  <meta property="twitter:title" content="Abdullahi Maxamed (Uncanny Stranger)" />
+  <meta property="twitter:description" content="Official portfolio. A study of stillness, memory, and visual storytelling through Mogadishu's shifting landscapes." />
   <meta property="twitter:image"
     content="https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_1200/abdullahi-maxamed-Qa31NNMX9es-unsplash_yogf4o" />
+  <meta property="twitter:creator" content="@uncannystranger" />
 
   <!-- Structured Data (Knowledge Panel / Person) -->
-  <!-- Master Person Schema (Unified Entity) -->
-<script type="application/ld+json">
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "WebSite",
-  "@id": "https://uncannystranger.com/#website",
-  "url": "https://uncannystranger.com",
+  "@type": "Person",
+  "@id": "https://uncannystranger.com/#person",
   "name": "Abdullahi Maxamed",
-  "alternateName": "Uncanny Stranger"
-},
+  "alternateName": "Uncanny Stranger",
   "birthDate": "2000-12-12",
   "birthPlace": {
     "@type": "Place",
@@ -85,12 +91,10 @@
     "Photographer",
     "Visual Artist",
     "Digital Artist",
-    "Creative Technologist",
-    "Translator",
-    "Public Speaker"
+    "Creative Technologist"
   ],
   "address": {
-    "@type": "Place",
+    "@type": "PostalAddress",
     "addressLocality": "Mogadishu",
     "addressCountry": "SO"
   },
@@ -98,40 +102,47 @@
     "Photography",
     "Visual storytelling",
     "Cinematography",
-    "Urban documentation",
-    "Somali cultural revival",
-    "Cybersecurity awareness"
+    "Urban documentation"
   ],
-  "knowsLanguage": [
-    "Somali",
-    "English",
-    "Italian",
-    "Chinese",
-    "Arabic"
-  ],
+  "knowsLanguage": ["Somali", "English", "Italian", "Chinese", "Arabic"],
   "alumniOf": {
     "@type": "CollegeOrUniversity",
     "name": "City University of Mogadishu"
   },
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://uncannystranger.com/background.html"
+    "@id": "https://uncannystranger.com"
   },
   "sameAs": [
-     "https://www.instagram.com/uncannystranger",
-      "https://www.pexels.com/@uncannystranger",
-      "https://unsplash.com/@uncannystranger",
+    "https://www.instagram.com/uncannystranger",
+    "https://www.pexels.com/@uncannystranger",
+    "https://unsplash.com/@uncannystranger",
     "https://www.linkedin.com/in/uncannystranger/",
     "https://www.pinterest.com/uncannystranger/",
     "https://www.facebook.com/uncannystranger",
     "https://www.tiktok.com/@uncannystranger",
     "https://github.com/uncannystranger",
-  "https://uncannystranger.medium.com/abdullahi-maxamed-uncannystranger-c0d61a149d75"
+    "https://uncannystranger.medium.com/abdullahi-maxamed-uncannystranger-c0d61a149d75"
   ]
 }
-</script>
+  </script>
 
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Website Schema -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": "https://uncannystranger.com/#website",
+  "url": "https://uncannystranger.com",
+  "name": "Abdullahi Maxamed",
+  "alternateName": "Uncanny Stranger",
+  "mainEntity": {
+    "@id": "https://uncannystranger.com/#person"
+  }
+}
+  </script>
+
+  <!-- Fonts preload (critical for LCP) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
@@ -142,55 +153,13 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
     rel="stylesheet">
 
+  <!-- Hero image preload for LCP -->
   <link rel="preload" as="image"
     href="https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,dpr_auto,w_2000/abdullahi-maxamed-Qa31NNMX9es-unsplash_yogf4o"
     fetchpriority="high" />
 
   <link rel="preload" as="image"
     href="https://res.cloudinary.com/duwhuzkib/image/upload/v1768400000/grain_texture_z9x9v9.png" />
-
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            beige: '#FDFCF0',
-            accent: '#FF4D00',
-            ink: {
-              primary: '#1C1917',
-              secondary: '#78716C',
-              tertiary: '#A8A29E',
-            },
-            bone: {
-              primary: '#FAF9F6',
-              secondary: '#A8A29E',
-              tertiary: '#78716C',
-            }
-          },
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            serif: ['Playfair Display', 'serif'],
-          },
-          fontWeight: {
-            light: '300',
-            book: '400',
-            medium: '500',
-            bold: '700',
-          },
-          animation: {
-            'fluid-fade': 'fluidFade 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards',
-          },
-          keyframes: {
-            fluidFade: {
-              '0%': { opacity: '0', transform: 'translateY(10px)' },
-              '100%': { opacity: '1', transform: 'translateY(0)' },
-            }
-          }
-        },
-      },
-    }
-  </script>
 
   <style>
     body {
@@ -210,17 +179,6 @@
       scrollbar-width: none;
     }
   </style>
-
-  <script type="importmap">
-    {
-      "imports": {
-        "react": "https://esm.sh/react@^19.2.3",
-        "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-        "react/": "https://esm.sh/react@^19.2.3/",
-        "framer-motion": "https://esm.sh/framer-motion@^12.25.0"
-      }
-    }
-  </script>
 
   <link rel="stylesheet" href="/index.css">
 
