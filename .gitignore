@@ -11,6 +11,25 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
+.env.*
+!.env.example
+.vercel
+.cache
+.vite
+coverage
+*.tsbuildinfo
+*.map
+debug.log*
+
+# Private/local-only media
+private/
+private-assets/
+originals/
+raw/
+raw-assets/
+photos-original/
+photos-private/
 
 # Editor directories and files
 .vscode/*

@@ -79,7 +79,7 @@ const Projects: React.FC<ProjectsProps> = ({
   );
 
   return (
-    <section data-chapter="Projects" className="min-h-screen pt-32 pb-48 px-6 md:px-12">
+    <section data-protected="true" data-chapter="Projects" className="protected-content min-h-screen pt-32 pb-48 px-6 md:px-12">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
@@ -235,7 +235,7 @@ const GalleryItem: React.FC<GalleryItemProps> = ({
   };
 
   return (
-    <motion.div
+    <motion.figure
       initial={{
         opacity: 0.4,
         y: 24 * motionScale,
@@ -257,7 +257,8 @@ const GalleryItem: React.FC<GalleryItemProps> = ({
         <div className="w-full h-full overflow-hidden bg-neutral-100 dark:bg-neutral-800">
           <motion.img
             src={photo.url}
-            alt={photo.title}
+            alt={photo.alt}
+            draggable={false}
             loading="lazy"
             decoding="async"
             data-loaded="false"
@@ -274,9 +275,13 @@ const GalleryItem: React.FC<GalleryItemProps> = ({
                 : 'grayscale-0 brightness-100'
             }`}
           />
+          <div className="media-protection-overlay" aria-hidden="true" />
         </div>
       </LightingWrapper>
-    </motion.div>
+      <figcaption className="sr-only">
+        {photo.title}. {photo.description}
+      </figcaption>
+    </motion.figure>
   );
 };
 /* ────────────────────────────────
@@ -314,7 +319,7 @@ const ExhibitionItem: React.FC<ExhibitionItemProps> = ({
   };
 
   return (
-    <motion.div
+    <motion.figure
       initial={{
         opacity: 0.4,
         y: 20 * motionScale,
@@ -358,7 +363,8 @@ const ExhibitionItem: React.FC<ExhibitionItemProps> = ({
           <div className="w-full h-full overflow-hidden relative">
             <motion.img
               src={photo.url}
-              alt={photo.title}
+              alt={photo.alt}
+              draggable={false}
               loading="lazy"
               decoding="async"
               data-loaded="false"
@@ -375,6 +381,7 @@ const ExhibitionItem: React.FC<ExhibitionItemProps> = ({
                   : 'grayscale-0 brightness-100'
               }`}
             />
+            <div className="media-protection-overlay" aria-hidden="true" />
             <div className="absolute inset-0 ring-1 ring-inset ring-black/5 dark:ring-white/5 pointer-events-none" />
           </div>
         </LightingWrapper>
@@ -398,7 +405,10 @@ const ExhibitionItem: React.FC<ExhibitionItemProps> = ({
           {photo.description}
         </motion.p>
       </div>
-    </motion.div>
+      <figcaption className="sr-only">
+        {photo.title}. {photo.description}
+      </figcaption>
+    </motion.figure>
   );
 };
 

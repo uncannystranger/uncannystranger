@@ -10,7 +10,8 @@ export const PHOTOS: Photo[] = GALLERY_IMAGES.map((img) => ({
   id: String(img.id),            // ✅ string as required
   url: img.src,
   title: img.title,
-  description: '',
+  alt: img.alt,
+  description: img.description,
   category: img.category as Photo['category'],
 }));
 
@@ -25,6 +26,7 @@ export const EXHIBITIONS: Exhibition[] = EXHIBITION_IMAGES.map((ex) => ({
     id: String(img.id),
     url: img.src,
     title: img.title,
+    alt: img.alt,
     description: img.description,
     category: 'exhibition' as Photo['category'],
   })),

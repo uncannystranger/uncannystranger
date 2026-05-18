@@ -5,6 +5,7 @@ interface BoothImage {
   id: number;
   src: string;
   title?: string;
+  alt?: string;
   caption?: string;
 }
 
@@ -58,7 +59,7 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
   };
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+    <section data-protected="true" className="protected-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
       {/* HANGING RAIL */}
       <div className="relative mb-20 hidden lg:block">
         <div className="absolute left-0 right-0 top-0 h-[2px] bg-neutral-900/20 dark:bg-white/15" />
@@ -148,7 +149,8 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
                     src={buildCloudinarySrc(img.src, 1200)}
                     srcSet={buildSrcSet(img.src)}
                     sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 30vw"
-                    alt={img.title || ''}
+                    alt={img.alt || img.title || 'Photograph from the Uncanny Stranger portfolio'}
+                    draggable={false}
                     loading={index < 2 ? 'eager' : 'lazy'}
                     decoding="async"
                     fetchPriority={index < 2 ? 'high' : 'auto'}
@@ -160,6 +162,7 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
                       ${imageClass}
                     `}
                   />
+                  <div className="media-protection-overlay" aria-hidden="true" />
                 </div>
               </figure>
 

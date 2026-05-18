@@ -1,4 +1,18 @@
-// Cloudinary URL helper (FAST + LCP optimized)
+const CLOUDINARY_BASE = 'https://res.cloudinary.com/duwhuzkib/image/upload';
+export const PUBLIC_IMAGE_WIDTHS = {
+  thumbnail: 600,
+  gallery: 800,
+  exhibition: 1200,
+  feature: 1600,
+  hero: 2000,
+} as const;
+
+/**
+ * Public-site image helper.
+ *
+ * The frontend should only request transformed display derivatives.
+ * Original/high-resolution assets belong outside the public delivery path.
+ */
 export function cld(publicId: string, width?: number): string {
   const parts = publicId.split('/').map(encodeURIComponent).join('/');
 
@@ -11,7 +25,7 @@ export function cld(publicId: string, width?: number): string {
 
   if (width) transformations.push(`w_${width}`);
 
-  return `https://res.cloudinary.com/duwhuzkib/image/upload/${transformations.join(',')}/${parts}`;
+  return `${CLOUDINARY_BASE}/${transformations.join(',')}/${parts}`;
 }
 
 /* ================= GLOBAL SYSTEM CONSTANTS ================= */

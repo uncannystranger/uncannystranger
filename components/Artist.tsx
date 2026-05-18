@@ -18,6 +18,7 @@ const Artist: React.FC = () => {
   const direction = useScrollDirection();
   const { isLowPower } = useDeviceTier();
   const reduceMotion = shouldReduceMotion || isSmallScreen || isLowPower;
+  const revealImmediately = reduceMotion;
   const motionScale = reduceMotion ? 0.5 : 1;
   const isDarkMode =
     typeof document !== 'undefined' &&
@@ -46,12 +47,13 @@ const Artist: React.FC = () => {
     return () => mq.removeListener(update);
   }, []);
   return (
-    <section data-chapter="Artist" className="min-h-screen py-32 px-6 md:px-12 flex items-center justify-center">
+    <section data-protected="true" data-chapter="Artist" className="protected-content min-h-screen py-32 px-6 md:px-12 flex items-center justify-center">
       <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-32 items-center">
         <motion.div
-          initial={{ opacity: 0, x: reduceMotion ? -20 : -50, y: getDirectionalY(20) }}
-          whileInView={{ opacity: 1, x: 0, y: 0 }}
-          viewport={{ once: false, margin: "-10%" }}
+          initial={revealImmediately ? false : { opacity: 0, x: -50, y: getDirectionalY(20) }}
+          animate={revealImmediately ? { opacity: 1, x: 0, y: 0 } : undefined}
+          whileInView={revealImmediately ? undefined : { opacity: 1, x: 0, y: 0 }}
+          viewport={revealImmediately ? undefined : { once: false, margin: "-10%" }}
           transition={LIQUID_SPRING}
           className="aspect-[4/5] md:max-h-[75vh] md:w-auto mx-auto bg-neutral-200 dark:bg-neutral-900 overflow-hidden shadow-2xl relative group cursor-pointer"
           data-cursor="Artist"
@@ -60,6 +62,7 @@ const Artist: React.FC = () => {
           <img
             src={IMAGES.artist.profile.src}
             alt={IMAGES.artist.profile.alt}
+            draggable={false}
             data-loaded="false"
             onLoad={handleFocusLoad}
             className={`w-full h-full object-cover transition-all duration-1000 ease-in-out focus-reveal ${
@@ -72,14 +75,16 @@ const Artist: React.FC = () => {
                 : 'grayscale-0'
             }`}
           />
+          <div className="media-protection-overlay" aria-hidden="true" />
           <div className="absolute inset-0 ring-1 ring-inset ring-black/5 pointer-events-none" />
         </motion.div>
 
         <div className="flex flex-col gap-12">
           <motion.div
-            initial={{ opacity: 0, y: getDirectionalY(30) }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, margin: "-10%" }}
+            initial={revealImmediately ? false : { opacity: 0, y: getDirectionalY(30) }}
+            animate={revealImmediately ? { opacity: 1, y: 0 } : undefined}
+            whileInView={revealImmediately ? undefined : { opacity: 1, y: 0 }}
+            viewport={revealImmediately ? undefined : { once: false, margin: "-10%" }}
             transition={{ ...LIQUID_SPRING, delay: 0.1 }}
           >
             <span className="text-[10px] tracking-[0.5em] uppercase text-accent font-semibold mb-6 block">
@@ -103,9 +108,10 @@ const Artist: React.FC = () => {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
+            initial={revealImmediately ? false : { opacity: 0 }}
+            animate={revealImmediately ? { opacity: 1 } : undefined}
+            whileInView={revealImmediately ? undefined : { opacity: 1 }}
+            viewport={revealImmediately ? undefined : { once: true }}
             transition={reduceMotion ? { delay: 0.2, duration: 0.6 } : { delay: 0.8, duration: 1 }}
             className="flex flex-wrap gap-x-12 gap-y-6 pt-8 border-t border-neutral-200 dark:border-[#f4efe4]/40"
           >

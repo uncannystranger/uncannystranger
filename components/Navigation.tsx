@@ -1,7 +1,9 @@
 import React, { useCallback, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Section } from '../types';
+
+const MotionLink = motion.create(Link);
 
 interface NavigationProps {
   currentSection: Section;
@@ -18,8 +20,6 @@ const Navigation: React.FC<NavigationProps> = ({
   toggleTheme,
 }) => {
   const shouldReduceMotion = useReducedMotion();
-  const navigate = useNavigate();
-
   const [isFullscreen, setIsFullscreen] = useState(
     typeof document !== 'undefined' && !!document.fullscreenElement
   );
@@ -48,13 +48,17 @@ const Navigation: React.FC<NavigationProps> = ({
   /* ------------------------------
      NAV LINK (NO SECTION ANIMATION)
   ------------------------------ */
+  const routeForSection = (item: Section) => {
+    if (item === 'projects' || item === 'projects:exhibition') return '/projects';
+    if (item === 'artist') return '/artist';
+    return '/';
+  };
+
   const NavLink = ({ item }: { item: { label: string; id: Section } }) => (
-    <motion.button
+    <MotionLink
+      to={routeForSection(item.id)}
       onClick={() => {
         setSection(item.id);
-        if (item.id === 'home') navigate('/');
-        if (item.id === 'projects') navigate('/projects');
-        if (item.id === 'artist') navigate('/artist');
       }}
       whileHover={shouldReduceMotion ? undefined : { y: -2 }}
       whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
@@ -75,7 +79,7 @@ const Navigation: React.FC<NavigationProps> = ({
       {currentSection === item.id && (
         <div className="absolute -bottom-1 left-0 right-0 h-[1.5px] bg-orange-500" />
       )}
-    </motion.button>
+    </MotionLink>
   );
 
   const IconButton = ({

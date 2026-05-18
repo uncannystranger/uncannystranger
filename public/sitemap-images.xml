@@ -4,95 +4,95 @@
   xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 
   <url>
-  <loc>https://uncannystranger.com/projects</loc>
+    <loc>https://uncannystranger.com/</loc>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,dpr_auto,c_fill,w_2000/_DSC9555.ARW_fm87ao</image:loc>
+      <image:title>Cinematic hero photograph by Abdullahi Maxamed</image:title>
+      <image:caption>Homepage hero image from the official Uncanny Stranger photography portfolio.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_1600/IMG_1629_copy_rdvybq</image:loc>
+      <image:title>A Mother's Joy — I</image:title>
+      <image:caption>Mother and child photograph from the Uncanny Stranger portfolio.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_1600/IMG_1633_copy_uknev3</image:loc>
+      <image:title>A Mother's Joy — II</image:title>
+      <image:caption>Tender documentary portrait by Abdullahi Maxamed.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_1600/IMG_2166_copy_uwf1w2</image:loc>
+      <image:title>A quiet moment between her and the morning tide</image:title>
+      <image:caption>Cinematic shoreline portrait from the Uncanny Stranger portfolio.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_1600/abdullahi-maxamed-oY_sXKTsFCw-unsplash_1_lkrahb</image:loc>
+      <image:title>Silver of Belonging</image:title>
+      <image:caption>Somali identity portrait photographed by Abdullahi Maxamed.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_1600/21_ianwgj</image:loc>
+      <image:title>The Shoreline's Keepers</image:title>
+      <image:caption>Travel and documentary photography from the Somali shoreline.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_1600/18_hbconn</image:loc>
+      <image:title>Silent Architecture</image:title>
+      <image:caption>Night architecture photograph from Mogadishu.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_1600/2025-08-14_6_lblngg</image:loc>
+      <image:title>Measured Descent</image:title>
+      <image:caption>Urban editorial photograph by Uncanny Stranger.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_1600/2023-04-05_151130_jd6w2i</image:loc>
+      <image:title>Watching the Work of the Sea</image:title>
+      <image:caption>Children watching ships along the water in Somalia.</image:caption>
+    </image:image>
+  </url>
 
-  <!-- ================= GALLERY IMAGES ================= -->
-
-  <image:image>
-    <image:loc>
-      https://res.cloudinary.com/duwhuzkib/image/upload/v1768090162/abdullahi-maxamed-F_lc9t1GwGU-unsplash_vfakxq.jpg
-    </image:loc>
-    <image:title>A quiet smile, held with grace.</image:title>
-    <image:caption>
-      Albums series photograph by Uncanny Stranger, part of the Projects gallery.
-    </image:caption>
-  </image:image>
-
-  <image:image>
-    <image:loc>
-      https://res.cloudinary.com/duwhuzkib/image/upload/v1768942450/IMG_2166_copy_uwf1w2.jpg
-    </image:loc>
-    <image:title>Light, shadow, and a quiet exchange.</image:title>
-    <image:caption>
-      Albums series photograph by Uncanny Stranger, part of the Projects gallery.
-    </image:caption>
-  </image:image>
-
-  <image:image>
-    <image:loc>
-      https://res.cloudinary.com/duwhuzkib/image/upload/v1768090151/2025-08-14_1_tm1ak4.jpg
-    </image:loc>
-    <image:title>Light, shadow, and a quiet exchange.</image:title>
-    <image:caption>
-      Albums series photograph by Uncanny Stranger, part of the Projects gallery.
-    </image:caption>
-  </image:image>
-
-  <image:image>
-    <image:loc>
-      https://res.cloudinary.com/duwhuzkib/image/upload/v1768082032/4_pfkuzt.jpg
-    </image:loc>
-    <image:title>Light, shadow, and a quiet exchange.</image:title>
-    <image:caption>
-      Collections series photograph by Uncanny Stranger, part of the Projects gallery.
-    </image:caption>
-  </image:image>
-
-  <image:image>
-    <image:loc>
-      https://res.cloudinary.com/duwhuzkib/image/upload/v1768082033/10_lpotua.jpg
-    </image:loc>
-    <image:title>Light, shadow, and a quiet exchange.</image:title>
-    <image:caption>
-      Journal series photograph by Uncanny Stranger, part of the Projects gallery.
-    </image:caption>
-  </image:image>
-
-  <!-- ================= EXHIBITION IMAGES ================= -->
-
-  <image:image>
-    <image:loc>
-      https://res.cloudinary.com/duwhuzkib/image/upload/v1768082917/photo-1731070663512-59d7a0b0629d_d5gwyf.jpg
-    </image:loc>
-    <image:title>The Pause Between — Exhibition</image:title>
-    <image:caption>
-      Exhibition photograph from The Pause Between series by Uncanny Stranger
-    </image:caption>
-  </image:image>
-
-  <image:image>
-    <image:loc>
-      https://res.cloudinary.com/duwhuzkib/image/upload/v1768078875/18_tvp43p.jpg
-    </image:loc>
-    <image:title>The Pause Between — Mogadishu</image:title>
-    <image:caption>
-      Fine art exhibition photography exploring stillness and memory in Mogadishu
-    </image:caption>
-  </image:image>
-
-</url>
+  <url>
+    <loc>https://uncannystranger.com/projects</loc>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_800/abdullahi-maxamed-F_lc9t1GwGU-unsplash_vfakxq</image:loc>
+      <image:title>A quiet smile, held with grace.</image:title>
+      <image:caption>Cinematic portrait photograph from the Uncanny Stranger albums series.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_800/IMG_2166_copy_uwf1w2</image:loc>
+      <image:title>Light, shadow, and a quiet exchange.</image:title>
+      <image:caption>Editorial coastal portrait by Abdullahi Maxamed.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_800/2025-08-14_1_tm1ak4</image:loc>
+      <image:title>A desk waiting for ideas.</image:title>
+      <image:caption>Still-life photography from the Uncanny Stranger portfolio.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_1200/abdullahi-maxamed-l8MHcngK4Ww-unsplash_bakhyb</image:loc>
+      <image:title>Between Shadows and Glow</image:title>
+      <image:caption>Exhibition photograph by Uncanny Stranger.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_1200/15_ad2kxb</image:loc>
+      <image:title>History</image:title>
+      <image:caption>Statue against a blue sky photographed by Abdullahi Maxamed.</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_1200/16_btfm8c</image:loc>
+      <image:title>Lines We Leave Behind</image:title>
+      <image:caption>Mogadishu skyline photograph from the Rooted in Memory exhibition.</image:caption>
+    </image:image>
+  </url>
 
   <url>
     <loc>https://uncannystranger.com/artist</loc>
-
     <image:image>
-      <image:loc>
-        https://res.cloudinary.com/duwhuzkib/image/upload/v1768417940/_DSC9555.ARW_fm87ao.png
-      </image:loc>
-      <image:title>Framed by light ✨️ 🧡</image:title>
-      <image:caption>A photo of Uncannystranger himself</image:caption>
+      <image:loc>https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_600/profile_vq16nd</image:loc>
+      <image:title>Portrait of Abdullahi Maxamed</image:title>
+      <image:caption>Portrait of the photographer known as Uncanny Stranger.</image:caption>
     </image:image>
-
   </url>
 
 </urlset>

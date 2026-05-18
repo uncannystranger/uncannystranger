@@ -1,26 +1,14 @@
 User-agent: *
 Allow: /
-Disallow: /private/
-Disallow: /.well-known/
-
-# Crawl delay for responsible crawling
-Crawl-delay: 1
-
-# Allow fast crawlers
-Allow: Googlebot
-Allow: Googlebot-Image
-Allow: Googlebot-Mobile
-Allow: Bingbot
-Allow: Slurp
-Allow: DuckDuckBot
 
 Sitemap: https://uncannystranger.com/sitemap.xml
 Sitemap: https://uncannystranger.com/sitemap-images.xml
 
-# Specific rules for Google
 User-agent: Googlebot
 Allow: /
-Disallow:
+
+User-agent: Googlebot-Image
+Allow: /
 
 # Social crawlers
 User-agent: facebookexternalhit

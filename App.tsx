@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
-import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import Navigation from './components/Navigation';
 import Home from './components/Home';
@@ -15,6 +15,8 @@ import { useDeviceTier } from './src/hooks/useDeviceTier';
 
 import Projects from './components/Projects';
 import Artist from './components/Artist';
+import { canonicalFor, DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGE_ALT, pageSeo } from './src/seo/siteSeo';
+import { useContentProtection } from './src/hooks/useContentProtection';
 
 /* ================= SAFETY: ERROR BOUNDARY ================= */
 type ErrorBoundaryProps = {
@@ -112,6 +114,7 @@ const App: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { isLowPower } = useDeviceTier();
+  useContentProtection();
 
   const [section, setSection] = useState<Section>('home');
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -127,29 +130,7 @@ const App: React.FC = () => {
   const recTimeoutRef = useRef<number | null>(null);
   const isPerfLow = isLowPower || isSmallScreen || prefersReducedMotion;
 
-  const SEO = {
-    home: {
-      title: 'Abdullahi Maxamed',
-      description:
-        "Official portfolio of Abdullahi Maxamed (Uncanny Stranger). A study of stillness, memory, and visual storytelling through the lens of Mogadishu's shifting landscapes.",
-      canonical: 'https://uncannystranger.com',
-      keywords: 'Abdullahi Maxamed, Uncanny Stranger, photographer, visual artist, Mogadishu, photography portfolio'
-    },
-    projects: {
-      title: 'Projects | Abdullahi Maxamed',
-      description:
-        'Photography projects and exhibitions by Abdullahi Maxamed (Uncanny Stranger), including curated galleries, visual journals, and cinematic exhibitions.',
-      canonical: 'https://uncannystranger.com/projects',
-      keywords: 'projects, exhibitions, photography, galleries, visual storytelling'
-    },
-    artist: {
-      title: 'Artist | Abdullahi Maxamed',
-      description:
-        'About Abdullahi Maxamed, known as Uncanny Stranger. A Somali photographer documenting quiet moments, light, movement, and personal visual stories.',
-      canonical: 'https://uncannystranger.com/artist',
-      keywords: 'about, artist, biography, photographer, Somalia, Mogadishu'
-    },
-  } as const;
+  const isKnownPath = ['/', '/projects', '/artist'].includes(location.pathname);
 
   /* ================= URL → SECTION (ON LOAD & REFRESH) ================= */
   useEffect(() => {
@@ -163,8 +144,7 @@ const App: React.FC = () => {
     if (typeof document === 'undefined') return;
     const resolvedSection =
       section === 'projects:exhibition' ? 'projects' : section;
-    const data = SEO[resolvedSection];
-    if (!data) return;
+    const data = isKnownPath ? pageSeo[resolvedSection] : pageSeo.notFound;
 
     const setMeta = (name: string, content: string) => {
       let el = document.querySelector<HTMLMetaElement>(`meta[name="${name}"]`);
@@ -199,14 +179,19 @@ const App: React.FC = () => {
     document.title = data.title;
     setMeta('description', data.description);
     setMeta('keywords', data.keywords);
-    setCanonical(data.canonical);
+    setCanonical(isKnownPath ? canonicalFor(data.path) : canonicalFor('/'));
     setMetaProperty('og:title', data.title);
     setMetaProperty('og:description', data.description);
-    setMetaProperty('og:url', data.canonical);
-    setMetaProperty('twitter:title', data.title);
-    setMetaProperty('twitter:description', data.description);
-    setMetaProperty('twitter:url', data.canonical);
-  }, [section]);
+    setMetaProperty('og:url', isKnownPath ? canonicalFor(data.path) : canonicalFor('/'));
+    setMetaProperty('og:image', DEFAULT_OG_IMAGE);
+    setMetaProperty('og:image:alt', DEFAULT_OG_IMAGE_ALT);
+    setMeta('twitter:title', data.title);
+    setMeta('twitter:description', data.description);
+    setMeta('twitter:url', isKnownPath ? canonicalFor(data.path) : canonicalFor('/'));
+    setMeta('twitter:image', DEFAULT_OG_IMAGE);
+    setMeta('twitter:image:alt', DEFAULT_OG_IMAGE_ALT);
+    setMeta('robots', isKnownPath ? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' : 'noindex, follow');
+  }, [section, isKnownPath]);
 
   /* ================= SCROLL RESET (ORIGINAL BEHAVIOR) ================= */
   useEffect(() => {
@@ -294,11 +279,12 @@ const App: React.FC = () => {
 
   /* ================= SECTION → URL (SEO) ================= */
   useEffect(() => {
+    if (!isKnownPath) return;
     if (section === 'home') navigate('/', { replace: false });
     if (section === 'projects') navigate('/projects', { replace: false });
     if (section === 'projects:exhibition') navigate('/projects', { replace: false });
     if (section === 'artist') navigate('/artist', { replace: false });
-  }, [section, navigate]);
+  }, [section, navigate, isKnownPath]);
 
   useEffect(() => {
     if (isPerfLow) return;
@@ -533,8 +519,22 @@ const App: React.FC = () => {
         {!isPerfLow && <ScrollIndicator />}
 
         <main className="relative z-10 flex-grow">
-          {section === 'home' && <Home setSection={setSection} />}
-          {(section === 'projects' || section === 'projects:exhibition') && (
+          {!isKnownPath && (
+            <section className="min-h-screen px-6 py-40 flex items-center justify-center text-center">
+              <div className="max-w-xl">
+                <p className="text-[10px] tracking-[0.5em] uppercase text-accent mb-6">404</p>
+                <h1 className="text-4xl md:text-6xl font-serif italic mb-6">Page not found</h1>
+                <p className="text-ink-secondary dark:text-bone-secondary mb-10">
+                  This page does not exist. Return to the official Uncanny Stranger portfolio.
+                </p>
+                <Link to="/" className="text-xs tracking-[0.4em] uppercase border-b border-accent pb-2">
+                  Back home
+                </Link>
+              </div>
+            </section>
+          )}
+          {isKnownPath && section === 'home' && <Home setSection={setSection} />}
+          {isKnownPath && (section === 'projects' || section === 'projects:exhibition') && (
   <Projects
     initialView={
       section === 'projects:exhibition'
@@ -543,10 +543,10 @@ const App: React.FC = () => {
     }
   />
 )}
-          {section === 'artist' && <Artist />}
+          {isKnownPath && section === 'artist' && <Artist />}
         </main>
         {/* Conditionally rendered footer restricted to Home and Artist sections */}
-        {(section === 'home' || section === 'artist') && (
+        {isKnownPath && (section === 'home' || section === 'artist') && (
           <footer className="w-full pt-10 pb-28 md:pb-12 text-center select-none flex flex-col items-center gap-6">
             {section === 'home' && (
               <div className="transition-opacity opacity-100 text-orange-500">
@@ -571,6 +571,12 @@ const App: React.FC = () => {
                 Uncanny Stranger
               </span>.
             </span>
+            <a
+              href="/copyright.html"
+              className="text-[10px] tracking-[0.35em] uppercase text-ink-secondary/70 dark:text-bone-secondary/70 hover:text-accent transition-colors"
+            >
+              Copyright notice
+            </a>
 
           </footer>
         )}

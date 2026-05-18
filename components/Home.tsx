@@ -1,4 +1,5 @@
 import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, useReducedMotion, useScroll, useTransform, useAnimation } from 'framer-motion';
 import { Section } from '../types';
 import ScrambleText from './ScrambleText';
@@ -7,9 +8,10 @@ import { IMAGES } from '../src/assets/images/imageRegistry';
 import { LightingWrapper } from './LightingWrapper';
 import { Intertitle } from './Intertitle';
 import { useDeviceTier } from '../src/hooks/useDeviceTier';
-import { cld } from '../src/utils/cloudinary';
+import { cld, PUBLIC_IMAGE_WIDTHS } from '../src/utils/cloudinary';
 
 const LazyPhotoBooth = lazy(() => import('./PhotoBooth'));
+const MotionLink = motion.create(Link);
 
 const LIQUID_SPRING = {
   type: 'spring',
@@ -24,12 +26,12 @@ interface HomeProps {
 
 const HERO_PUBLIC_ID = '_DSC9555.ARW_fm87ao';
 const heroImage = (width: number) => cld(HERO_PUBLIC_ID, width);
-const HERO_IMAGE = heroImage(2000);
+const HERO_IMAGE = heroImage(PUBLIC_IMAGE_WIDTHS.hero);
 const HERO_IMAGE_SET = [
-  `${heroImage(800)} 800w`,
-  `${heroImage(1200)} 1200w`,
-  `${heroImage(1600)} 1600w`,
-  `${heroImage(2000)} 2000w`,
+  `${heroImage(PUBLIC_IMAGE_WIDTHS.gallery)} 800w`,
+  `${heroImage(PUBLIC_IMAGE_WIDTHS.exhibition)} 1200w`,
+  `${heroImage(PUBLIC_IMAGE_WIDTHS.feature)} 1600w`,
+  `${heroImage(PUBLIC_IMAGE_WIDTHS.hero)} 2000w`,
 ].join(', ');
 const EXHIBITION_POSTER = IMAGES.home?.flipbook?.[0]?.src ?? HERO_IMAGE;
 const Home = ({ setSection }: HomeProps) => {
@@ -41,9 +43,11 @@ const Home = ({ setSection }: HomeProps) => {
     document.documentElement.classList.contains('dark');
   const heroRef = useRef<HTMLElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const videoSectionRef = useRef<HTMLElement | null>(null);
   const photoBoothRef = useRef<HTMLElement | null>(null);
   const behanceRef = useRef<HTMLDivElement | null>(null);
   const [shouldLoadBehance, setShouldLoadBehance] = useState(false);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
   const [shouldLoadPhotoBooth, setShouldLoadPhotoBooth] = useState(false);
   const [isBehanceActive, setIsBehanceActive] = useState(false);
   const motionScale = isLowPower ? 0.7 : 1;
@@ -81,6 +85,28 @@ const Home = ({ setSection }: HomeProps) => {
   };
 
   useEffect(() => {
+    if (shouldLoadVideo || !videoSectionRef.current) return;
+    const section = videoSectionRef.current;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldLoadVideo(true);
+          observer.disconnect();
+        }
+      },
+      {
+        root: null,
+        threshold: 0.1,
+        rootMargin: '400px 0px',
+      }
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, [shouldLoadVideo]);
+
+  useEffect(() => {
+    if (!shouldLoadVideo) return;
     attemptVideoPlay();
     const onVisibility = () => {
       if (document.visibilityState === 'visible') {
@@ -89,7 +115,7 @@ const Home = ({ setSection }: HomeProps) => {
     };
     document.addEventListener('visibilitychange', onVisibility);
     return () => document.removeEventListener('visibilitychange', onVisibility);
-  }, []);
+  }, [shouldLoadVideo]);
 
   useEffect(() => {
     if (shouldLoadBehance || !behanceRef.current) return;
@@ -150,6 +176,7 @@ const Home = ({ setSection }: HomeProps) => {
     <>
       {/* ================= HERO ================= */}
       <section
+        data-protected="true"
         ref={heroRef}
         data-chapter="Introduction"
         className="relative min-h-[100svh] md:min-h-[110vh] flex items-center justify-center px-6 overflow-hidden"
@@ -162,7 +189,8 @@ const Home = ({ setSection }: HomeProps) => {
           loading="eager"
           decoding="async"
           fetchPriority="high"
-          alt="Artist Hero Background"
+          alt="Cinematic hero photograph by Abdullahi Maxamed for the Uncanny Stranger portfolio."
+          draggable={false}
           className="absolute inset-0 z-0 w-full h-full object-cover will-change-transform"
         />
         {/* CINEMATIC TONE */}
@@ -258,7 +286,7 @@ const Home = ({ setSection }: HomeProps) => {
       />
 
       {/* ================= CURRENT EXHIBITION ================= */}
-      <section data-chapter="Exhibition" className="py-32 px-6 text-center max-w-4xl mx-auto">
+      <section data-protected="true" data-chapter="Exhibition" className="protected-content py-32 px-6 text-center max-w-4xl mx-auto">
         <LightingWrapper className="py-12 px-8 rounded-lg">
           <motion.span
             initial={{ opacity: 0, y: getDirectionalY(10) }}
@@ -325,6 +353,7 @@ const Home = ({ setSection }: HomeProps) => {
         }
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 95vw, min(90vw, 1000px)"
         alt="Portrait scene in Mogadishu by Abdullahi Maxamed (Uncanny Stranger)"
+        draggable={false}
         loading="lazy"
         decoding="async"
         data-loaded="false"
@@ -332,22 +361,21 @@ const Home = ({ setSection }: HomeProps) => {
         className="w-full h-auto block focus-reveal transition-opacity duration-500 ease-out will-change-transform"
         style={{ display: 'block', maxWidth: '100%' }}
       />
+      <div className="media-protection-overlay" aria-hidden="true" />
     </div>
   </div>
 </motion.div>
 
-          <motion.button
-  onClick={() => {
-    window.location.hash = 'exhibition';
-    setSection('projects:exhibition');
-  }}
+          <MotionLink
+  to="/projects#exhibition"
+  onClick={() => setSection('projects:exhibition')}
   whileHover={shouldReduceMotion ? undefined : { letterSpacing: '0.6em', scale: 1.05 }}
   whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
   className="mt-12 text-[10px] tracking-[0.4em] uppercase border-b border-accent pb-2 hover:text-accent transition-all duration-500"
   data-cursor="Explore"
 >
   Explore Exhibition
-</motion.button>
+</MotionLink>
         </LightingWrapper>
       </section>
       {/* ================= SECTION SEPARATOR ================= */}
@@ -356,6 +384,8 @@ const Home = ({ setSection }: HomeProps) => {
       </div>
       {/* ================= VIDEO ================= */}
       <section
+        data-protected="true"
+        ref={videoSectionRef}
         data-chapter="Motion"
         className="relative h-[100svh] w-full overflow-hidden cursor-pointer"
         data-cursor="Play"
@@ -368,13 +398,13 @@ const Home = ({ setSection }: HomeProps) => {
           >
             <video
               ref={videoRef}
-              src="https://res.cloudinary.com/duwhuzkib/video/upload/v1768131908/Reshoot_stationary_up_1080p_20260111140_oxixev.mp4"
+              src={shouldLoadVideo ? "https://res.cloudinary.com/duwhuzkib/video/upload/v1768131908/Reshoot_stationary_up_1080p_20260111140_oxixev.mp4" : undefined}
               poster="https://res.cloudinary.com/duwhuzkib/video/upload/v1768131908/Reshoot_stationary_up_1080p_20260111140_oxixev.jpg"
               autoPlay
               loop
               muted
               playsInline
-              preload="auto"
+              preload={shouldLoadVideo ? 'metadata' : 'none'}
               onCanPlay={attemptVideoPlay}
               onLoadedData={attemptVideoPlay}
               className="absolute inset-0 w-full h-full object-cover dark:grayscale contrast-125"
@@ -417,6 +447,7 @@ const Home = ({ setSection }: HomeProps) => {
  />
       {/* ================= PHOTO BOOTH ================= */}
       <section
+        data-protected="true"
         ref={photoBoothRef}
         data-chapter="Photo Booth"
         className="py-24 px-6"
@@ -435,8 +466,9 @@ const Home = ({ setSection }: HomeProps) => {
       </div>
 
       {/* ================= NEXT TO PROJECTS ================= */}
-      <section data-chapter="Projects" className="relative w-full flex flex-col items-center py-16">
-        <motion.button
+      <section data-protected="true" data-chapter="Projects" className="protected-content relative w-full flex flex-col items-center py-16">
+        <MotionLink
+          to="/projects"
           onClick={() => setSection('projects')}
           whileHover={shouldReduceMotion ? undefined : { letterSpacing: '0.7em', color: '#FF4D00' }}
           whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
@@ -450,7 +482,7 @@ const Home = ({ setSection }: HomeProps) => {
           "
         >
           Next to Projects
-        </motion.button>
+        </MotionLink>
       </section>
     </>
 
