@@ -230,8 +230,7 @@ function replaceMeta(html, route) {
       /<meta name="robots"[^>]*>/,
       '<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />'
     )
-    .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>\s*<!-- Website Schema -->\s*<script type="application\/ld\+json">[\s\S]*?<\/script>/, schemas)
-    .replace('<div id="root"></div>', `<div id="root">${route.fallback}</div>`);
+    .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>\s*<!-- Website Schema -->\s*<script type="application\/ld\+json">[\s\S]*?<\/script>/, schemas);
 }
 
 for (const route of routes) {
