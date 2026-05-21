@@ -25,10 +25,6 @@ export const useContentProtection = () => {
   useEffect(() => {
     if (!import.meta.env.PROD) return;
 
-    console.info(
-      '© Uncanny Stranger. All photography and visual content on this site is protected. Unauthorized copying, downloading, redistribution, or commercial use is prohibited.'
-    );
-
     const preventProtectedAction = (event: Event) => {
       if (!isProtectedTarget(event.target)) return;
       event.preventDefault();
@@ -46,13 +42,7 @@ export const useContentProtection = () => {
       const modifier = event.metaKey || event.ctrlKey;
       const protectedCopy = modifier && key === 'c' && selectionIsProtected();
       const savePage = modifier && key === 's';
-      const viewSource = modifier && key === 'u';
-      const devtools =
-        event.key === 'F12' ||
-        (event.ctrlKey && event.shiftKey && ['i', 'j', 'c'].includes(key)) ||
-        (event.metaKey && event.altKey && ['i', 'j', 'c'].includes(key));
-
-      if (protectedCopy || savePage || viewSource || devtools) {
+      if (protectedCopy || savePage) {
         event.preventDefault();
       }
     };

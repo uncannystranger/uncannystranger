@@ -1,6 +1,6 @@
 
-export type Section = 'home' | 'projects' | 'projects:exhibition' | 'artist';
-export type ProjectView = 'gallery' | 'exhibition';
+export type Section = 'home' | 'projects' | 'projects:exhibition' | 'projects:frames' | 'artist';
+export type ProjectView = 'gallery' | 'exhibition' | 'frames';
 export type GalleryCategory = 'albums' | 'collections' | 'journal';
 
 export interface Photo {

@@ -1,491 +1,470 @@
-import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useReducedMotion, useScroll, useTransform, useAnimation } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Section } from '../types';
+import GradualBlur from './GradualBlur';
+import PhotoDetail from './PhotoDetail';
 import ScrambleText from './ScrambleText';
-import { useScrollDirection } from '../src/hooks/useScrollDirection';
-import { IMAGES } from '../src/assets/images/imageRegistry';
-import { LightingWrapper } from './LightingWrapper';
-import { Intertitle } from './Intertitle';
-import { useDeviceTier } from '../src/hooks/useDeviceTier';
-import { cld, PUBLIC_IMAGE_WIDTHS } from '../src/utils/cloudinary';
+import { fetchUserPhotos, UnsplashPhoto } from '../src/services/unsplash';
+import { formatUnsplashPhoto } from '../src/utils/photoFormatters';
 
-const LazyPhotoBooth = lazy(() => import('./PhotoBooth'));
 const MotionLink = motion.create(Link);
-
-const LIQUID_SPRING = {
-  type: 'spring',
-  stiffness: 240,
-  damping: 20,
-  mass: 0.85
-};
 
 interface HomeProps {
   setSection: (section: Section) => void;
 }
 
-const HERO_PUBLIC_ID = '_DSC9555.ARW_fm87ao';
-const heroImage = (width: number) => cld(HERO_PUBLIC_ID, width);
-const HERO_IMAGE = heroImage(PUBLIC_IMAGE_WIDTHS.hero);
-const HERO_IMAGE_SET = [
-  `${heroImage(PUBLIC_IMAGE_WIDTHS.gallery)} 800w`,
-  `${heroImage(PUBLIC_IMAGE_WIDTHS.exhibition)} 1200w`,
-  `${heroImage(PUBLIC_IMAGE_WIDTHS.feature)} 1600w`,
-  `${heroImage(PUBLIC_IMAGE_WIDTHS.hero)} 2000w`,
-].join(', ');
-const EXHIBITION_POSTER = IMAGES.home?.flipbook?.[0]?.src ?? HERO_IMAGE;
+type HomePhoto = {
+  id: string;
+  title: string;
+  meta: string;
+  caption: string;
+  src: string;
+  srcSet?: string;
+  url: string;
+  alt: string;
+  width: number;
+  height: number;
+  role: 'hero' | 'feature' | 'frames' | 'gallery';
+};
+
+const unsplashImage = (base: string, width: number, quality = 75) =>
+  `${base}?auto=format&fit=crop&w=${width}&q=${quality}`;
+
+const responsiveSet = (base: string) =>
+  [640, 960, 1200, 1600, 2000]
+    .map((width) => `${unsplashImage(base, width, width > 1400 ? 75 : 72)} ${width}w`)
+    .join(', ');
+
+const photoBases = {
+  hero: 'https://images.unsplash.com/photo-1760008780659-6ac16a68e012',
+  trending: 'https://images.unsplash.com/photo-1723151684036-d014403c33b2',
+  street: 'https://images.unsplash.com/photo-1737742462464-b26eb948dfeb',
+  night: 'https://images.unsplash.com/photo-1744477825395-e43544c2e2cc',
+  window: 'https://images.unsplash.com/photo-1759429638334-e98f8e9f3da0',
+};
+
+const HOME_PHOTOS: HomePhoto[] = [
+  {
+    id: '7PdUGlHwmh8',
+    title: 'Abdullahi M.',
+    meta: 'Portfolio',
+    caption: 'A camera raised into warm silence, where looking becomes a self-portrait.',
+    src: unsplashImage(photoBases.hero, 1400, 75),
+    srcSet: responsiveSet(photoBases.hero),
+    url: 'https://unsplash.com/photos/person-holding-a-camera-and-taking-a-picture-7PdUGlHwmh8',
+    alt: 'Person holding a camera and taking a picture.',
+    width: 1400,
+    height: 1750,
+    role: 'hero',
+  },
+  {
+    id: 'XzWkVZKqU0M',
+    title: 'Good Night Sun',
+    meta: 'Feature',
+    caption: 'Mogadishu exhales into evening, soft with rooftops, blue air, and the last warmth of day.',
+    src: unsplashImage(photoBases.trending, 1600, 75),
+    srcSet: responsiveSet(photoBases.trending),
+    url: 'https://unsplash.com/photos/a-view-of-a-city-with-tall-buildings-XzWkVZKqU0M',
+    alt: 'A view of a city with tall buildings.',
+    width: 1600,
+    height: 1200,
+    role: 'feature',
+  },
+  {
+    id: 'iJKXnMSZ_qI',
+    title: 'Street Circle',
+    meta: 'Frames',
+    caption: 'A circle of friends turns a public street into something close and bright.',
+    src: unsplashImage(photoBases.street, 1100, 72),
+    srcSet: responsiveSet(photoBases.street),
+    url: 'https://unsplash.com/photos/a-group-of-men-standing-next-to-each-other-iJKXnMSZ_qI',
+    alt: 'A group of men standing next to each other.',
+    width: 1400,
+    height: 1100,
+    role: 'frames',
+  },
+  {
+    id: 'xmEupVYRQqw',
+    title: 'Neon After Dark',
+    meta: 'Gallery',
+    caption: 'A narrow night street glows through windows, headlights, and magenta signs.',
+    src: unsplashImage(photoBases.night, 1100, 72),
+    srcSet: responsiveSet(photoBases.night),
+    url: 'https://unsplash.com/photos/a-neon-lit-city-street-at-night-xmEupVYRQqw',
+    alt: 'A neon-lit city street at night.',
+    width: 1200,
+    height: 1500,
+    role: 'gallery',
+  },
+  {
+    id: '_2OdbG4q4Wc',
+    title: 'Room With Blue Window',
+    meta: 'Gallery',
+    caption: 'A quiet room is shaped by blue glass and the warm geometry of afternoon.',
+    src: unsplashImage(photoBases.window, 1100, 72),
+    srcSet: responsiveSet(photoBases.window),
+    url: 'https://unsplash.com/photos/sunlight-streams-through-a-window-casting-shadows-_2OdbG4q4Wc',
+    alt: 'Sunlight streams through a window, casting shadows.',
+    width: 1200,
+    height: 1500,
+    role: 'gallery',
+  },
+];
+
+const heroPhoto = HOME_PHOTOS[0];
+const trendingPhoto = HOME_PHOTOS[1];
+const framesFeaturePhoto = HOME_PHOTOS[2];
+const galleryFallbackPhotos = [HOME_PHOTOS[3], HOME_PHOTOS[4], HOME_PHOTOS[1], HOME_PHOTOS[2]];
+
+const toFallbackGalleryPhoto = (photo: HomePhoto, index: number): UnsplashPhoto => ({
+  id: `home-preview-${photo.id}`,
+  rawId: photo.id,
+  source: 'unsplash',
+  title: photo.title,
+  description: photo.caption,
+  intro: photo.caption,
+  image: photo.src,
+  imageSmall: photo.src,
+  imageSrcSet: photo.srcSet,
+  imageSmallSrcSet: photo.srcSet,
+  alt: photo.alt,
+  category: index % 2 === 0 ? 'Street' : 'Portrait',
+  date: 'Selected Frame',
+  year: '2026',
+  sortTimestamp: Date.now() - index,
+  readingTime: '2 min read',
+  location: 'Somalia',
+  width: photo.width,
+  height: photo.height,
+  aspectRatio: photo.width / photo.height,
+  color: '#1c1917',
+  likes: null,
+  views: null,
+  downloads: null,
+  exif: null,
+  tags: [],
+  unsplashUrl: photo.url,
+  photographer: 'Abdullahi Maxamed',
+});
+
+const reveal = {
+  hidden: { opacity: 0, y: 28 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const transition = { duration: 0.34, ease: [0.22, 1, 0.36, 1] };
+const newestFirst = (items: UnsplashPhoto[]) =>
+  [...items].sort((a, b) => b.sortTimestamp - a.sortTimestamp);
+
+const InstagramIcon = () => (
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <rect x="4" y="4" width="16" height="16" rx="4.5" stroke="currentColor" strokeWidth="1.45" />
+    <circle cx="12" cy="12" r="3.25" stroke="currentColor" strokeWidth="1.45" />
+    <circle cx="16.8" cy="7.2" r="1" fill="currentColor" />
+  </svg>
+);
+
+const XIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M4.75 4.75l14.5 14.5M19.25 4.75L4.75 19.25" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" />
+  </svg>
+);
+
+const UnsplashIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M9.25 4h5.5v6h-5.5V4Zm-5.5 9.25h5.5V20h5.5v-6.75h5.5V20H3.75v-6.75Z" fill="currentColor" />
+  </svg>
+);
+
+const HomePhotoButton = ({
+  photo,
+  activePhotoId,
+  onSelect,
+  className = '',
+  sizes = '(max-width: 768px) 92vw, 42vw',
+  eager = false,
+}: {
+  photo: HomePhoto;
+  activePhotoId: string | null;
+  onSelect: (id: string) => void;
+  className?: string;
+  sizes?: string;
+  eager?: boolean;
+}) => (
+  <button
+    type="button"
+    className={`home-photo-shell ${activePhotoId === photo.id ? 'is-active' : ''} ${className}`}
+    onClick={() => onSelect(photo.id)}
+    aria-pressed={activePhotoId === photo.id}
+    aria-label={`Toggle color treatment for ${photo.title}`}
+    data-cursor={photo.title}
+  >
+    <img
+      src={photo.src}
+      srcSet={photo.srcSet}
+      sizes={sizes}
+      alt={photo.alt}
+      draggable={false}
+      loading={eager ? 'eager' : 'lazy'}
+      decoding="async"
+      fetchPriority={eager ? 'high' : 'auto'}
+      width={photo.width}
+      height={photo.height}
+    />
+    <span className="media-protection-overlay" aria-hidden="true" />
+  </button>
+);
+
 const Home = ({ setSection }: HomeProps) => {
   const shouldReduceMotion = useReducedMotion();
-  const direction = useScrollDirection();
-  const { isLowPower } = useDeviceTier();
-  const isDarkMode =
-    typeof document !== 'undefined' &&
-    document.documentElement.classList.contains('dark');
   const heroRef = useRef<HTMLElement | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const videoSectionRef = useRef<HTMLElement | null>(null);
-  const photoBoothRef = useRef<HTMLElement | null>(null);
-  const behanceRef = useRef<HTMLDivElement | null>(null);
-  const [shouldLoadBehance, setShouldLoadBehance] = useState(false);
-  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
-  const [shouldLoadPhotoBooth, setShouldLoadPhotoBooth] = useState(false);
-  const [isBehanceActive, setIsBehanceActive] = useState(false);
-  const motionScale = isLowPower ? 0.7 : 1;
-  const liquidSpring = isLowPower
-    ? { ...LIQUID_SPRING, stiffness: 100, damping: 26 }
-    : LIQUID_SPRING;
-  const { scrollYProgress: heroProgress } = useScroll({
-    target: heroRef,
-    offset: ['start start', 'end start'],
-  });
-  const gridY = useTransform(
-    heroProgress,
-    [0, 1],
-    [0, isLowPower ? -10 : -30]
+  const trendingRef = useRef<HTMLElement | null>(null);
+  const [activePhotoId, setActivePhotoId] = useState<string | null>(null);
+  const [galleryPreviewPhotos, setGalleryPreviewPhotos] = useState<UnsplashPhoto[]>(
+    galleryFallbackPhotos.map(toFallbackGalleryPhoto)
   );
+  const [activeGalleryIndex, setActiveGalleryIndex] = useState(-1);
 
-  const handleFocusLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
-    event.currentTarget.setAttribute('data-loaded', 'true');
-  };
+  const sectionMotion = shouldReduceMotion
+    ? {}
+    : {
+        initial: 'hidden',
+        whileInView: 'visible',
+        viewport: { once: true, margin: '-12%' },
+        variants: reveal,
+        transition,
+      };
 
-  const getDirectionalY = (baseValue = 30) => {
-    const scaled = baseValue * motionScale;
-    if (direction === 'down') return scaled;
-    if (direction === 'up') return -scaled;
-    return scaled;
-  };
-
-  const attemptVideoPlay = () => {
-    const video = videoRef.current;
-    if (!video) return;
-    const playPromise = video.play();
-    if (playPromise && typeof playPromise.catch === 'function') {
-      playPromise.catch(() => {});
-    }
+  const handlePhotoSelect = (id: string) => {
+    setActivePhotoId((current) => (current === id ? null : id));
   };
 
   useEffect(() => {
-    if (shouldLoadVideo || !videoSectionRef.current) return;
-    const section = videoSectionRef.current;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setShouldLoadVideo(true);
-          observer.disconnect();
-        }
-      },
-      {
-        root: null,
-        threshold: 0.1,
-        rootMargin: '400px 0px',
-      }
-    );
+    let cancelled = false;
 
-    observer.observe(section);
-    return () => observer.disconnect();
-  }, [shouldLoadVideo]);
+    fetchUserPhotos(1, 6)
+      .then((photos) => {
+        if (cancelled) return;
+        const formatted = newestFirst(photos.map(formatUnsplashPhoto)).slice(0, 4);
+        if (formatted.length) setGalleryPreviewPhotos(formatted);
+      })
+      .catch(() => {
+        if (!cancelled) setGalleryPreviewPhotos(galleryFallbackPhotos.map(toFallbackGalleryPhoto));
+      });
 
-  useEffect(() => {
-    if (!shouldLoadVideo) return;
-    attemptVideoPlay();
-    const onVisibility = () => {
-      if (document.visibilityState === 'visible') {
-        attemptVideoPlay();
-      }
+    return () => {
+      cancelled = true;
     };
-    document.addEventListener('visibilitychange', onVisibility);
-    return () => document.removeEventListener('visibilitychange', onVisibility);
-  }, [shouldLoadVideo]);
+  }, []);
 
-  useEffect(() => {
-    if (shouldLoadBehance || !behanceRef.current) return;
-    const section = behanceRef.current;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setShouldLoadBehance(true);
-          observer.disconnect();
-        }
-      },
-      {
-        root: null,
-        threshold: 0.2,
-        rootMargin: '200px 0px',
-      }
-    );
-
-    observer.observe(section);
-    return () => observer.disconnect();
-  }, [shouldLoadBehance]);
-
-  useEffect(() => {
-    if (shouldLoadPhotoBooth || !photoBoothRef.current) return;
-    const section = photoBoothRef.current;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setShouldLoadPhotoBooth(true);
-          observer.disconnect();
-        }
-      },
-      {
-        root: null,
-        threshold: 0.15,
-        rootMargin: '500px 0px',
-      }
-    );
-
-    observer.observe(section);
-    return () => observer.disconnect();
-  }, [shouldLoadPhotoBooth]);
-
-  const photoBoothFallback = (
-    <div className="max-w-7xl mx-auto animate-pulse">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-24 gap-y-40">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div
-            key={i}
-            className="aspect-[3/4] bg-neutral-200/80 dark:bg-neutral-800/80 rounded-sm"
-          />
-        ))}
-      </div>
-    </div>
-  );
+  const activeGalleryPhoto = activeGalleryIndex >= 0 ? galleryPreviewPhotos[activeGalleryIndex] : null;
 
   return (
     <>
-      {/* ================= HERO ================= */}
       <section
         data-protected="true"
         ref={heroRef}
         data-chapter="Introduction"
-        className="relative min-h-[100svh] md:min-h-[110vh] flex items-center justify-center px-6 overflow-hidden"
+        className="editorial-home-hero home-reference-hero editorial-safe-top protected-content relative min-h-[100svh] overflow-hidden px-5 sm:px-8 md:px-12 lg:px-16"
       >
-        {/* PARALLAX BACKGROUND */}
-        <motion.img
-          src={HERO_IMAGE}
-          srcSet={HERO_IMAGE_SET}
-          sizes="100vw"
-          loading="eager"
-          decoding="async"
-          fetchPriority="high"
-          alt="Cinematic hero photograph by Abdullahi Maxamed for the Uncanny Stranger portfolio."
-          draggable={false}
-          className="absolute inset-0 z-0 w-full h-full object-cover will-change-transform"
-        />
-        {/* CINEMATIC TONE */}
-        <div className="absolute inset-0 bg-black/25 dark:bg-black/45" />
+        <div className="absolute inset-0 bg-beige dark:bg-black" />
+        <div className="editorial-grid-lines absolute inset-0 pointer-events-none opacity-100" />
+        <div className="home-hero-vignette" aria-hidden="true" />
+        <GradualBlur preset="footer" height="7rem" strength={1.2} divCount={5} zIndex={3} className="home-gradual-blur" />
 
-        {/* EDITORIAL GRID */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none"
-          style={{ y: gridY }}
-        >
-          <div
-            className="
-              h-full max-w-7xl mx-auto
-              grid grid-cols-6 md:grid-cols-12
-              opacity-[0.05] dark:opacity-[0.07]
-            "
+        <div className="home-reference-layout relative z-10 mx-auto grid min-h-[calc(100svh-var(--nav-safe-offset))] max-w-[1560px] grid-cols-1 gap-8 pb-20 md:grid-cols-12 md:gap-x-8 md:pb-10">
+          <aside className="home-social-rail md:col-span-1">
+            <div className="flex flex-row gap-5 md:flex-col">
+              <a href="https://instagram.com/uncannystranger" target="_blank" rel="noopener noreferrer" data-cursor="Instagram" aria-label="Instagram" className="home-social-icon">
+                <InstagramIcon />
+              </a>
+              <a href="https://unsplash.com/@uncannystranger" target="_blank" rel="noopener noreferrer" data-cursor="Unsplash" aria-label="Unsplash" className="home-social-icon">
+                <UnsplashIcon />
+              </a>
+              <a href="https://x.com/uncannystranger" target="_blank" rel="noopener noreferrer" data-cursor="X" aria-label="X" className="home-social-icon">
+                <XIcon />
+              </a>
+            </div>
+          </aside>
+
+          <div className="home-hero-copy relative z-30 md:col-span-6 md:col-start-2 md:row-start-1">
+            <div>
+              <p className="home-hero-topline">Portfolio</p>
+              <h1 className="editorial-hero-title home-hero-masthead font-serif text-ink-primary dark:text-bone-primary" aria-label="Abdullahi M.">
+                <span className="sr-only">Abdullahi M.</span>
+                <ScrambleText text="Abdullahi" className="block" ariaHidden />
+                <ScrambleText text="M." className="block" ariaHidden startDelayMs={160} />
+              </h1>
+              <p className="home-hero-deck mt-7 max-w-[430px] font-serif text-[clamp(1rem,1.45vw,1.25rem)] leading-[1.75]">
+                Seen once. Remembered Longer.
+              </p>
+            </div>
+
+          </div>
+
+          <motion.div
+            className="home-hero-image-wrap home-hero-collage md:col-span-10 md:col-start-2 md:row-start-1"
+            initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: 42 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: shouldReduceMotion ? 0.18 : 0.46, ease: [0.16, 1, 0.3, 1] }}
           >
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div
-                key={i}
-                className="border-l border-orange-500/25 dark:border-white/10"
+            <figure className="home-collage-item home-collage-main">
+              <HomePhotoButton
+                photo={heroPhoto}
+                activePhotoId={activePhotoId}
+                onSelect={handlePhotoSelect}
+                className="home-hero-image editorial-image-mask"
+                eager
               />
+            </figure>
+          </motion.div>
+        </div>
+      </section>
+
+      <section data-protected="true" data-chapter="Frames" className="protected-content home-frames-intro relative px-5 py-14 sm:px-8 md:px-12 md:py-20 lg:px-16">
+        <div className="home-section-divider top" aria-hidden="true" />
+        <div className="editorial-grid-lines absolute inset-0 pointer-events-none opacity-80" />
+        <motion.div {...sectionMotion} className="home-frames-layout relative mx-auto grid max-w-[1460px] grid-cols-1 gap-10 md:grid-cols-12 md:items-start md:gap-x-8">
+          <div className="md:col-span-5">
+            <h2 className="font-serif text-[clamp(3.8rem,8vw,8.5rem)] uppercase leading-[0.78] tracking-[-0.075em] text-ink-primary dark:text-bone-primary">
+              Frames
+            </h2>
+            <p className="mt-7 max-w-[10rem] font-serif text-[clamp(1.25rem,2vw,1.8rem)] leading-[1.25] text-ink-primary/72 dark:text-bone-primary/72">
+              Where photographs become essays.
+            </p>
+            <MotionLink to="/frames" onClick={() => setSection('projects:frames')} className="home-editorial-link mt-7" data-cursor="Frames">
+              Enter Frames
+            </MotionLink>
+          </div>
+          <div className="home-frames-preview-strip md:col-span-7">
+            {[framesFeaturePhoto, galleryFallbackPhotos[0], galleryFallbackPhotos[1]].map((photo, index) => (
+              <figure className="home-frames-feature" key={photo.id}>
+                <HomePhotoButton
+                  photo={photo}
+                  activePhotoId={activePhotoId}
+                  onSelect={handlePhotoSelect}
+                  className="home-frames-photo editorial-image-mask"
+                  sizes="(max-width: 768px) 92vw, 26vw"
+                />
+                <figcaption>
+                  <span>Frame {String(index + 1).padStart(2, '0')}</span>
+                  <h3>{photo.title}</h3>
+                  <p>{photo.caption}</p>
+                </figcaption>
+              </figure>
             ))}
           </div>
         </motion.div>
-
-        {/* HERO CONTENT */}
-        <div className="relative z-10 text-center max-w-5xl">
-          <motion.div
-            initial={false}
-            animate={{ opacity: 1, scaleX: 1 }}
-            transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1], delay: 0.5 }}
-            className="
-              absolute
-              inset-x-[-14%]
-              top-[42%]
-              h-[28%]
-              bg-white/60 dark:bg-black/40
-              pointer-events-none
-            "
-          />
-
-          <h1
-            className="
-              relative
-              text-7xl md:text-[10rem]
-              font-serif
-              tracking-tighter
-              leading-[0.85]
-              mb-8
-              text-black dark:text-bone-primary
-              mix-blend-difference
-              invert dark:invert-0
-            "
-          >
-            <ScrambleText text="Abdullahi M." />
-          </h1>
-
-          <motion.p
-            initial={false}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ ...liquidSpring, delay: isLowPower ? 0.8 : 1.2 }}
-            className="
-              relative
-              font-sans
-              text-[10px] md:text-xs
-              tracking-[0.5em]
-              uppercase
-              text-orange-600 dark:text-orange-500
-              font-medium
-            "
-          >
-            Seen once. Remembered longer.
-          </motion.p>
-        </div>
+        <div className="home-section-divider bottom" aria-hidden="true" />
       </section>
 
-       {/* ================= SECTION SEPARATOR (RECORDING CUE) ================= */}
-      <motion.div
-        initial={{ opacity: 0, scaleY: 0.5 }}
-        whileInView={{ opacity: 1, scaleY: 1 }}
-        viewport={{ once: false }}
-        transition={liquidSpring}
-        className="w-full flex justify-center py-24"
-      >
-        <div className="w-px h-24 bg-gradient-to-b from-transparent via-neutral-900/20 dark:via-white/20 to-transparent" />
-      </motion.div>
-
-      <Intertitle
-        text="The Frame"
-        subtext="A quiet opening sequence"
-        className="py-6 md:py-12"
-      />
-
-      {/* ================= CURRENT EXHIBITION ================= */}
-      <section data-protected="true" data-chapter="Exhibition" className="protected-content py-32 px-6 text-center max-w-4xl mx-auto">
-        <LightingWrapper className="py-12 px-8 rounded-lg">
-          <motion.span
-            initial={{ opacity: 0, y: getDirectionalY(10) }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, margin: "-10%" }}
-            transition={liquidSpring}
-            className="text-[10px] tracking-[0.6em] uppercase text-accent font-semibold"
-          >
-            Current Exhibition
-          </motion.span>
-
-          <motion.h2
-            initial={{ opacity: 0, y: getDirectionalY(20) }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, margin: "-10%" }}
-            transition={{ ...liquidSpring, delay: 0.1 }}
-            className="text-4xl md:text-6xl font-serif italic mt-6 mb-8"
-          >
-            The Pause Between
-          </motion.h2>
-          <div className="placard-meta justify-center">
-            <span>Series</span>
-            <span>Exhibition</span>
-            <span>Ongoing</span>
-          </div>
-
-          <motion.div
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: false }}
-            transition={{ ...liquidSpring, delay: 0.2 }}
-            className="w-24 h-px bg-accent mx-auto mb-10 opacity-60"
-          />
-
-          <motion.p
-            initial={{ opacity: 0, y: getDirectionalY(15) }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, margin: "-10%" }}
-            transition={{ ...liquidSpring, delay: 0.3 }}
-            className="text-sm md:text-base opacity-70 leading-relaxed font-serif max-w-2xl mx-auto"
-          >
-            A study of stillness, memory, and the quiet tension between motion and pause. Captured through the lens of Mogadishu's shifting landscapes.
-          </motion.p>
-          {/* === Exhibition Preview (Responsive Image) === */}
-<motion.div
-  ref={behanceRef}
-  initial={{ opacity: 0, y: getDirectionalY(20) }}
-  whileInView={{ opacity: 1, y: 0 }}
-  viewport={{ once: false, margin: "-10%" }}
-  transition={{ ...liquidSpring, delay: 0.4 }}
-  className="relative w-full mx-auto my-14"
->
-  <div className="relative w-full overflow-hidden rounded-md border border-neutral-900/10 dark:border-white/10 shadow-xl">
-    {/* Fully responsive adaptive image: portrait on mobile (<768px), landscape on desktop */}
-    <div className="w-full max-w-full">
-      <img
-        src="https://res.cloudinary.com/duwhuzkib/image/upload/e_blur:200,q_auto,w_100/v1778229782/IMG_2767_gcjpnw.jpg"
-        srcSet={
-          "https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_500/v1778229782/IMG_2767_gcjpnw.jpg 500w, " +
-          "https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_800/v1778229782/IMG_2767_gcjpnw.jpg 800w, " +
-          "https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_1200/v1778229782/IMG_2767_gcjpnw.jpg 1200w, " +
-          "https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_1600/v1778229782/IMG_2767_gcjpnw.jpg 1600w, " +
-          "https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,w_2000/v1778229782/IMG_2767_gcjpnw.jpg 2000w"
-        }
-        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 95vw, min(90vw, 1000px)"
-        alt="Portrait scene in Mogadishu by Abdullahi Maxamed (Uncanny Stranger)"
-        draggable={false}
-        loading="lazy"
-        decoding="async"
-        data-loaded="false"
-        onLoad={handleFocusLoad}
-        className="w-full h-auto block focus-reveal transition-opacity duration-500 ease-out will-change-transform"
-        style={{ display: 'block', maxWidth: '100%' }}
-      />
-      <div className="media-protection-overlay" aria-hidden="true" />
-    </div>
-  </div>
-</motion.div>
-
-          <MotionLink
-  to="/projects#exhibition"
-  onClick={() => setSection('projects:exhibition')}
-  whileHover={shouldReduceMotion ? undefined : { letterSpacing: '0.6em', scale: 1.05 }}
-  whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
-  className="mt-12 text-[10px] tracking-[0.4em] uppercase border-b border-accent pb-2 hover:text-accent transition-all duration-500"
-  data-cursor="Explore"
->
-  Explore Exhibition
-</MotionLink>
-        </LightingWrapper>
-      </section>
-      {/* ================= SECTION SEPARATOR ================= */}
-      <div className="w-full flex justify-center py-16">
-        <div className="w-24 h-px bg-neutral-900/10 dark:bg-white/10" />
-      </div>
-      {/* ================= VIDEO ================= */}
       <section
+        ref={trendingRef}
         data-protected="true"
-        ref={videoSectionRef}
-        data-chapter="Motion"
-        className="relative h-[100svh] w-full overflow-hidden cursor-pointer"
-        data-cursor="Play"
+        data-chapter="Good Night Sun"
+        className="protected-content relative overflow-hidden px-5 py-20 sm:px-8 md:px-12 md:py-32 lg:px-16"
       >
-          <motion.div
-            initial={{ scale: 1.08, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute inset-0 w-full h-full"
+        <div className="home-section-divider top" aria-hidden="true" />
+        <div className="editorial-grid-lines absolute inset-0 pointer-events-none opacity-100" />
+        <div className="relative mx-auto grid max-w-[1460px] grid-cols-1 gap-9 md:grid-cols-12 md:gap-x-8">
+          <motion.article
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 38 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-8%' }}
+            transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+            className="home-trending-spread md:col-span-12"
           >
-            <video
-              ref={videoRef}
-              src={shouldLoadVideo ? "https://res.cloudinary.com/duwhuzkib/video/upload/v1768131908/Reshoot_stationary_up_1080p_20260111140_oxixev.mp4" : undefined}
-              poster="https://res.cloudinary.com/duwhuzkib/video/upload/v1768131908/Reshoot_stationary_up_1080p_20260111140_oxixev.jpg"
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload={shouldLoadVideo ? 'metadata' : 'none'}
-              onCanPlay={attemptVideoPlay}
-              onLoadedData={attemptVideoPlay}
-              className="absolute inset-0 w-full h-full object-cover dark:grayscale contrast-125"
-            />
+            <Link to={`/frames/${trendingPhoto.id}`} className="home-goodnight-image-link" data-cursor="Read">
+              <img
+                src={trendingPhoto.src}
+                srcSet={trendingPhoto.srcSet}
+                sizes="(max-width: 768px) 92vw, 55vw"
+                alt={trendingPhoto.alt}
+                draggable={false}
+                loading="lazy"
+                decoding="async"
+                width={trendingPhoto.width}
+                height={trendingPhoto.height}
+                className="home-city-image"
+              />
+            </Link>
+            <motion.div {...sectionMotion} className="home-trending-copy">
+              <h2>
+                {trendingPhoto.title}
+              </h2>
+              <p>
+                {trendingPhoto.caption}
+              </p>
+              <Link to={`/frames/${trendingPhoto.id}`} onClick={() => setSection('projects:frames')} className="home-editorial-link home-read-frame-link mt-8" data-cursor="Read">
+                Read Frame
+              </Link>
+            </motion.div>
+          </motion.article>
+        </div>
+        <div className="home-section-divider bottom" aria-hidden="true" />
+      </section>
+
+      <section data-protected="true" data-chapter="Gallery" className="protected-content relative px-5 py-20 sm:px-8 md:px-12 md:py-28 lg:px-16">
+        <div className="home-section-divider top" aria-hidden="true" />
+        <div className="editorial-grid-lines absolute inset-0 pointer-events-none opacity-70" />
+        <div className="relative mx-auto grid max-w-[1460px] grid-cols-1 gap-10 md:grid-cols-12 md:gap-x-8">
+          <motion.div {...sectionMotion} className="md:col-span-4 md:pt-10">
+            <span className="home-section-kicker">Short Gallery</span>
+            <h2 className="mt-6 max-w-[10ch] font-serif text-[clamp(2.8rem,6vw,6.8rem)] uppercase leading-[0.82] tracking-[-0.065em] text-ink-primary dark:text-bone-primary">
+              A brief edit, not the whole archive.
+            </h2>
+            <MotionLink to="/projects" onClick={() => setSection('projects')} className="home-editorial-link mt-9" data-cursor="Gallery">
+              Explore Gallery
+            </MotionLink>
           </motion.div>
-
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-black/30 dark:bg-black/50" />
-
-        {/* Bottom Text */}
-        <div className="absolute bottom-0 left-0 w-full z-10 px-12 pb-20">
-          <motion.p
-            initial={{ opacity: 0, x: -20, y: getDirectionalY(10) }}
-            whileInView={{ opacity: 1, x: 0, y: 0 }}
-            viewport={{ once: false, margin: "-5%" }}
-            transition={liquidSpring}
-            className="text-white text-xs md:text-sm tracking-[0.4em] uppercase opacity-70 mb-4"
-          >
-            Mogadishu · Motion · Atmosphere
-          </motion.p>
-          <motion.h2
-            initial={{ opacity: 0, y: getDirectionalY(20) }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, margin: "-5%" }}
-            transition={{ ...liquidSpring, delay: 0.2 }}
-            className="text-white text-4xl md:text-7xl font-serif italic leading-tight max-w-4xl"
-          >
-            Visual stories in constant motion
-          </motion.h2>
+          <div className="home-gallery-strip home-masonry-preview md:col-span-8">
+            {galleryPreviewPhotos.map((photo, index) => (
+              <motion.button
+                type="button"
+                key={photo.id}
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 22 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-10%' }}
+                transition={{ ...transition, delay: index * 0.03 }}
+                className="home-gallery-card"
+                onClick={() => setActiveGalleryIndex(index)}
+                data-cursor="Open"
+              >
+                <span className="home-gallery-image-wrap">
+                  <img
+                    src={photo.imageSmall}
+                    srcSet={photo.imageSmallSrcSet}
+                    sizes="(max-width: 768px) 92vw, 26vw"
+                    alt={photo.alt}
+                    loading="lazy"
+                    decoding="async"
+                    draggable={false}
+                    width={photo.width}
+                    height={photo.height}
+                    style={{ aspectRatio: `${photo.width} / ${photo.height}` }}
+                    className="home-gallery-photo"
+                  />
+                </span>
+                <span>Frame {String(index + 1).padStart(2, '0')}</span>
+                <h3>{photo.title}</h3>
+                <p>{photo.intro}</p>
+              </motion.button>
+            ))}
+          </div>
         </div>
-      </section>
-      {/* ================= SECTION SEPARATOR ================= */}
-      <div className="w-full flex justify-center py-16">
-        <div className="w-24 h-px bg-neutral-900/10 dark:bg-white/10" />
-      </div>
-      <Intertitle
-  text="RECENT PHOTOGRAPHS"
-  subtext="A quiet study of light and presence"
-  className="py-6 md:py-10 text-orange-500"
- />
-      {/* ================= PHOTO BOOTH ================= */}
-      <section
-        data-protected="true"
-        ref={photoBoothRef}
-        data-chapter="Photo Booth"
-        className="py-24 px-6"
-      >
-        {shouldLoadPhotoBooth ? (
-          <Suspense fallback={photoBoothFallback}>
-            <LazyPhotoBooth images={IMAGES.home.flipbook} />
-          </Suspense>
-        ) : (
-          photoBoothFallback
-        )}
-      </section>
-      {/* ================= SECTION SEPARATOR ================= */}
-      <div className="w-full flex justify-center py-16">
-        <div className="w-24 h-px bg-neutral-900/10 dark:bg-white/10" />
-      </div>
-
-      {/* ================= NEXT TO PROJECTS ================= */}
-      <section data-protected="true" data-chapter="Projects" className="protected-content relative w-full flex flex-col items-center py-16">
-        <MotionLink
-          to="/projects"
-          onClick={() => setSection('projects')}
-          whileHover={shouldReduceMotion ? undefined : { letterSpacing: '0.7em', color: '#FF4D00' }}
-          whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
-          data-cursor="Projects"
-          className="
-            text-xs tracking-[0.5em] uppercase
-            text-ink-secondary dark:text-bone-secondary
-            border-b border-transparent
-            hover:border-accent
-            transition-all duration-500 py-1
-          "
-        >
-          Next to Projects
-        </MotionLink>
+        <div className="home-section-divider bottom" aria-hidden="true" />
+        <PhotoDetail
+          photo={activeGalleryPhoto}
+          photos={galleryPreviewPhotos}
+          activeIndex={activeGalleryIndex}
+          onClose={() => setActiveGalleryIndex(-1)}
+          onNavigate={(nextIndex) => {
+            if (nextIndex >= 0 && nextIndex < galleryPreviewPhotos.length) setActiveGalleryIndex(nextIndex);
+          }}
+        />
       </section>
     </>
-
   );
 };
 

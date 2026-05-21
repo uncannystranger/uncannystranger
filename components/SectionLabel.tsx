@@ -10,6 +10,7 @@ const SECTION_MAP: Record<string, string> = {
     'home': 'ESTB. 2024',
     'projects': 'EXHIBITION ARC',
     'projects:exhibition': 'VIEWING ROOM',
+    'projects:frames': 'FRAMES',
     'artist': 'THE ARCHIVE'
 };
 
@@ -27,7 +28,7 @@ export const SectionLabel: React.FC<SectionLabelProps> = ({ currentSection }) =>
     }, [currentSection, lastSection]);
 
     return (
-        <div className="fixed left-6 md:left-12 bottom-8 z-50 pointer-events-none overflow-hidden">
+        <div className="fixed bottom-8 left-12 z-50 hidden pointer-events-none overflow-hidden md:block">
             <AnimatePresence mode="wait">
                 {isVisible && (
                     <motion.div

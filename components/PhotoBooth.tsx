@@ -59,24 +59,16 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
   };
 
   return (
-    <section data-protected="true" className="protected-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-      {/* HANGING RAIL */}
-      <div className="relative mb-20 hidden lg:block">
-        <div className="absolute left-0 right-0 top-0 h-[2px] bg-neutral-900/20 dark:bg-white/15" />
-      </div>
-
-      {/* WALL PERSPECTIVE */}
+    <section data-protected="true" className="protected-content mx-auto max-w-[1440px] px-0 py-16 md:py-24">
       <div
         className="
+          relative
           grid
           grid-cols-1
           sm:grid-cols-2
-          lg:grid-cols-3
-          gap-x-6
-          gap-y-24
-          lg:gap-x-20
-          lg:gap-y-40
-          [perspective:1800px]
+          lg:grid-cols-12
+          gap-x-8
+          gap-y-20
         "
       >
         {images.map((img, index) => {
@@ -93,58 +85,36 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
             ? 'grayscale'
             : 'grayscale-0';
 
-          /* ------------------------------
-             STRONG MUSEUM TILT
-          ------------------------------ */
-          const tilt =
-            isLowPower
-              ? ''
-              : index % 3 === 0
-              ? 'lg:rotate-y-[-10deg] lg:rotate-x-[2deg]'
-              : index % 3 === 2
-              ? 'lg:rotate-y-[10deg] lg:rotate-x-[2deg]'
-              : 'lg:rotate-y-[0deg] lg:rotate-x-[1deg]';
-
           return (
             <article
               key={img.id}
               className={`
-                flex flex-col items-center
-                ${index % 3 === 1 ? 'lg:mt-28' : ''}
-                ${index % 3 === 2 ? 'lg:mt-16' : ''}
+                group
+                ${index % 6 === 0 ? 'lg:col-span-4 lg:col-start-1' : ''}
+                ${index % 6 === 1 ? 'lg:col-span-3 lg:col-start-6 lg:mt-28' : ''}
+                ${index % 6 === 2 ? 'lg:col-span-4 lg:col-start-9 lg:mt-8' : ''}
+                ${index % 6 === 3 ? 'lg:col-span-5 lg:col-start-2 lg:mt-20' : ''}
+                ${index % 6 === 4 ? 'lg:col-span-3 lg:col-start-8' : ''}
+                ${index % 6 === 5 ? 'lg:col-span-4 lg:col-start-10 lg:mt-24' : ''}
               `}
             >
-              {/* HANGING STRING */}
-              <div className="hidden lg:block relative h-10 w-px bg-neutral-900/30 dark:bg-white/20 mb-1" />
-
-              {/* FRAME */}
               <figure
                 onClick={() => setActiveId(isActive ? null : img.id)}
                 className={`
+                  editorial-image-mask
                   relative
                   w-full
                   aspect-[3/4]
                   cursor-pointer
-                  bg-black
-                  dark:bg-[#4a2a12]
-                  p-[4px]
-                  sm:p-[5px]
-                  shadow-[0_22px_50px_rgba(0,0,0,0.4)]
-                  dark:shadow-[0_28px_70px_rgba(0,0,0,0.7)]
-                  transform-gpu
-                  ${tilt}
+                  overflow-hidden
+                  border
+                  border-ink-primary/10
+                  bg-ink-primary/[0.035]
+                  dark:border-bone-primary/10
+                  dark:bg-bone-primary/[0.045]
                 `}
-                style={{
-                  transformStyle: 'preserve-3d',
-                }}
               >
-                {/* INNER MAT */}
-                <div
-                  className="relative w-full h-full bg-white sm:p-[8px] p-0"
-                  style={{
-                    transform: 'translateZ(18px)',
-                  }}
-                >
+                <div className="relative h-full w-full">
                   <img
                     src={buildCloudinarySrc(img.src, 1200)}
                     srcSet={buildSrcSet(img.src)}
@@ -159,6 +129,10 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
                       w-full
                       h-full
                       object-cover
+                      transition-transform
+                      duration-[1400ms]
+                      ease-out
+                      group-hover:scale-[1.035]
                       ${imageClass}
                     `}
                   />
@@ -166,16 +140,15 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
                 </div>
               </figure>
 
-              {/* CAPTION */}
               {(img.title || img.caption) && (
-                <figcaption className="mt-6 max-w-xs text-center text-xs leading-relaxed text-neutral-600 dark:text-neutral-400">
+                <figcaption className="mt-5 border-t border-ink-primary/12 pt-4 text-left font-serif text-xs leading-relaxed text-ink-primary/62 dark:border-bone-primary/12 dark:text-bone-primary/62">
                   {img.title && (
-                    <div className="font-serif italic text-sm mb-1 text-orange-600">
+                    <div className="mb-2 text-base leading-none tracking-[-0.03em] text-ink-primary dark:text-bone-primary">
                       {img.title}
                     </div>
                   )}
                   {img.caption && (
-                    <div className="tracking-wide">
+                    <div>
                       {img.caption}
                     </div>
                   )}

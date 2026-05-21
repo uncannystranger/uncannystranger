@@ -47,15 +47,28 @@ const Artist: React.FC = () => {
     return () => mq.removeListener(update);
   }, []);
   return (
-    <section data-protected="true" data-chapter="Artist" className="protected-content min-h-screen py-32 px-6 md:px-12 flex items-center justify-center">
-      <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-32 items-center">
+    <section data-protected="true" data-chapter="Artist" className="protected-content editorial-safe-top relative min-h-screen px-5 pb-32 sm:px-8 md:px-12 lg:px-16">
+      <div className="editorial-grid-lines absolute inset-0 pointer-events-none opacity-70" />
+      <div className="relative mx-auto grid max-w-[1440px] grid-cols-1 gap-12 md:grid-cols-12 md:gap-x-8">
+        <div className="border-b border-ink-primary/10 pb-10 dark:border-bone-primary/10 md:col-span-7 md:col-start-1">
+          <span className="mb-7 block text-[10px] uppercase tracking-[0.5em] text-accent">
+            The Artist
+          </span>
+          <motion.h2
+            initial={false}
+            animate={{ opacity: 1, y: 0 }}
+            transition={LIQUID_SPRING}
+            className="max-w-[9ch] break-words font-serif text-[clamp(3.8rem,10vw,9.5rem)] uppercase leading-[0.86] tracking-[-0.075em] text-ink-primary dark:text-bone-primary"
+          >
+            Abdullahi Maxamed
+          </motion.h2>
+        </div>
+
         <motion.div
-          initial={revealImmediately ? false : { opacity: 0, x: -50, y: getDirectionalY(20) }}
-          animate={revealImmediately ? { opacity: 1, x: 0, y: 0 } : undefined}
-          whileInView={revealImmediately ? undefined : { opacity: 1, x: 0, y: 0 }}
-          viewport={revealImmediately ? undefined : { once: false, margin: "-10%" }}
+          initial={false}
+          animate={{ opacity: 1, x: 0, y: 0 }}
           transition={LIQUID_SPRING}
-          className="aspect-[4/5] md:max-h-[75vh] md:w-auto mx-auto bg-neutral-200 dark:bg-neutral-900 overflow-hidden shadow-2xl relative group cursor-pointer"
+          className="editorial-image-mask relative mx-auto aspect-[4/5] w-full cursor-pointer overflow-hidden border border-ink-primary/10 bg-ink-primary/[0.035] dark:border-bone-primary/10 dark:bg-bone-primary/[0.045] md:col-span-4 md:col-start-9 md:row-span-2 md:row-start-1 md:max-h-[78vh]"
           data-cursor="Artist"
           onClick={() => setIsPortraitActive(!isPortraitActive)}
         >
@@ -79,7 +92,7 @@ const Artist: React.FC = () => {
           <div className="absolute inset-0 ring-1 ring-inset ring-black/5 pointer-events-none" />
         </motion.div>
 
-        <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-12 md:col-span-6 md:col-start-3">
           <motion.div
             initial={revealImmediately ? false : { opacity: 0, y: getDirectionalY(30) }}
             animate={revealImmediately ? { opacity: 1, y: 0 } : undefined}
@@ -87,14 +100,7 @@ const Artist: React.FC = () => {
             viewport={revealImmediately ? undefined : { once: false, margin: "-10%" }}
             transition={{ ...LIQUID_SPRING, delay: 0.1 }}
           >
-            <span className="text-[10px] tracking-[0.5em] uppercase text-accent font-semibold mb-6 block">
-              The Artist
-            </span>
-
-            <h2 className="text-5xl md:text-8xl font-serif italic mb-12 text-ink-primary dark:text-bone-primary leading-tight">
-              Abdullahi Maxamed
-            </h2>
-            <div className="space-y-8 text-lg md:text-xl leading-relaxed font-serif text-ink-primary/80 dark:text-bone-primary/80 max-w-xl">
+            <div className="max-w-2xl space-y-8 font-serif text-base leading-[2.05] text-ink-primary/78 dark:text-bone-primary/78 md:text-lg">
               <p>
                 Photography is something I come back to out of love, not obligation. It started as curiosity and slowly became a habit. A way to notice light, movement, and small details that usually pass without attention.
               </p>
@@ -113,7 +119,7 @@ const Artist: React.FC = () => {
             whileInView={revealImmediately ? undefined : { opacity: 1 }}
             viewport={revealImmediately ? undefined : { once: true }}
             transition={reduceMotion ? { delay: 0.2, duration: 0.6 } : { delay: 0.8, duration: 1 }}
-            className="flex flex-wrap gap-x-12 gap-y-6 pt-8 border-t border-neutral-200 dark:border-[#f4efe4]/40"
+            className="grid grid-cols-2 gap-x-8 gap-y-5 border-t border-ink-primary/12 pt-8 dark:border-bone-primary/12 sm:grid-cols-3"
           >
             {[
               { label: "Instagram", href: "https://www.instagram.com/uncannystranger" },
@@ -132,7 +138,7 @@ const Artist: React.FC = () => {
               <a
                 key={link.label}
                 href={link.href}
-                className="text-xs tracking-[0.3em] uppercase text-ink-secondary dark:text-bone-secondary hover:text-accent dark:hover:text-accent transition-all hover:translate-x-1 inline-block"
+                className="inline-block border-b border-transparent pb-2 text-[10px] uppercase tracking-[0.32em] text-ink-secondary transition-all duration-500 hover:translate-x-1 hover:border-accent hover:text-accent dark:text-bone-secondary dark:hover:text-accent"
                 target="_blank"
                 rel="noopener noreferrer"
                 data-cursor="Follow"

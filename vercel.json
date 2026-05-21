@@ -1,7 +1,11 @@
 {
   "rewrites": [
     { "source": "/projects", "destination": "/projects/index.html" },
-    { "source": "/artist", "destination": "/artist/index.html" }
+    { "source": "/gallery", "destination": "/projects/index.html" },
+    { "source": "/frames", "destination": "/frames/index.html" },
+    { "source": "/frames/(.*)", "destination": "/frames/index.html" },
+    { "source": "/artist", "destination": "/artist/index.html" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
     {
@@ -9,7 +13,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data: blob: https://res.cloudinary.com; media-src 'self' https://res.cloudinary.com; frame-src https://www.behance.net; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://esm.sh https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://vitals.vercel-analytics.com https://vitals.vercel-insights.com https://va.vercel-scripts.com; worker-src 'self' blob:; form-action 'self'; upgrade-insecure-requests"
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data: blob: https://res.cloudinary.com https://images.unsplash.com https://plus.unsplash.com; media-src 'self' https://res.cloudinary.com; frame-src https://www.behance.net; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://esm.sh https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://api.unsplash.com https://*.supabase.co https://vitals.vercel-analytics.com https://vitals.vercel-insights.com https://va.vercel-scripts.com; worker-src 'self' blob:; form-action 'self'; upgrade-insecure-requests"
         },
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
         { "key": "X-Content-Type-Options", "value": "nosniff" },

@@ -1,22 +1,32 @@
-import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
-import { motion } from 'framer-motion';
+import React, { Suspense, useState, useEffect, useRef } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import Navigation from './components/Navigation';
-import Home from './components/Home';
 import { Section } from './types';
 import { ScrollIndicator } from './components/ScrollIndicator';
 import { ScrollProgress } from './components/ScrollProgress';
 import { SectionLabel } from './components/SectionLabel';
 import { BackToTop } from './components/BackToTop';
+import FloatingLines from './components/FloatingLines';
 import { useDeviceTier } from './src/hooks/useDeviceTier';
 
-import Projects from './components/Projects';
-import Artist from './components/Artist';
 import { canonicalFor, DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGE_ALT, pageSeo } from './src/seo/siteSeo';
 import { useContentProtection } from './src/hooks/useContentProtection';
+
+const THEME_STORAGE_KEY = 'uncanny-theme-mode';
+const Home = React.lazy(() => import('./components/Home'));
+const Projects = React.lazy(() => import('./components/Projects'));
+const Artist = React.lazy(() => import('./components/Artist'));
+const FrameArticle = React.lazy(() => import('./components/FrameArticle'));
+
+const readInitialThemeMode = (): 'system' | 'dark' | 'light' => {
+  if (typeof window === 'undefined') return 'system';
+  const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+  return stored === 'dark' || stored === 'light' || stored === 'system' ? stored : 'system';
+};
 
 /* ================= SAFETY: ERROR BOUNDARY ================= */
 type ErrorBoundaryProps = {
@@ -109,41 +119,54 @@ const CustomCursor: React.FC = () => {
   );
 };
 
+const sectionForPath = (pathname: string): Section => {
+  if (pathname === '/projects' || pathname === '/gallery') return 'projects';
+  if (pathname === '/frames' || /^\/frames\/[^/]+$/.test(pathname)) return 'projects:frames';
+  if (pathname === '/artist') return 'artist';
+  return 'home';
+};
+
 /* ================= APP ================= */
 const App: React.FC = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const { isLowPower } = useDeviceTier();
   useContentProtection();
 
-  const [section, setSection] = useState<Section>('home');
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [themeOverride, setThemeOverride] = useState<'system' | 'dark' | 'light'>('system');
+  const [section, setSection] = useState<Section>(() =>
+    typeof window !== 'undefined' ? sectionForPath(window.location.pathname) : 'home'
+  );
+  const [isDarkMode, setIsDarkMode] = useState(() =>
+    typeof document !== 'undefined'
+      ? document.documentElement.classList.contains('dark')
+      : false
+  );
+  const [themeOverride, setThemeOverride] = useState<'system' | 'dark' | 'light'>(readInitialThemeMode);
   const [recActive, setRecActive] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const gradeRafRef = useRef<number | null>(null);
   const leakRafRef = useRef<number | null>(null);
-  const meterRafRef = useRef<number | null>(null);
-  const meterLevelRef = useRef(0);
   const lastSectionRef = useRef('');
   const recTimeoutRef = useRef<number | null>(null);
   const isPerfLow = isLowPower || isSmallScreen || prefersReducedMotion;
 
-  const isKnownPath = ['/', '/projects', '/artist'].includes(location.pathname);
+  const isFrameArticlePath = /^\/frames\/[^/]+$/.test(location.pathname);
+  const isKnownPath = ['/', '/projects', '/gallery', '/frames', '/artist'].includes(location.pathname) || isFrameArticlePath;
 
   /* ================= URL → SECTION (ON LOAD & REFRESH) ================= */
   useEffect(() => {
-    if (location.pathname === '/projects') setSection('projects');
-    else if (location.pathname === '/artist') setSection('artist');
-    else setSection('home');
-  }, [location.pathname]);
+    setSection(sectionForPath(location.pathname));
+  }, [isFrameArticlePath, location.pathname]);
 
   /* ================= SEO HEAD INJECTION ================= */
   useEffect(() => {
     if (typeof document === 'undefined') return;
     const resolvedSection =
-      section === 'projects:exhibition' ? 'projects' : section;
+      section === 'projects:frames'
+        ? 'frames'
+        : section === 'projects:exhibition'
+          ? 'projects'
+          : section;
     const data = isKnownPath ? pageSeo[resolvedSection] : pageSeo.notFound;
 
     const setMeta = (name: string, content: string) => {
@@ -179,19 +202,20 @@ const App: React.FC = () => {
     document.title = data.title;
     setMeta('description', data.description);
     setMeta('keywords', data.keywords);
-    setCanonical(isKnownPath ? canonicalFor(data.path) : canonicalFor('/'));
+    const canonicalPath = isFrameArticlePath ? location.pathname : data.path;
+    setCanonical(isKnownPath ? canonicalFor(canonicalPath) : canonicalFor('/'));
     setMetaProperty('og:title', data.title);
     setMetaProperty('og:description', data.description);
-    setMetaProperty('og:url', isKnownPath ? canonicalFor(data.path) : canonicalFor('/'));
+    setMetaProperty('og:url', isKnownPath ? canonicalFor(canonicalPath) : canonicalFor('/'));
     setMetaProperty('og:image', DEFAULT_OG_IMAGE);
     setMetaProperty('og:image:alt', DEFAULT_OG_IMAGE_ALT);
     setMeta('twitter:title', data.title);
     setMeta('twitter:description', data.description);
-    setMeta('twitter:url', isKnownPath ? canonicalFor(data.path) : canonicalFor('/'));
+    setMeta('twitter:url', isKnownPath ? canonicalFor(canonicalPath) : canonicalFor('/'));
     setMeta('twitter:image', DEFAULT_OG_IMAGE);
     setMeta('twitter:image:alt', DEFAULT_OG_IMAGE_ALT);
     setMeta('robots', isKnownPath ? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' : 'noindex, follow');
-  }, [section, isKnownPath]);
+  }, [isFrameArticlePath, isKnownPath, location.pathname, section]);
 
   /* ================= SCROLL RESET (ORIGINAL BEHAVIOR) ================= */
   useEffect(() => {
@@ -202,13 +226,11 @@ const App: React.FC = () => {
   });
 }, [location.pathname]);
 
-  /* ================= THEME (ORIGINAL LOGIC, UNCHANGED) ================= */
+  /* ================= THEME ================= */
   const applyTheme = (dark: boolean) => {
-    if (dark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    document.documentElement.classList.toggle('dark', dark);
+    document.documentElement.classList.toggle('light', !dark);
+    document.documentElement.dataset.theme = dark ? 'dark' : 'light';
   };
 
   useEffect(() => {
@@ -223,6 +245,7 @@ const App: React.FC = () => {
     };
 
     applyFromMode(themeOverride, mq.matches);
+    window.localStorage.setItem(THEME_STORAGE_KEY, themeOverride);
 
     const onChange = (e: MediaQueryListEvent) => {
       if (themeOverride !== 'system') return;
@@ -276,15 +299,6 @@ const App: React.FC = () => {
       return 'system';
     });
   };
-
-  /* ================= SECTION → URL (SEO) ================= */
-  useEffect(() => {
-    if (!isKnownPath) return;
-    if (section === 'home') navigate('/', { replace: false });
-    if (section === 'projects') navigate('/projects', { replace: false });
-    if (section === 'projects:exhibition') navigate('/projects', { replace: false });
-    if (section === 'artist') navigate('/artist', { replace: false });
-  }, [section, navigate, isKnownPath]);
 
   useEffect(() => {
     if (isPerfLow) return;
@@ -427,38 +441,6 @@ const App: React.FC = () => {
   }, [isPerfLow]);
 
   useEffect(() => {
-    if (isPerfLow) return;
-    const root = document.documentElement;
-    let lastY = window.scrollY;
-    let lastTime = performance.now();
-    const tick = () => {
-      meterLevelRef.current *= 0.92;
-      root.style.setProperty('--meter-level', meterLevelRef.current.toFixed(3));
-      meterRafRef.current = requestAnimationFrame(tick);
-    };
-
-    const handleScroll = () => {
-      const now = performance.now();
-      const dy = Math.abs(window.scrollY - lastY);
-      const dt = Math.max(16, now - lastTime);
-      const velocity = dy / dt;
-      const level = Math.min(1, velocity * 0.9);
-      if (level > meterLevelRef.current) {
-        meterLevelRef.current = level;
-      }
-      lastY = window.scrollY;
-      lastTime = now;
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    meterRafRef.current = requestAnimationFrame(tick);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      if (meterRafRef.current !== null) cancelAnimationFrame(meterRafRef.current);
-    };
-  }, [isPerfLow]);
-
-  useEffect(() => {
     const root = document.documentElement;
     let rafId: number | null = null;
 
@@ -485,22 +467,23 @@ const App: React.FC = () => {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen selection:bg-accent selection:text-white transition-colors duration-500 flex flex-col relative overflow-hidden">
+      <div className="app-shell min-h-screen selection:bg-accent selection:text-white transition-colors duration-500 flex flex-col relative overflow-x-hidden">
         <div className="grid-overlay" />
+        <div className="editorial-flow-lines" aria-hidden="true">
+          <FloatingLines
+            enabledWaves={['top', 'middle', 'bottom']}
+            lineCount={[3, 4, 3]}
+            lineDistance={[18, 20, 18]}
+            animationSpeed={0.24}
+            gradientStart="var(--flow-line-start)"
+            gradientMid="var(--flow-line-mid)"
+            gradientEnd="var(--flow-line-end)"
+            mixBlendMode="normal"
+          />
+        </div>
         {!isPerfLow && (
           <div className={`rec-indicator ${recActive ? 'is-active' : ''}`}>
             REC <span className="rec-dot" />
-          </div>
-        )}
-        {!isPerfLow && (
-          <div className="meter-strip">
-            {Array.from({ length: 8 }).map((_, index) => (
-              <span
-                key={index}
-                className="meter-bar"
-                style={{ ['--bar-mult' as any]: 0.4 + index * 0.08 }}
-              />
-            ))}
           </div>
         )}
         {!isPerfLow && <CustomCursor />}
@@ -519,35 +502,50 @@ const App: React.FC = () => {
         {!isPerfLow && <ScrollIndicator />}
 
         <main className="relative z-10 flex-grow">
-          {!isKnownPath && (
-            <section className="min-h-screen px-6 py-40 flex items-center justify-center text-center">
-              <div className="max-w-xl">
-                <p className="text-[10px] tracking-[0.5em] uppercase text-accent mb-6">404</p>
-                <h1 className="text-4xl md:text-6xl font-serif italic mb-6">Page not found</h1>
-                <p className="text-ink-secondary dark:text-bone-secondary mb-10">
-                  This page does not exist. Return to the official Uncanny Stranger portfolio.
-                </p>
-                <Link to="/" className="text-xs tracking-[0.4em] uppercase border-b border-accent pb-2">
-                  Back home
-                </Link>
-              </div>
-            </section>
-          )}
-          {isKnownPath && section === 'home' && <Home setSection={setSection} />}
-          {isKnownPath && (section === 'projects' || section === 'projects:exhibition') && (
-  <Projects
-    initialView={
-      section === 'projects:exhibition'
-        ? 'exhibition'
-        : 'gallery'
-    }
-  />
-)}
-          {isKnownPath && section === 'artist' && <Artist />}
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={location.pathname}
+              initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
+              transition={{ duration: prefersReducedMotion ? 0.14 : 0.24, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {!isKnownPath && (
+                <section className="min-h-screen px-6 py-40 flex items-center justify-center text-center">
+                  <div className="max-w-xl">
+                    <p className="text-[10px] tracking-[0.5em] uppercase text-accent mb-6">404</p>
+                    <h1 className="text-4xl md:text-6xl font-serif italic mb-6">Page not found</h1>
+                    <p className="text-ink-secondary dark:text-bone-secondary mb-10">
+                      This page does not exist. Return to the official Uncanny Stranger portfolio.
+                    </p>
+                    <Link to="/" className="text-xs tracking-[0.4em] uppercase border-b border-accent pb-2">
+                      Back home
+                    </Link>
+                  </div>
+                </section>
+              )}
+              <Suspense fallback={null}>
+                {isKnownPath && !isFrameArticlePath && section === 'home' && <Home setSection={setSection} />}
+                {isKnownPath && !isFrameArticlePath && (section === 'projects' || section === 'projects:exhibition' || section === 'projects:frames') && (
+                  <Projects
+                    initialView={
+                      section === 'projects:exhibition'
+                        ? 'exhibition'
+                        : section === 'projects:frames'
+                        ? 'frames'
+                        : 'gallery'
+                    }
+                  />
+                )}
+                {isKnownPath && isFrameArticlePath && <FrameArticle />}
+                {isKnownPath && !isFrameArticlePath && section === 'artist' && <Artist />}
+              </Suspense>
+            </motion.div>
+          </AnimatePresence>
         </main>
         {/* Conditionally rendered footer restricted to Home and Artist sections */}
         {isKnownPath && (section === 'home' || section === 'artist') && (
-          <footer className="w-full pt-10 pb-28 md:pb-12 text-center select-none flex flex-col items-center gap-6">
+          <footer className="relative z-10 w-full pt-10 pb-28 md:pb-12 text-center select-none flex flex-col items-center gap-6">
             {section === 'home' && (
               <div className="transition-opacity opacity-100 text-orange-500">
                 <motion.a

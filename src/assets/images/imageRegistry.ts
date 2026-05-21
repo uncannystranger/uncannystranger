@@ -10,58 +10,58 @@ export const IMAGES = {
       {
         id: 1,
         src: cld('IMG_1629_copy_rdvybq', PUBLIC_IMAGE_WIDTHS.feature),
-        title: 'A Mother’s Joy — I',
+        title: 'Laughter Held Upward',
         alt: 'Mother and child sharing a joyful moment in Somalia, photographed by Uncanny Stranger.',
-        caption: 'A mother and her child share a moment of spontaneous laughter, looking upward together as joy unfolds naturally. This image captures the lightness of their bond — a reminder that love often reveals itself through simple, unguarded expressions. Photographed in Somalia, where warmth and resilience live side by side.'
+        caption: 'A mother and child look upward together, caught in a burst of laughter that feels unplanned and complete. The frame keeps joy close to the body, bright and unguarded.'
       },
       {
         id: 2,
         src: cld('IMG_1633_copy_uknev3', PUBLIC_IMAGE_WIDTHS.feature),
-        title: 'A Mother’s Joy — II',
+        title: 'Held Close After Laughter',
         alt: 'Tender mother and child portrait from the Uncanny Stranger photography portfolio.',
-        caption: 'Moments later, the same mother draws her child close, shifting from laughter to quiet presence. Their faces meet in calm connection, expressing protection, tenderness, and trust. Together, these images tell a single story — one of love that moves between joy and stillness, without ever breaking.'
+        caption: 'The mood softens as the child is drawn near. What remains is not the noise of the moment, but the protection inside it.'
       },
       {
         id: 3,
         src: cld('IMG_2166_copy_uwf1w2', PUBLIC_IMAGE_WIDTHS.feature),
-        title: 'A quiet moment between her and the morning tide',
+        title: 'Before The Tide Speaks',
         alt: 'Cinematic shoreline portrait in Somalia by Abdullahi Maxamed.',
-        caption: 'She stands at the edge of the waking shore, wrapped in the hush of early light. The sea rolls in slowly, like it doesn’t want to break the spell, and the sun reaches her first before it reaches the day. Its warmth brushes her cheek, turning the air golden, turning the moment into something she’ll carry long after the tide pulls back. For a breath of time, it’s just her, the water, and the soft promise of what’s about to begin.'
+        caption: 'She stands at the shore before the day becomes loud. Water, air, and posture turn the portrait into a quiet beginning.'
       },
       {
         id: 4,
         src: cld('abdullahi-maxamed-oY_sXKTsFCw-unsplash_1_lkrahb', PUBLIC_IMAGE_WIDTHS.feature),
         title: 'Silver of Belonging',
         alt: 'Somali flag necklace portrait photographed by Uncanny Stranger.',
-        caption: 'A quiet declaration rests against the chest. The Somali Flag in silver reflects not just light, but lineage, memory, and the unspoken weight of home carried close to the heart.'
+        caption: 'A Somali flag pendant rests near the chest, small but declarative. Home appears here as metal, skin, and something carried without performance.'
       },
       {
         id: 5,
         src: cld('21_ianwgj', PUBLIC_IMAGE_WIDTHS.feature),
-        title: 'The Shoreline’s Keepers',
+        title: 'Boats Waiting With The Tide',
         alt: 'Fishing boats along the Somali shoreline photographed by Abdullahi Maxamed.',
-        caption: 'Lined along the water, the boats form a quiet procession. They speak of endurance, routine, and lives shaped by tides rather than clocks.'
+        caption: 'Boats line the water with the patience of routine. Their stillness suggests labor paused, not finished.'
       },
       {
         id: 6,
         src: cld('18_hbconn', PUBLIC_IMAGE_WIDTHS.feature),
-        title: 'Silent Architecture',
+        title: 'Cathedral After Sound',
         alt: 'Night architectural photograph from Mogadishu by Uncanny Stranger.',
-        caption: 'Where sound once carried across open space, only the night remains. The cathedral endures as a pause in the city’s long and unfolding story.'
+        caption: 'The architecture stands in night like a held breath. Its silence feels historical, not empty.'
       },
       {
         id: 7,
         src: cld('2025-08-14_6_lblngg', PUBLIC_IMAGE_WIDTHS.feature),
         title: 'Measured Descent',
         alt: 'Urban architectural photograph with a lone figure by Uncanny Stranger.',
-        caption: 'Layers of railings and walls guide the eye inward. A single figure below turns architecture into a map of distance, scale, and quiet human presence.'
+        caption: 'Railings, walls, and stairs pull the eye downward toward one small figure. The building becomes a measure of human scale.'
       },
       {
         id: 8,
         src: cld('2023-04-05_151130_jd6w2i', PUBLIC_IMAGE_WIDTHS.feature),
-        title: 'Watching the Work of the Sea',
+        title: 'Children Facing The Harbor',
         alt: 'Children watching ships along the water in Somalia, photographed by Abdullahi Maxamed.',
-        caption: 'Three figures sit at the edge of land and water, facing ships and cranes in the distance. Childhood meets industry, and the future unfolds across the waterline.'
+        caption: 'Children sit at the edge of land and water, looking toward ships and cranes. Childhood and industry share the same horizon.'
       }
     ]
   },

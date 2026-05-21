@@ -4,9 +4,20 @@ import { motion, useReducedMotion } from 'framer-motion';
 interface ScrambleTextProps {
   text: string;
   className?: string;
+  durationMs?: number;
+  startDelayMs?: number;
+  ariaHidden?: boolean;
 }
 
-const ScrambleText = ({ text, className }: ScrambleTextProps) => {
+const completedScrambles = new Set<string>();
+
+const ScrambleText = ({
+  text,
+  className,
+  durationMs = 820,
+  startDelayMs = 80,
+  ariaHidden = false,
+}: ScrambleTextProps) => {
   const [output, setOutput] = useState(text);
   const hasRun = useRef(false);
   const shouldReduceMotion = useReducedMotion();
@@ -14,69 +25,51 @@ const ScrambleText = ({ text, className }: ScrambleTextProps) => {
   useEffect(() => {
     if (hasRun.current) return;
     hasRun.current = true;
-    if (shouldReduceMotion) {
+    if (shouldReduceMotion || completedScrambles.has(text)) {
       setOutput(text);
       return;
     }
 
-    let frame = 0;
     let rafId = 0;
-    let idleId: number | null = null;
-    let idleMode: 'idle' | 'timeout' | null = null;
-    let lastTime = 0;
+    let timeoutId = 0;
+    let startedAt = 0;
 
     const chars =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
     const scramble = (time: number) => {
-      if (time - lastTime < 32) {
-        rafId = requestAnimationFrame(scramble);
-        return;
-      }
-      lastTime = time;
-      frame += 3; // 🔥 FAST
+      if (!startedAt) startedAt = time;
+      const progress = Math.min(1, (time - startedAt) / durationMs);
+      const resolvedCount = Math.floor(progress * text.length);
 
       setOutput(
         text
           .split('')
           .map((char, i) => {
-            if (i < frame / 2) return char;
+            if (char === ' ') return char;
+            if (i <= resolvedCount) return char;
             return chars[Math.floor(Math.random() * chars.length)];
           })
           .join('')
       );
 
-      if (frame < text.length * 2) {
+      if (progress < 1) {
         rafId = requestAnimationFrame(scramble);
       } else {
+        completedScrambles.add(text);
         setOutput(text);
       }
     };
 
-    const start = () => {
+    timeoutId = window.setTimeout(() => {
       rafId = requestAnimationFrame(scramble);
-    };
-
-    // ✅ Start AFTER first paint + idle window to reduce main-thread contention
-    const hasWindow = typeof window !== 'undefined';
-    if (hasWindow && typeof (window as any).requestIdleCallback === 'function') {
-      idleMode = 'idle';
-      idleId = (window as any).requestIdleCallback(start, { timeout: 600 });
-    } else {
-      idleMode = 'timeout';
-      idleId = (hasWindow ? window : globalThis).setTimeout(start, 120);
-    }
+    }, startDelayMs);
 
     return () => {
-      if (idleId !== null && idleMode === 'idle') {
-        (window as any).cancelIdleCallback(idleId);
-      }
-      if (idleId !== null && idleMode === 'timeout') {
-        (hasWindow ? window : globalThis).clearTimeout(idleId);
-      }
+      window.clearTimeout(timeoutId);
       cancelAnimationFrame(rafId);
     };
-  }, [text, shouldReduceMotion]);
+  }, [durationMs, startDelayMs, text, shouldReduceMotion]);
 
   return (
     <motion.span
@@ -84,6 +77,7 @@ const ScrambleText = ({ text, className }: ScrambleTextProps) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className={className}
+      aria-hidden={ariaHidden}
     >
       {output}
     </motion.span>

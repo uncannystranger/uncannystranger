@@ -95,4 +95,31 @@
     </image:image>
   </url>
 
+  <url>
+    <loc>https://uncannystranger.com/frames/7PdUGlHwmh8</loc>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1760008780659-6ac16a68e012?auto=format&amp;fit=crop&amp;w=1600&amp;q=82</image:loc>
+      <image:title>Abdullahi M.</image:title>
+      <image:caption>A camera raised into warm silence, where looking becomes a self-portrait.</image:caption>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://uncannystranger.com/frames/XzWkVZKqU0M</loc>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1723151684036-d014403c33b2?auto=format&amp;fit=crop&amp;w=1600&amp;q=82</image:loc>
+      <image:title>Good Night Sun</image:title>
+      <image:caption>Mogadishu exhales into evening, soft with rooftops, blue air, and the last warmth of day.</image:caption>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://uncannystranger.com/frames/iJKXnMSZ_qI</loc>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1737742462464-b26eb948dfeb?auto=format&amp;fit=crop&amp;w=1400&amp;q=80</image:loc>
+      <image:title>Street Circle</image:title>
+      <image:caption>A circle of friends turns a public street into something close and bright.</image:caption>
+    </image:image>
+  </url>
+
 </urlset>

@@ -42,6 +42,7 @@ const Navigation: React.FC<NavigationProps> = ({
   const navItems: { label: string; id: Section }[] = [
     { label: 'Home', id: 'home' },
     { label: 'Projects', id: 'projects' },
+    { label: 'Frames', id: 'projects:frames' },
     { label: 'Artist', id: 'artist' },
   ];
 
@@ -50,11 +51,17 @@ const Navigation: React.FC<NavigationProps> = ({
   ------------------------------ */
   const routeForSection = (item: Section) => {
     if (item === 'projects' || item === 'projects:exhibition') return '/projects';
+    if (item === 'projects:frames') return '/frames';
     if (item === 'artist') return '/artist';
     return '/';
   };
 
-  const NavLink = ({ item }: { item: { label: string; id: Section } }) => (
+  const isActive = (item: Section) => {
+    if (item === 'projects') return currentSection === 'projects' || currentSection === 'projects:exhibition';
+    return currentSection === item;
+  };
+
+  const NavLink = ({ item, mobile = false }: { item: { label: string; id: Section }; mobile?: boolean }) => (
     <MotionLink
       to={routeForSection(item.id)}
       onClick={() => {
@@ -63,22 +70,27 @@ const Navigation: React.FC<NavigationProps> = ({
       whileHover={shouldReduceMotion ? undefined : { y: -2 }}
       whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
       data-cursor={item.label}
-      className="relative group py-1.5 px-1 focus:outline-none"
+      className={`group relative inline-flex items-center text-ink-primary transition-[opacity,transform,border-color,color] duration-200 hover:text-accent focus:outline-none dark:text-bone-primary ${
+        mobile
+          ? 'min-h-[28px] px-1 py-1.5'
+          : 'min-h-[30px] px-1 py-1'
+      }`}
     >
       <span
-        className={`text-sm md:text-base tracking-[0.12em] capitalize font-serif ${
-          currentSection === item.id
-            ? 'opacity-100 font-semibold'
-            : 'opacity-60 md:text-orange-500/80 dark:md:text-white/40'
+        className={`font-serif text-[10px] tracking-[0.03em] sm:text-[11px] md:text-[14px] md:tracking-[0.035em] ${
+          isActive(item.id)
+            ? 'opacity-100'
+            : 'opacity-55'
         }`}
       >
         {item.label}
       </span>
 
-      {/* INSTANT ORANGE UNDERLINE (NO ANIMATION) */}
-      {currentSection === item.id && (
-        <div className="absolute -bottom-1 left-0 right-0 h-[1.5px] bg-orange-500" />
-      )}
+      <span
+        className={`absolute ${mobile ? 'bottom-0.5' : 'bottom-1.5'} left-1/2 h-px -translate-x-1/2 bg-accent transition-all duration-200 ${
+          isActive(item.id) ? 'w-5' : 'w-0 group-hover:w-4'
+        }`}
+      />
     </MotionLink>
   );
 
@@ -86,10 +98,12 @@ const Navigation: React.FC<NavigationProps> = ({
     onClick,
     label,
     children,
+    mobile = false,
   }: {
     onClick: () => void;
     label: string;
     children: React.ReactNode;
+    mobile?: boolean;
   }) => (
     <motion.button
       onClick={onClick}
@@ -97,7 +111,11 @@ const Navigation: React.FC<NavigationProps> = ({
       whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
       data-cursor={label}
       aria-label={label}
-      className="relative p-3 md:p-2 opacity-70 hover:opacity-100 transition-all duration-200 hover:text-orange-500 md:text-neutral-900 md:dark:text-white min-w-[44px] min-h-[44px] md:min-w-auto md:min-h-auto flex items-center justify-center"
+      className={`relative flex items-center justify-center rounded-full text-ink-primary/65 transition-[opacity,transform,border-color,color,background-color] duration-200 hover:text-accent hover:opacity-100 dark:text-bone-primary/65 ${
+        mobile
+          ? 'min-h-[28px] min-w-[28px] bg-transparent'
+          : 'min-h-[30px] min-w-[30px] bg-transparent'
+      }`}
     >
       {children}
     </motion.button>
@@ -106,8 +124,8 @@ const Navigation: React.FC<NavigationProps> = ({
   /* ------------------------------
      THEME TOGGLE (UNCHANGED)
   ------------------------------ */
-  const ThemeToggle = () => (
-    <IconButton onClick={toggleTheme} label="Theme">
+  const ThemeToggle = ({ mobile = false }: { mobile?: boolean }) => (
+    <IconButton onClick={toggleTheme} label="Theme" mobile={mobile}>
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={isDarkMode ? 'dark' : 'light'}
@@ -130,8 +148,8 @@ const Navigation: React.FC<NavigationProps> = ({
     </IconButton>
   );
 
-  const FullscreenToggle = () => (
-    <IconButton onClick={toggleFullscreen} label="Fullscreen">
+  const FullscreenToggle = ({ mobile = false }: { mobile?: boolean }) => (
+    <IconButton onClick={toggleFullscreen} label="Fullscreen" mobile={mobile}>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         {isFullscreen ? (
           <path d="M9 14H5v5h5M15 10h4V5h-5" />
@@ -144,39 +162,39 @@ const Navigation: React.FC<NavigationProps> = ({
 
   return (
     <>
-      {/* ================= DESKTOP ================= */}
-      <nav className="hidden md:flex fixed top-0 left-0 right-0 z-50 h-24 px-12 items-center justify-between">
-        <div className="relative flex gap-16">
-          {navItems.map((item) => (
-            <React.Fragment key={item.id}>
-              <NavLink item={item} />
-            </React.Fragment>
-          ))}
-        </div>
+      {/* ================= EDITORIAL TOP NAV ================= */}
+      <nav className="pointer-events-none fixed left-0 right-0 top-0 z-[9993] hidden px-6 py-5 md:block lg:px-10">
+        <div className="mx-auto flex max-w-[1880px] items-start justify-center gap-2.5">
+          <div className="pointer-events-auto flex items-center justify-center gap-2.5">
+            {navItems.map((item) => (
+              <React.Fragment key={item.id}>
+                <NavLink item={item} />
+              </React.Fragment>
+            ))}
+          </div>
 
-        <div className="relative flex items-center gap-6">
-          <FullscreenToggle />
-          <ThemeToggle />
-          <div className="text-[10px] tracking-[0.5em] uppercase md:text-neutral-700 md:dark:text-white/50">
-            Mogadishu, SO
+          <div className="pointer-events-auto absolute right-6 top-5 flex items-start justify-end gap-2.5 lg:right-10">
+            <FullscreenToggle />
+            <ThemeToggle />
+            <div className="flex min-h-[30px] items-center px-1 text-[10px] uppercase tracking-[0.18em] text-ink-secondary dark:text-bone-secondary">
+              Mogadishu, SO
+            </div>
           </div>
         </div>
       </nav>
 
-      {/* ================= MOBILE ================= */}
-      <nav className="md:hidden fixed bottom-0 left-1/2 -translate-x-1/2 z-50 w-full">
-        <div className="w-[90%] max-w-sm mx-auto mb-6 bg-white/25 dark:bg-black/40 backdrop-blur-xl border border-white/15 dark:border-white/10 rounded-[2rem] px-6 py-3 flex items-center justify-between shadow-[0_16px_32px_rgba(0,0,0,0.25)]" style={{ marginBottom: 'max(1.5rem, calc(1.5rem + env(safe-area-inset-bottom)))' }}>
+      {/* ================= MOBILE BOTTOM NAV ================= */}
+      <nav className="pointer-events-none fixed inset-x-0 bottom-0 z-[9993] px-3 pb-[max(0.85rem,env(safe-area-inset-bottom))] md:hidden">
+        <div className="nav-material-capsule pointer-events-auto mx-auto flex w-full max-w-[330px] items-center justify-center gap-0.5 rounded-full px-2 py-2">
           {navItems.map((item, index) => (
             <React.Fragment key={item.id}>
-              <NavLink item={item} />
-              {index < navItems.length - 1 && (
-                <div className="w-px h-4 bg-orange-500/50 mx-1" />
-              )}
+              <NavLink item={item} mobile />
+              {index < navItems.length - 1 && <span className="h-5 w-px bg-accent/35" aria-hidden="true" />}
             </React.Fragment>
           ))}
-          <div className="w-px h-4 bg-orange-500/50 mx-1" />
-          <FullscreenToggle />
-          <ThemeToggle />
+          <span className="h-5 w-px bg-accent/35" aria-hidden="true" />
+          <FullscreenToggle mobile />
+          <ThemeToggle mobile />
         </div>
       </nav>
     </>

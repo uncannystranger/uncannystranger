@@ -85,6 +85,60 @@ const routes = [
     ],
   },
   {
+    key: 'frames',
+    outDir: 'frames',
+    path: '/frames',
+    title: 'Frames | Uncanny Stranger Editorial Photo Stories',
+    description:
+      'Read poetic editorial Frames by Uncanny Stranger, where Mogadishu-rooted photography becomes short visual essays, image notes, and cinematic archive stories.',
+    keywords:
+      'Uncanny Stranger Frames, Somali photo stories, Mogadishu visual essays, editorial photography stories, Abdullahi Maxamed photography',
+    fallback: `
+      <main>
+        <h1>Frames by Uncanny Stranger</h1>
+        <p>Editorial photography stories, visual essays, and cinematic archive notes by Abdullahi Maxamed.</p>
+        <nav aria-label="Primary">
+          <a href="/">Home</a>
+          <a href="/projects">Photography projects</a>
+          <a href="/artist">About the artist</a>
+        </nav>
+      </main>`,
+    schema: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        '@id': `${siteUrl}/frames#webpage`,
+        url: `${siteUrl}/frames`,
+        name: 'Frames | Uncanny Stranger Editorial Photo Stories',
+        isPartOf: { '@id': `${siteUrl}/#website` },
+        about: { '@id': `${siteUrl}/#person` },
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Blog',
+        '@id': `${siteUrl}/frames#blog`,
+        url: `${siteUrl}/frames`,
+        name: 'Frames',
+        creator: { '@id': `${siteUrl}/#person` },
+        description:
+          'Poetic editorial photo stories, image notes, and cinematic archive essays.',
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Frames',
+            item: `${siteUrl}/frames`,
+          },
+        ],
+      },
+    ],
+  },
+  {
     key: 'artist',
     outDir: 'artist',
     path: '/artist',
@@ -138,9 +192,10 @@ const sharedSchemas = [
     '@type': 'Person',
     '@id': `${siteUrl}/#person`,
     name: personName,
-    alternateName: siteName,
+    alternateName: [siteName, 'Abdullahi M.', 'uncannystranger'],
     url: siteUrl,
     image: publicProfileImage,
+    description: 'Editorial photography portfolio and visual archive based in Mogadishu, Somalia.',
     jobTitle: ['Photographer', 'Visual Artist', 'Digital Artist', 'Creative Technologist'],
     address: {
       '@type': 'PostalAddress',
@@ -159,7 +214,17 @@ const sharedSchemas = [
       'https://github.com/uncannystranger',
       'https://x.com/uncannystranger',
       'https://glass.photo/uncannystranger',
+      'https://uncannystranger.medium.com/abdullahi-maxamed-uncannystranger-c0d61a149d75',
     ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    '@id': `${siteUrl}/#profile`,
+    url: siteUrl,
+    name: `${siteName} — ${personName}`,
+    description: 'Editorial photography portfolio and visual archive based in Mogadishu, Somalia.',
+    mainEntity: { '@id': `${siteUrl}/#person` },
   },
   {
     '@context': 'https://schema.org',
@@ -230,7 +295,10 @@ function replaceMeta(html, route) {
       /<meta name="robots"[^>]*>/,
       '<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />'
     )
-    .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>\s*<!-- Website Schema -->\s*<script type="application\/ld\+json">[\s\S]*?<\/script>/, schemas);
+    .replace(
+      /<!-- Structured Data \(Knowledge Panel \/ Person\) -->[\s\S]*?<!-- Fonts preload \(critical for LCP\) -->/,
+      `<!-- Structured Data -->\n  ${schemas}\n\n  <!-- Fonts preload (critical for LCP) -->`
+    );
 }
 
 for (const route of routes) {

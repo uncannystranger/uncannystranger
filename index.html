@@ -5,13 +5,42 @@
   <!-- Prevent white flash: default background applied to <html> and a dark override when .dark is present -->
   <style>
     html {
-      background-color: #FDFCF0
+      background-color: #FDFCF0;
+      color: #1C1917;
+      color-scheme: light;
     }
 
     html.dark {
-      background-color: #121110
+      background-color: #000000;
+      color: #FAF9F6;
+      color-scheme: dark;
+    }
+
+    body {
+      background-color: inherit;
+      color: inherit;
     }
   </style>
+  <script>
+    (() => {
+      try {
+        const stored = localStorage.getItem('uncanny-theme-mode');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const dark = stored === 'dark' || ((!stored || stored === 'system') && prefersDark);
+        document.documentElement.classList.toggle('dark', dark);
+        document.documentElement.classList.toggle('light', !dark);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      } catch {
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.documentElement.classList.add('dark');
+          document.documentElement.dataset.theme = 'dark';
+        } else {
+          document.documentElement.classList.add('light');
+          document.documentElement.dataset.theme = 'light';
+        }
+      }
+    })();
+  </script>
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -43,9 +72,8 @@
   <!-- SEO Performance Hints -->
   <link rel="preconnect" href="https://res.cloudinary.com">
   <link rel="dns-prefetch" href="https://res.cloudinary.com">
-
-  <link rel="preload" as="image"
-    href="https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,dpr_auto,c_fill,w_600/WhatsApp_Image_2025-09-16_at_12.10.24_qkle3u">
+  <link rel="preconnect" href="https://images.unsplash.com">
+  <link rel="dns-prefetch" href="https://images.unsplash.com">
 
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
   <meta name="googlebot" content="index, follow" />
@@ -81,13 +109,18 @@
   "@type": "Person",
   "@id": "https://uncannystranger.com/#person",
   "name": "Abdullahi Maxamed",
-  "alternateName": "Uncanny Stranger",
+  "alternateName": [
+    "Uncanny Stranger",
+    "Abdullahi M.",
+    "uncannystranger"
+  ],
   "birthDate": "2000-12-12",
   "birthPlace": {
     "@type": "Place",
     "name": "Mogadishu, Somalia"
   },
   "url": "https://uncannystranger.com",
+  "description": "Editorial photography portfolio and visual archive based in Mogadishu, Somalia.",
   "image": "https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,dpr_auto,c_fill,w_600/WhatsApp_Image_2025-09-16_at_12.10.24_qkle3u",
   "jobTitle": [
     "Photographer",
@@ -131,6 +164,21 @@
 }
   </script>
 
+  <!-- Public Profile Schema -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  "@id": "https://uncannystranger.com/#profile",
+  "url": "https://uncannystranger.com",
+  "name": "Uncanny Stranger — Abdullahi Maxamed",
+  "description": "Editorial photography portfolio and visual archive based in Mogadishu, Somalia.",
+  "mainEntity": {
+    "@id": "https://uncannystranger.com/#person"
+  }
+}
+  </script>
+
   <!-- Website Schema -->
   <script type="application/ld+json">
 {
@@ -163,11 +211,10 @@
 
   <!-- Hero image preload for LCP -->
   <link rel="preload" as="image"
-    href="https://res.cloudinary.com/duwhuzkib/image/upload/f_auto,q_auto,dpr_auto,c_fill,w_2000/_DSC9555.ARW_fm87ao"
+    href="https://images.unsplash.com/photo-1760008780659-6ac16a68e012?auto=format&fit=crop&w=960&q=72"
+    imagesrcset="https://images.unsplash.com/photo-1760008780659-6ac16a68e012?auto=format&fit=crop&w=640&q=72 640w, https://images.unsplash.com/photo-1760008780659-6ac16a68e012?auto=format&fit=crop&w=960&q=72 960w, https://images.unsplash.com/photo-1760008780659-6ac16a68e012?auto=format&fit=crop&w=1200&q=72 1200w, https://images.unsplash.com/photo-1760008780659-6ac16a68e012?auto=format&fit=crop&w=1600&q=75 1600w, https://images.unsplash.com/photo-1760008780659-6ac16a68e012?auto=format&fit=crop&w=2000&q=75 2000w"
+    imagesizes="(max-width: 768px) 92vw, 42vw"
     fetchpriority="high" />
-
-  <link rel="preload" as="image"
-    href="https://res.cloudinary.com/duwhuzkib/image/upload/v1768400000/grain_texture_z9x9v9.png" />
 
   <style>
     body {
@@ -189,21 +236,6 @@
   </style>
 
   <link rel="stylesheet" href="/index.css">
-
-  <!-- Early script to set/remove the `dark` class on <html> before React mounts -->
-  <script>
-    (function () {
-      try {
-        var mq = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
-        var prefersDark = mq ? mq.matches : false;
-        if (prefersDark) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
-      } catch (e) {}
-    })();
-  </script>
 </head>
 
 <body class="text-ink-primary dark:text-bone-primary transition-colors duration-500">
