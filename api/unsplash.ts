@@ -44,7 +44,7 @@ const makeUnsplashUrl = (query: Record<string, unknown>) => {
 export default async function handler(req: any, res: any) {
   if (req.method !== 'GET') return json(res, 405, { error: 'Method not allowed' });
 
-  const key = process.env.UNSPLASH_ACCESS_KEY;
+  const key = process.env.VITE_UNSPLASH_ACCESS_KEY || process.env.UNSPLASH_ACCESS_KEY;
   if (!key) return json(res, 500, errorBody('Photo service is not configured.', 'missing-config'));
 
   const url = makeUnsplashUrl(req.query || {});

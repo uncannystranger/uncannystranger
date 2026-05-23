@@ -325,6 +325,9 @@ async function requestUnsplash<T>(path: string, params?: Record<string, string |
 
   if (!response.ok) {
     const code = typeof payload?.code === 'string' ? payload.code : undefined;
+    if (code === 'missing-config' && !import.meta.env.VITE_UNSPLASH_ACCESS_KEY) {
+      console.warn('Missing VITE_UNSPLASH_ACCESS_KEY in Vercel/frontend environment.');
+    }
     throw new UnsplashRequestError(
       response.status,
       classifyStatus(response.status, code),
