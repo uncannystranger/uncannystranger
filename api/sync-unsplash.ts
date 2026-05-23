@@ -117,7 +117,7 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const unsplashKey = process.env.UNSPLASH_ACCESS_KEY;
+    const unsplashKey = process.env.VITE_UNSPLASH_ACCESS_KEY || process.env.UNSPLASH_ACCESS_KEY;
     if (!unsplashKey) throw new Error('Missing Unsplash server environment.');
 
     const photos = await fetchUnsplashArchive(unsplashKey);

@@ -55,7 +55,7 @@ const unsplashDevApi = () => ({
         return;
       }
 
-      const key = env.VITE_UNSPLASH_ACCESS_KEY || env.UNSPLASH_ACCESS_KEY || process.env.VITE_UNSPLASH_ACCESS_KEY || process.env.UNSPLASH_ACCESS_KEY;
+      const key = env.VITE_UNSPLASH_ACCESS_KEY || process.env.VITE_UNSPLASH_ACCESS_KEY;
       if (!key) {
         sendJson(500, { error: 'Photo service is not configured.', code: 'missing-config' });
         return;
