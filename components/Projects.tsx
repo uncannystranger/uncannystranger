@@ -176,7 +176,7 @@ const Projects = ({ initialView = 'gallery' }: ProjectsProps) => {
         try {
           const category = filter !== 'All' && filter !== 'Frames' ? filter : undefined;
           const page = await fetchUserPhotoPage(nextPage, RENDER_BATCH_SIZE, category);
-          setPhotos((current) => formatAndOrderPhotos([...current, ...page.photos]));
+          setPhotos((current) => orderPinnedFirst([...current, ...page.photos.map(formatUnsplashPhoto)]));
           setNextPage((current) => current + 1);
           setHasMore(page.hasMore);
           setRenderLimit((current) => current + page.photos.length);
