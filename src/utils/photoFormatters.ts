@@ -57,10 +57,11 @@ const unsplashSrcSet = (
 
 export function formatUnsplashPhoto(photo: UnsplashApiPhoto): UnsplashPhoto {
   const story = getFrameStorySummary(photo.id);
-  const title = story?.title || generatePoeticTitle(photo);
-  const category = story?.category || photo.category || generateCategory(photo);
+  const title = story?.title || photo.frame_story?.title || generatePoeticTitle(photo);
+  const category = (story?.category || photo.frame_story?.category || photo.category || generateCategory(photo)) as UnsplashCategory;
   const description =
     story?.excerpt ||
+    photo.frame_story?.excerpt ||
     photo.description ||
     photo.alt_description ||
     'A quiet archive of faces, light, and unfinished moments.';

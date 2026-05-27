@@ -24,12 +24,13 @@ export const loadFrameArticleText = async (
   photo: UnsplashPhoto
 ): Promise<FrameArticleText> => {
   if (photo.frameStory?.story) {
+    const stored = photo.frameStory.story.split(/\n\s*\n/).filter(Boolean);
     return {
-      quote: 'A photograph can hold more than it explains.',
+      quote: stored[0] || 'A photograph can hold more than it explains.',
       opening: photo.frameStory.subtitle || photo.intro,
-      story: photo.frameStory.story,
-      observation: 'Light, gesture, and distance give this moment its editorial shape.',
-      meaning: 'Held as a Frame, the image becomes a small record of place and memory.',
+      story: stored[1] || photo.frameStory.story,
+      observation: stored[2] || 'Light, gesture, and distance give this moment its editorial shape.',
+      meaning: stored[3] || 'Held as a Frame, the image becomes a small record of place and memory.',
       closing: photo.frameStory.excerpt || 'The image stays after the page moves on.',
     };
   }

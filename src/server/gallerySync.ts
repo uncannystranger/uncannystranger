@@ -1,4 +1,5 @@
 import { PINNED_PHOTO_ID_SET, PINNED_PHOTO_IDS } from '../gallery/constants.js';
+import { syncFrameStories, type FrameSyncReport } from './frameStorySync.js';
 import { supabasePublicFetch } from './supabaseRest.js';
 
 const PER_PAGE = 30;
@@ -39,6 +40,7 @@ export type GallerySyncReport = {
   updated: number;
   unchanged: number;
   frames_written: number;
+  frame_report?: FrameSyncReport;
   pinned_reconciled: number;
   stopped_incrementally: boolean;
   completed_at: string;
@@ -46,15 +48,12 @@ export type GallerySyncReport = {
 
 const CATEGORY_RULES: Array<[string, string[]]> = [
   ['Mogadishu', ['mogadishu', 'xamar']],
+  ['Women', ['woman', 'women', 'lady', 'girl', 'mother', 'female']],
   ['Black & White', ['black and white', 'monochrome', 'grayscale']],
-  ['Architecture', ['architecture', 'building', 'structure', 'mosque']],
-  ['Nature', ['nature', 'ocean', 'sea', 'tree', 'flower', 'landscape', 'beach']],
-  ['Portraits', ['portrait', 'person', 'face', 'woman', 'man', 'people']],
-  ['Street', ['street', 'road', 'market', 'cafe', 'harbor']],
-  ['Urban Life', ['urban', 'city', 'traffic', 'downtown']],
-  ['Textures', ['texture', 'pattern', 'wall']],
-  ['Travel', ['travel', 'journey', 'airport']],
-  ['Documentary', ['documentary', 'community', 'daily']],
+  ['Portrait', ['portrait', 'person', 'face', 'man', 'people']],
+  ['Street', ['street', 'road', 'market', 'cafe', 'harbor', 'urban', 'city', 'traffic', 'downtown', 'architecture', 'building']],
+  ['Light', ['light', 'sun', 'shadow', 'glow', 'golden', 'nature', 'ocean', 'sea', 'tree', 'flower', 'landscape', 'beach']],
+  ['Everyday', ['tea', 'food', 'cup', 'home', 'daily', 'everyday']],
 ];
 
 const cleanText = (value?: string | null) => (value || '').replace(/\s+/g, ' ').trim();
@@ -90,7 +89,7 @@ const metadataFor = (photo: RemotePhoto, username: string, existing?: ExistingPh
     ...tags,
     ...topics,
   ].filter(Boolean).join(' ').toLowerCase();
-  const category = CATEGORY_RULES.find(([, words]) => words.some((word) => text.includes(word)))?.[0] || 'Uncategorized';
+  const category = CATEGORY_RULES.find(([, words]) => words.some((word) => text.includes(word)))?.[0] || 'Memory';
   const date = photo.created_at ? new Date(photo.created_at) : null;
   const year = date && !Number.isNaN(date.getTime()) ? date.getUTCFullYear() : null;
   const month = date && !Number.isNaN(date.getTime()) ? date.getUTCMonth() + 1 : null;
@@ -106,7 +105,7 @@ const metadataFor = (photo: RemotePhoto, username: string, existing?: ExistingPh
       ? 'Featured'
       : locationName?.toLowerCase().includes('mogadishu')
         ? 'Mogadishu'
-        : category === 'Uncategorized' ? 'Library' : category;
+        : category === 'Memory' ? 'Library' : category;
   const momentGroup = locationName ? `${monthLabel} - ${locationName}` : monthLabel;
   const width = photo.width || null;
   const height = photo.height || null;
@@ -268,6 +267,9 @@ export async function syncUnsplashGallery() {
   };
 
   await upsertPhotos([...insertRows, ...updateRows], report);
+  const frameReport = await syncFrameStories();
+  report.frames_written = frameReport.written;
+  report.frame_report = frameReport;
 
   return report;
 }

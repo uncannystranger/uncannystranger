@@ -1,5 +1,6 @@
 import { backendErrorResponse } from '../../src/server/supabaseRest.js';
 import { authorizedCronRequest, sendJson } from '../../src/server/galleryHttp.js';
+import { syncFrameStories } from '../../src/server/frameStorySync.js';
 import { syncUnsplashGallery, UnsplashRequestError } from '../../src/server/gallerySync.js';
 
 export default async function handler(req: any, res: any) {
@@ -11,6 +12,14 @@ export default async function handler(req: any, res: any) {
   }
   if (!authorizedCronRequest(req)) {
     return sendJson(res, 401, { error: 'Unauthorized', code: 'unauthorized' });
+  }
+  if (req.method === 'POST' && req.query?.scope === 'frames') {
+    try {
+      return sendJson(res, 200, await syncFrameStories());
+    } catch (error) {
+      const failure = backendErrorResponse(error, 'Frame sync failed.');
+      return sendJson(res, failure.status, failure.body);
+    }
   }
   if (!process.env.UNSPLASH_ACCESS_KEY) {
     return sendJson(res, 503, { error: 'Photo service is not configured.', code: 'missing-config' });
