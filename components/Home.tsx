@@ -1,14 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useReducedMotion } from 'framer-motion';
 import { Section } from '../types';
 import GradualBlur from './GradualBlur';
 import PhotoDetail from './PhotoDetail';
-import ScrambleText from './ScrambleText';
 import { fetchLatestPhotos, UnsplashPhoto } from '../src/services/unsplash';
 import { formatUnsplashPhoto } from '../src/utils/photoFormatters';
-
-const MotionLink = motion.create(Link);
 
 interface HomeProps {
   setSection: (section: Section) => void;
@@ -148,12 +144,6 @@ const toFallbackGalleryPhoto = (photo: HomePhoto, index: number): UnsplashPhoto 
   photographer: 'Abdullahi Maxamed',
 });
 
-const reveal = {
-  hidden: { opacity: 0, y: 28 },
-  visible: { opacity: 1, y: 0 },
-};
-
-const transition = { duration: 0.34, ease: [0.22, 1, 0.36, 1] };
 const newestFirst = (items: UnsplashPhoto[]) =>
   [...items].sort((a, b) => b.sortTimestamp - a.sortTimestamp);
 
@@ -217,7 +207,6 @@ const HomePhotoButton = ({
 );
 
 const Home = ({ setSection }: HomeProps) => {
-  const shouldReduceMotion = useReducedMotion();
   const heroRef = useRef<HTMLElement | null>(null);
   const trendingRef = useRef<HTMLElement | null>(null);
   const [activePhotoId, setActivePhotoId] = useState<string | null>(null);
@@ -225,16 +214,6 @@ const Home = ({ setSection }: HomeProps) => {
     galleryFallbackPhotos.map(toFallbackGalleryPhoto)
   );
   const [activeGalleryIndex, setActiveGalleryIndex] = useState(-1);
-
-  const sectionMotion = shouldReduceMotion
-    ? {}
-    : {
-        initial: 'hidden',
-        whileInView: 'visible',
-        viewport: { once: true, margin: '-12%' },
-        variants: reveal,
-        transition,
-      };
 
   const handlePhotoSelect = (id: string) => {
     setActivePhotoId((current) => (current === id ? null : id));
@@ -292,9 +271,8 @@ const Home = ({ setSection }: HomeProps) => {
             <div>
               <p className="home-hero-topline">Portfolio</p>
               <h1 className="editorial-hero-title home-hero-masthead font-serif text-ink-primary dark:text-bone-primary" aria-label="Abdullahi M.">
-                <span className="sr-only">Abdullahi M.</span>
-                <ScrambleText text="Abdullahi" className="block" ariaHidden />
-                <ScrambleText text="M." className="block" ariaHidden startDelayMs={160} />
+                <span className="block">Abdullahi</span>
+                <span className="block">M.</span>
               </h1>
               <p className="home-hero-deck mt-7 max-w-[430px] font-serif text-[clamp(1rem,1.45vw,1.25rem)] leading-[1.75]">
                 Seen once. Remembered Longer.
@@ -303,11 +281,8 @@ const Home = ({ setSection }: HomeProps) => {
 
           </div>
 
-          <motion.div
+          <div
             className="home-hero-image-wrap home-hero-collage md:col-span-10 md:col-start-2 md:row-start-1"
-            initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: 42 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: shouldReduceMotion ? 0.18 : 0.46, ease: [0.16, 1, 0.3, 1] }}
           >
             <figure className="home-collage-item home-collage-main">
               <HomePhotoButton
@@ -318,14 +293,14 @@ const Home = ({ setSection }: HomeProps) => {
                 eager
               />
             </figure>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       <section data-protected="true" data-chapter="Frames" className="protected-content home-frames-intro relative px-5 py-14 sm:px-8 md:px-12 md:py-20 lg:px-16">
         <div className="home-section-divider top" aria-hidden="true" />
         <div className="editorial-grid-lines absolute inset-0 pointer-events-none opacity-80" />
-        <motion.div {...sectionMotion} className="home-frames-layout relative mx-auto grid max-w-[1460px] grid-cols-1 gap-10 md:grid-cols-12 md:items-start md:gap-x-8">
+        <div className="home-frames-layout relative mx-auto grid max-w-[1460px] grid-cols-1 gap-10 md:grid-cols-12 md:items-start md:gap-x-8">
           <div className="md:col-span-5">
             <h2 className="font-serif text-[clamp(3.8rem,8vw,8.5rem)] uppercase leading-[0.78] tracking-[-0.075em] text-ink-primary dark:text-bone-primary">
               Frames
@@ -333,9 +308,9 @@ const Home = ({ setSection }: HomeProps) => {
             <p className="mt-7 max-w-[10rem] font-serif text-[clamp(1.25rem,2vw,1.8rem)] leading-[1.25] text-ink-primary/72 dark:text-bone-primary/72">
               Where photographs become essays.
             </p>
-            <MotionLink to="/frames" onClick={() => setSection('projects:frames')} className="home-editorial-link mt-7" data-cursor="Frames">
+            <Link to="/frames" onClick={() => setSection('projects:frames')} className="home-editorial-link mt-7" data-cursor="Frames">
               Enter Frames
-            </MotionLink>
+            </Link>
           </div>
           <div className="home-frames-preview-strip md:col-span-7">
             {[framesFeaturePhoto, galleryFallbackPhotos[0], galleryFallbackPhotos[1]].map((photo, index) => (
@@ -355,7 +330,7 @@ const Home = ({ setSection }: HomeProps) => {
               </figure>
             ))}
           </div>
-        </motion.div>
+        </div>
         <div className="home-section-divider bottom" aria-hidden="true" />
       </section>
 
@@ -368,11 +343,7 @@ const Home = ({ setSection }: HomeProps) => {
         <div className="home-section-divider top" aria-hidden="true" />
         <div className="editorial-grid-lines absolute inset-0 pointer-events-none opacity-100" />
         <div className="relative mx-auto grid max-w-[1460px] grid-cols-1 gap-9 md:grid-cols-12 md:gap-x-8">
-          <motion.article
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 38 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-8%' }}
-            transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+          <article
             className="home-trending-spread md:col-span-12"
           >
             <Link to={`/frames/${trendingPhoto.id}`} className="home-goodnight-image-link" data-cursor="Read">
@@ -389,7 +360,7 @@ const Home = ({ setSection }: HomeProps) => {
                 className="home-city-image"
               />
             </Link>
-            <motion.div {...sectionMotion} className="home-trending-copy">
+            <div className="home-trending-copy">
               <h2>
                 {trendingPhoto.title}
               </h2>
@@ -399,8 +370,8 @@ const Home = ({ setSection }: HomeProps) => {
               <Link to={`/frames/${trendingPhoto.id}`} onClick={() => setSection('projects:frames')} className="home-editorial-link home-read-frame-link mt-8" data-cursor="Read">
                 Read Frame
               </Link>
-            </motion.div>
-          </motion.article>
+            </div>
+          </article>
         </div>
         <div className="home-section-divider bottom" aria-hidden="true" />
       </section>
@@ -409,24 +380,20 @@ const Home = ({ setSection }: HomeProps) => {
         <div className="home-section-divider top" aria-hidden="true" />
         <div className="editorial-grid-lines absolute inset-0 pointer-events-none opacity-70" />
         <div className="relative mx-auto grid max-w-[1460px] grid-cols-1 gap-10 md:grid-cols-12 md:gap-x-8">
-          <motion.div {...sectionMotion} className="md:col-span-4 md:pt-10">
+          <div className="md:col-span-4 md:pt-10">
             <span className="home-section-kicker">Short Gallery</span>
             <h2 className="mt-6 max-w-[10ch] font-serif text-[clamp(2.8rem,6vw,6.8rem)] uppercase leading-[0.82] tracking-[-0.065em] text-ink-primary dark:text-bone-primary">
               A brief edit, not the whole archive.
             </h2>
-            <MotionLink to="/projects" onClick={() => setSection('projects')} className="home-editorial-link mt-9" data-cursor="Gallery">
+            <Link to="/projects" onClick={() => setSection('projects')} className="home-editorial-link mt-9" data-cursor="Gallery">
               Explore Gallery
-            </MotionLink>
-          </motion.div>
+            </Link>
+          </div>
           <div className="home-gallery-strip home-masonry-preview md:col-span-8">
             {galleryPreviewPhotos.map((photo, index) => (
-              <motion.button
+              <button
                 type="button"
                 key={photo.id}
-                initial={shouldReduceMotion ? false : { opacity: 0, y: 22 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-10%' }}
-                transition={{ ...transition, delay: index * 0.03 }}
                 className="home-gallery-card"
                 onClick={() => setActiveGalleryIndex(index)}
                 data-cursor="Open"
@@ -449,7 +416,7 @@ const Home = ({ setSection }: HomeProps) => {
                 <span>Frame {String(index + 1).padStart(2, '0')}</span>
                 <h3>{photo.title}</h3>
                 <p>{photo.intro}</p>
-              </motion.button>
+              </button>
             ))}
           </div>
         </div>

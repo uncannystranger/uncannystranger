@@ -6,6 +6,15 @@
 /* stylelint-disable-next-line at-rule-no-unknown */
 @tailwind utilities;
 
+/* This edition intentionally uses immediate state changes only. */
+*,
+*::before,
+*::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
 /* Global smooth scrolling */
 html {
   scroll-behavior: auto;

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { fetchPhotoDetails, UnsplashPhoto } from '../src/services/unsplash';
 import { cameraLabel, formatStats, mergePhotoDetails } from '../src/utils/photoFormatters';
 
@@ -18,7 +17,6 @@ export const PhotoDetail = ({
   onClose,
   onNavigate,
 }: PhotoDetailProps) => {
-  const shouldReduceMotion = useReducedMotion();
   const [detail, setDetail] = useState<UnsplashPhoto | null>(photo);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -76,20 +74,11 @@ export const PhotoDetail = ({
   if (!photo || !detail) return null;
 
   return (
-    <AnimatePresence>
-      <motion.div
+      <div
         className="fixed inset-0 z-[10000] flex min-h-[100dvh] items-start justify-center overflow-hidden bg-ink-primary/45 px-3 py-2 backdrop-blur-[2px] dark:bg-black/72 sm:px-5 sm:py-7 md:items-center md:py-7"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: shouldReduceMotion ? 0.14 : 0.2, ease: [0.22, 1, 0.36, 1] }}
         onClick={onClose}
       >
-        <motion.article
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 12, scale: 0.988 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={shouldReduceMotion ? undefined : { opacity: 0, y: 8, scale: 0.992 }}
-          transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+        <article
           className="photo-detail-panel relative grid max-h-[calc(100dvh-1rem)] w-full max-w-[1180px] overflow-y-auto border border-ink-primary/10 bg-beige text-ink-primary shadow-[0_36px_120px_rgba(0,0,0,0.28)] dark:border-bone-primary/12 dark:bg-[#11100f] dark:text-bone-primary md:max-h-[85vh] md:overflow-hidden lg:grid-cols-[minmax(0,1.12fr)_minmax(360px,0.88fr)]"
           onClick={(event) => event.stopPropagation()}
         >
@@ -105,8 +94,7 @@ export const PhotoDetail = ({
           </div>
 
           <div className="photo-detail-media relative flex min-h-[32vh] items-center justify-center bg-ink-primary/[0.025] p-4 pt-0 dark:bg-bone-primary/[0.035] md:min-h-[42vh] md:p-6">
-            <AnimatePresence mode="wait">
-              <motion.img
+              <img
                 key={detail.rawId}
                 src={detail.image}
                 srcSet={detail.imageSrcSet}
@@ -116,13 +104,8 @@ export const PhotoDetail = ({
                 decoding="async"
                 width={detail.width}
                 height={detail.height}
-                initial={shouldReduceMotion ? false : { opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={shouldReduceMotion ? undefined : { opacity: 0, x: -8 }}
-                transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
                 className="max-h-[70dvh] w-full object-contain md:max-h-[76vh]"
               />
-            </AnimatePresence>
             <div className="absolute inset-x-3 bottom-3 hidden justify-between md:inset-x-3 md:top-1/2 md:bottom-auto md:flex md:-translate-y-1/2">
               <button
                 onClick={() => onNavigate(activeIndex - 1)}
@@ -142,11 +125,7 @@ export const PhotoDetail = ({
           </div>
 
           <aside className="photo-detail-copy flex max-h-none flex-col justify-between gap-8 overflow-visible p-5 pb-[calc(var(--mobile-nav-height,72px)+env(safe-area-inset-bottom)+2rem)] md:max-h-[85vh] md:overflow-y-auto md:p-8">
-            <motion.div
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.24, delay: shouldReduceMotion ? 0 : 0.04, ease: [0.22, 1, 0.36, 1] }}
-            >
+            <div>
               <div className="mb-6 flex items-center justify-between gap-4 md:gap-12 md:pr-12">
                 <div>
                   <p className="text-[10px] uppercase tracking-[0.34em] text-accent">Unsplash</p>
@@ -171,7 +150,7 @@ export const PhotoDetail = ({
               </div>
 
               <div className="photo-detail-title-row">
-                <h3 className="min-w-0 max-w-[12ch] break-words font-serif text-[clamp(2.2rem,3.25vw,3.8rem)] leading-[0.96] tracking-[-0.055em] text-balance">
+                <h3 className="min-w-0 max-w-[14ch] break-words font-serif text-[clamp(1.85rem,3.25vw,3.8rem)] leading-[0.96] tracking-[-0.055em] text-balance">
                   {detail.title}
                 </h3>
                 <a
@@ -216,7 +195,7 @@ export const PhotoDetail = ({
                   {isLoading ? 'Reading Unsplash metadata...' : error}
                 </p>
               )}
-            </motion.div>
+            </div>
 
             <div className="photo-detail-actions hidden flex-wrap items-center gap-4 md:static md:mx-0 md:flex md:max-w-none md:border-t md:border-x-0 md:border-b-0 md:border-ink-primary/10 md:bg-transparent md:px-0 md:pb-0 md:backdrop-blur-none dark:md:border-bone-primary/10">
               <a
@@ -229,9 +208,8 @@ export const PhotoDetail = ({
               </a>
             </div>
           </aside>
-        </motion.article>
-      </motion.div>
-    </AnimatePresence>
+        </article>
+      </div>
   );
 };
 

@@ -3,6 +3,7 @@ import { syncFrameStories, type FrameSyncReport } from './frameStorySync.js';
 import { supabasePublicFetch } from './supabaseRest.js';
 
 const PER_PAGE = 30;
+const DETAIL_REFRESH_LIMIT = 20;
 
 type RemotePhoto = {
   id: string;
@@ -16,10 +17,13 @@ type RemotePhoto = {
   alt_description?: string | null;
   likes?: number | null;
   downloads?: number | null;
+  views?: number | null;
   statistics?: {
     likes?: { total?: number | null } | null;
     downloads?: { total?: number | null } | null;
+    views?: { total?: number | null } | null;
   } | null;
+  exif?: Record<string, unknown> | null;
   urls: { raw: string; regular: string; small: string; thumb: string };
   links: { html: string };
   tags?: Array<{ title?: string | null }>;
@@ -35,6 +39,7 @@ type ExistingPhoto = {
   is_pinned: boolean;
   is_featured: boolean;
   is_favorite: boolean;
+  unsplash_exif: Record<string, unknown> | null;
 };
 
 export type GallerySyncReport = {
@@ -77,6 +82,11 @@ const photoStatistics = (summary: RemotePhoto, detail?: RemotePhoto) => ({
     countValue(summary.statistics?.downloads?.total) ??
     countValue(detail?.downloads) ??
     countValue(summary.downloads),
+  unsplash_views_count:
+    countValue(summary.statistics?.views?.total) ??
+    countValue(detail?.views) ??
+    countValue(summary.views),
+  unsplash_exif: detail?.exif || null,
 });
 
 const sameTimestamp = (left?: string | null, right?: string | null) => {
@@ -197,7 +207,7 @@ const getExisting = async () => {
   const rows: ExistingPhoto[] = [];
   for (let offset = 0; ; offset += 1000) {
     const response = await supabasePublicFetch(
-      `/photos?source=eq.unsplash&select=id,unsplash_id,updated_at_unsplash,is_pinned,is_featured,is_favorite&limit=1000&offset=${offset}`,
+      `/photos?source=eq.unsplash&select=id,unsplash_id,updated_at_unsplash,is_pinned,is_featured,is_favorite,unsplash_exif&limit=1000&offset=${offset}`,
       {},
       'sync existing photos'
     );
@@ -262,23 +272,42 @@ export async function syncUnsplashGallery() {
   const insertRows: Record<string, unknown>[] = [];
   const updateRows: Record<string, unknown>[] = [];
   const statisticsRows: ReturnType<typeof photoStatistics>[] = [];
+  const detailRefreshIds = new Set<string>(PINNED_PHOTO_IDS);
+  for (const photo of candidates.values()) {
+    if (detailRefreshIds.size >= DETAIL_REFRESH_LIMIT) break;
+    if (!existing.get(photo.id)?.unsplash_exif) detailRefreshIds.add(photo.id);
+  }
   let unchanged = 0;
   let pinnedReconciled = 0;
+  let detailFetches = 0;
+  let detailsUnavailable = false;
 
   for (const candidate of candidates.values()) {
     const current = existing.get(candidate.id);
-    let photo = candidate;
-    const pinnedChanged = Boolean(current) && current!.is_pinned !== PINNED_PHOTO_ID_SET.has(photo.id);
-    const changed = !current || !sameTimestamp(current.updated_at_unsplash, photo.updated_at || photo.created_at || null) || pinnedChanged;
+    const pinnedChanged = Boolean(current) && current!.is_pinned !== PINNED_PHOTO_ID_SET.has(candidate.id);
+    const changed = !current || !sameTimestamp(current.updated_at_unsplash, candidate.updated_at || candidate.created_at || null) || pinnedChanged;
+    let detail: RemotePhoto | undefined;
+    const needsDetail = !detailsUnavailable && detailFetches < DETAIL_REFRESH_LIMIT && (detailRefreshIds.has(candidate.id) || !current);
+    if (needsDetail) {
+      detailFetches += 1;
+      try {
+        detail = await fetchRemote(`/photos/${encodeURIComponent(candidate.id)}`, key, username) as RemotePhoto;
+      } catch (error) {
+        if (!(error instanceof UnsplashRequestError) || (error.status !== 403 && error.status !== 429)) throw error;
+        detailsUnavailable = true;
+      }
+    }
+    statisticsRows.push(photoStatistics(candidate, detail));
     if (!changed) {
-      statisticsRows.push(photoStatistics(candidate));
       unchanged += 1;
       continue;
     }
-    photo = await fetchRemote(`/photos/${encodeURIComponent(photo.id)}`, key, username) as RemotePhoto;
-    statisticsRows.push(photoStatistics(candidate, photo));
-    const payload = metadataFor(photo, username, current);
-    if (pinnedChanged || (!current && PINNED_PHOTO_ID_SET.has(photo.id))) pinnedReconciled += 1;
+    if (!detail && current && !pinnedChanged) {
+      unchanged += 1;
+      continue;
+    }
+    const payload = metadataFor(detail || candidate, username, current);
+    if (pinnedChanged || (!current && PINNED_PHOTO_ID_SET.has(candidate.id))) pinnedReconciled += 1;
     (current ? updateRows : insertRows).push(payload);
   }
 

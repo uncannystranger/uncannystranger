@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useReducedMotion } from 'framer-motion';
 import { UnsplashPhoto } from '../src/services/unsplash';
 import { getFrameEngagement } from '../src/utils/frameEngagement';
 
@@ -13,15 +12,10 @@ export const FrameCard: React.FC<FrameCardProps> = ({
   photo,
   index,
 }) => {
-  const shouldReduceMotion = useReducedMotion();
   const engagement = getFrameEngagement(photo.rawId);
 
   return (
-    <motion.article
-      initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-10%' }}
-      transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1], delay: (index % 3) * 0.025 }}
+    <article
       className={`group ${index % 4 === 0 ? 'md:col-span-7' : index % 4 === 1 ? 'md:col-span-5 md:mt-12' : index % 4 === 2 ? 'md:col-span-5' : 'md:col-span-7 md:mt-10'}`}
     >
       <Link to={`/frames/${photo.rawId}`} data-cursor="Read" className="block">
@@ -58,7 +52,7 @@ export const FrameCard: React.FC<FrameCardProps> = ({
           </span>
         </div>
       </Link>
-    </motion.article>
+    </article>
   );
 };
 

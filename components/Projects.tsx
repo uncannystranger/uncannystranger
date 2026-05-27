@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ProjectView } from '../types';
 import {
   fetchPinnedPhotos,
@@ -87,7 +86,6 @@ const archiveErrorMessage = (status: UnsplashArchiveStatus, error?: string) => {
 };
 
 const Projects = ({ initialView = 'gallery' }: ProjectsProps) => {
-  const shouldReduceMotion = useReducedMotion();
   const [view, setView] = useState<ProjectView>(initialView);
   const [filter, setFilter] = useState<GalleryFilter>('All');
   const [photos, setPhotos] = useState<UnsplashPhoto[]>([]);
@@ -253,15 +251,12 @@ const Projects = ({ initialView = 'gallery' }: ProjectsProps) => {
     <section data-protected="true" data-chapter={view === 'frames' ? 'Frames' : 'Projects'} className="protected-content editorial-safe-top relative min-h-screen px-5 pb-32 sm:px-8 md:px-12 lg:px-16">
       <div className="editorial-grid-lines absolute inset-0 pointer-events-none opacity-70" />
 
-      <motion.header
-        initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+      <header
         className="relative mx-auto mb-10 grid max-w-[1440px] grid-cols-1 gap-8 border-b border-ink-primary/10 pb-9 dark:border-bone-primary/10 md:mb-14 md:grid-cols-12 md:gap-x-10 md:pb-11"
       >
         <div className="md:col-span-7">
           <p className="mb-6 text-[10px] uppercase tracking-[0.5em] text-accent">Unsplash Archive</p>
-          <h1 className="max-w-[12ch] break-words font-serif text-[clamp(3.8rem,10vw,8.6rem)] uppercase leading-[0.88] tracking-[-0.07em] text-balance">
+          <h1 className="max-w-[12ch] break-words font-serif text-[clamp(3rem,10vw,8.6rem)] uppercase leading-[0.88] tracking-[-0.07em] text-balance">
             {view === 'frames' ? 'Frames' : 'Projects'}
           </h1>
         </div>
@@ -318,7 +313,7 @@ const Projects = ({ initialView = 'gallery' }: ProjectsProps) => {
             ))}
           </div>
         </div>
-      </motion.header>
+      </header>
 
       <div className="relative mx-auto max-w-[1440px]">
         <div className="mb-9 flex flex-wrap gap-x-6 gap-y-3 border-b border-ink-primary/10 pb-6 text-[10px] uppercase tracking-[0.32em] text-ink-primary/45 dark:border-bone-primary/10 dark:text-bone-primary/45">
@@ -363,15 +358,14 @@ const Projects = ({ initialView = 'gallery' }: ProjectsProps) => {
           </div>
         )}
 
-        <AnimatePresence mode="wait">
           {!isLoading && !error && filteredPhotos.length > 0 && view === 'gallery' && (
-            <motion.div key="gallery" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}>
+            <div>
               <EditorialPhotoGrid photos={galleryPhotos} onOpen={(photo) => setActiveIndex(filteredPhotos.findIndex((item) => item.rawId === photo.rawId))} />
-            </motion.div>
+            </div>
           )}
 
           {!isLoading && !error && filteredPhotos.length > 0 && view === 'exhibition' && (
-            <motion.div key="exhibition" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }} className="space-y-16 md:space-y-20">
+            <div className="space-y-16 md:space-y-20">
               {exhibitionPhotos.map((photo, index) => (
                 <button
                   key={photo.id}
@@ -405,17 +399,16 @@ const Projects = ({ initialView = 'gallery' }: ProjectsProps) => {
                   </div>
                 </button>
               ))}
-            </motion.div>
+            </div>
           )}
 
           {!isLoading && !error && filteredPhotos.length > 0 && view === 'frames' && (
-            <motion.div key="frames" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }} className="grid grid-cols-1 gap-12 md:grid-cols-12">
+            <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
               {framePhotos.map((photo, index) => (
                 <FrameCard key={photo.id} photo={photo} index={index} />
               ))}
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
 
         {!isLoading && !error && canLoadMore && (
           <div ref={loadMoreRef} className="h-16 w-full" aria-hidden="true" />

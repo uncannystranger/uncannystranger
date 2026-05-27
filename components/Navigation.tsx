@@ -1,9 +1,6 @@
 import React, { useCallback, useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Section } from '../types';
-
-const MotionLink = motion.create(Link);
 
 interface NavigationProps {
   currentSection: Section;
@@ -19,7 +16,6 @@ const Navigation: React.FC<NavigationProps> = ({
   isDarkMode,
   toggleTheme,
 }) => {
-  const shouldReduceMotion = useReducedMotion();
   const [isFullscreen, setIsFullscreen] = useState(
     typeof document !== 'undefined' && !!document.fullscreenElement
   );
@@ -62,13 +58,11 @@ const Navigation: React.FC<NavigationProps> = ({
   };
 
   const NavLink = ({ item, mobile = false }: { item: { label: string; id: Section }; mobile?: boolean }) => (
-    <MotionLink
+    <Link
       to={routeForSection(item.id)}
       onClick={() => {
         setSection(item.id);
       }}
-      whileHover={shouldReduceMotion ? undefined : { y: -2 }}
-      whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
       data-cursor={item.label}
       className={`group relative inline-flex items-center text-ink-primary transition-[opacity,transform,border-color,color] duration-200 hover:text-accent focus:outline-none dark:text-bone-primary ${
         mobile
@@ -91,7 +85,7 @@ const Navigation: React.FC<NavigationProps> = ({
           isActive(item.id) ? 'w-5' : 'w-0 group-hover:w-4'
         }`}
       />
-    </MotionLink>
+    </Link>
   );
 
   const IconButton = ({
@@ -105,10 +99,8 @@ const Navigation: React.FC<NavigationProps> = ({
     children: React.ReactNode;
     mobile?: boolean;
   }) => (
-    <motion.button
+    <button
       onClick={onClick}
-      whileHover={shouldReduceMotion ? undefined : { scale: 1.05 }}
-      whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
       data-cursor={label}
       aria-label={label}
       className={`relative flex items-center justify-center rounded-full text-ink-primary/65 transition-[opacity,transform,border-color,color,background-color] duration-200 hover:text-accent hover:opacity-100 dark:text-bone-primary/65 ${
@@ -118,7 +110,7 @@ const Navigation: React.FC<NavigationProps> = ({
       }`}
     >
       {children}
-    </motion.button>
+    </button>
   );
 
   /* ------------------------------
@@ -126,13 +118,7 @@ const Navigation: React.FC<NavigationProps> = ({
   ------------------------------ */
   const ThemeToggle = ({ mobile = false }: { mobile?: boolean }) => (
     <IconButton onClick={toggleTheme} label="Theme" mobile={mobile}>
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.div
-          key={isDarkMode ? 'dark' : 'light'}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
+      <div>
           {isDarkMode ? (
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <circle cx="12" cy="12" r="4" />
@@ -143,8 +129,7 @@ const Navigation: React.FC<NavigationProps> = ({
               <path d="M21 12.8A9 9 0 1111.2 3 7 7 0 0021 12.8z" />
             </svg>
           )}
-        </motion.div>
-      </AnimatePresence>
+      </div>
     </IconButton>
   );
 

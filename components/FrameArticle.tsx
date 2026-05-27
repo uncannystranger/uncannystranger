@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { motion, useReducedMotion } from 'framer-motion';
 import { fetchPhotoDetails, fetchUserPhotos, UnsplashPhoto } from '../src/services/unsplash';
 import { loadFrameArticleText } from '../src/data/frameStoryBodyLoader';
 import type { FrameArticleText } from '../src/data/frameStoryBodies';
@@ -10,12 +9,9 @@ import { DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGE_ALT, PERSON_NAME, SITE_NAME, SITE_UR
 import { isSupabaseConfigured, supabase } from '../src/lib/supabase';
 import FrameCard from './FrameCard';
 
-const LIQUID = { duration: 0.34, ease: [0.22, 1, 0.36, 1] as const };
-
 export const FrameArticle = () => {
   const location = useLocation();
   const photoId = location.pathname.split('/').filter(Boolean)[1];
-  const shouldReduceMotion = useReducedMotion();
   const [photo, setPhoto] = useState<UnsplashPhoto | null>(null);
   const [related, setRelated] = useState<UnsplashPhoto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -214,7 +210,7 @@ export const FrameArticle = () => {
   if (isLoading || (photo && !article && !error)) {
     return (
       <section className="editorial-safe-top min-h-screen px-5 sm:px-8 md:px-12 lg:px-16">
-        <div className="mx-auto max-w-[920px] animate-pulse">
+        <div className="mx-auto max-w-[920px]">
           <div className="h-5 w-44 bg-ink-primary/10 dark:bg-bone-primary/10" />
           <div className="mt-8 h-24 w-full bg-ink-primary/10 dark:bg-bone-primary/10" />
           <div className="mt-12 aspect-[1.5] w-full bg-ink-primary/10 dark:bg-bone-primary/10" />
@@ -249,17 +245,14 @@ export const FrameArticle = () => {
           Back to Frames
         </Link>
 
-        <motion.header
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={LIQUID}
+        <header
           className="grid grid-cols-1 gap-8 border-b border-ink-primary/10 pb-11 dark:border-bone-primary/10 md:grid-cols-12 md:gap-10"
         >
           <div className="md:col-span-12">
             <p className="text-[10px] uppercase tracking-[0.42em] text-accent">
               {photo.category} / Unsplash
             </p>
-            <h1 className="mt-7 max-w-[12ch] break-words font-serif text-[clamp(3.7rem,10vw,9.2rem)] uppercase leading-[0.86] tracking-[-0.075em] text-balance">
+            <h1 className="mt-7 max-w-[12ch] break-words font-serif text-[clamp(2.75rem,10vw,9.2rem)] uppercase leading-[0.86] tracking-[-0.075em] text-balance">
               {photo.title}
             </h1>
           </div>
@@ -273,12 +266,9 @@ export const FrameArticle = () => {
               <span>{photo.readingTime}</span>
             </div>
           </aside>
-        </motion.header>
+        </header>
 
-        <motion.figure
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...LIQUID, delay: 0.1 }}
+        <figure
           className="my-12"
         >
           <img
@@ -295,7 +285,7 @@ export const FrameArticle = () => {
           <figcaption className="mt-4 text-[10px] uppercase tracking-[0.3em] text-ink-primary/42 dark:text-bone-primary/42">
             Source: Unsplash / {photo.location}
           </figcaption>
-        </motion.figure>
+        </figure>
 
         <div className="mx-auto max-w-[760px]">
           <section className="mb-10 flex flex-wrap items-center justify-between gap-4 border-y border-ink-primary/10 py-5 dark:border-bone-primary/10">
