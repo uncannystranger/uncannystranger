@@ -30,6 +30,8 @@ const GALLERY_PHOTO_FIELDS = [
   'photographer_name',
   'photographer_url',
   'tags',
+  'unsplash_likes_count',
+  'unsplash_downloads_count',
 ];
 
 export const GALLERY_SELECT = GALLERY_PHOTO_FIELDS.join(',');
@@ -72,6 +74,8 @@ export type GalleryPhotoRow = {
   photographer_name: string | null;
   photographer_url: string | null;
   tags?: string[] | null;
+  unsplash_likes_count: number | null;
+  unsplash_downloads_count: number | null;
   frame?: GalleryFrameRow | GalleryFrameRow[] | null;
 };
 
@@ -121,6 +125,8 @@ export const publicPhoto = (photo: GalleryPhotoRow) => ({
   photographer_name: photo.photographer_name,
   photographer_url: photo.photographer_url,
   tags: photo.tags || [],
+  likes: photo.unsplash_likes_count,
+  downloads: photo.unsplash_downloads_count,
   frame: publicFrame(photo),
 });
 

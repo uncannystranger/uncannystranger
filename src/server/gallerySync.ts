@@ -14,6 +14,12 @@ type RemotePhoto = {
   blur_hash?: string | null;
   description?: string | null;
   alt_description?: string | null;
+  likes?: number | null;
+  downloads?: number | null;
+  statistics?: {
+    likes?: { total?: number | null } | null;
+    downloads?: { total?: number | null } | null;
+  } | null;
   urls: { raw: string; regular: string; small: string; thumb: string };
   links: { html: string };
   tags?: Array<{ title?: string | null }>;
@@ -38,6 +44,7 @@ export type GallerySyncReport = {
   inserted: number;
   updated: number;
   unchanged: number;
+  statistics_written: number;
   frames_written: number;
   frame_report?: FrameSyncReport;
   pinned_reconciled: number;
@@ -56,6 +63,21 @@ const CATEGORY_RULES: Array<[string, string[]]> = [
 ];
 
 const cleanText = (value?: string | null) => (value || '').replace(/\s+/g, ' ').trim();
+
+const countValue = (value?: number | null) =>
+  typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.round(value)) : null;
+
+const photoStatistics = (summary: RemotePhoto, detail?: RemotePhoto) => ({
+  unsplash_id: summary.id,
+  unsplash_likes_count:
+    countValue(summary.statistics?.likes?.total) ??
+    countValue(detail?.likes) ??
+    countValue(summary.likes),
+  unsplash_downloads_count:
+    countValue(summary.statistics?.downloads?.total) ??
+    countValue(detail?.downloads) ??
+    countValue(summary.downloads),
+});
 
 const sameTimestamp = (left?: string | null, right?: string | null) => {
   if (!left || !right) return left === right;
@@ -195,6 +217,17 @@ const upsertPhotos = async (rows: Record<string, unknown>[], report: GallerySync
   }, 'gallery cache sync');
 };
 
+const upsertPhotoStatistics = async (rows: ReturnType<typeof photoStatistics>[]) => {
+  if (!rows.length) return 0;
+  const token = process.env.CRON_SECRET;
+  if (!token) throw new Error('CRON_SECRET is not configured.');
+  const response = await supabasePublicFetch('/rpc/sync_gallery_statistics', {
+    method: 'POST',
+    body: JSON.stringify({ p_token: token, p_rows: rows }),
+  }, 'gallery statistic sync');
+  return Number(await response.json()) || 0;
+};
+
 export async function syncUnsplashGallery() {
   const key = process.env.UNSPLASH_ACCESS_KEY;
   const username = process.env.UNSPLASH_USERNAME || 'uncannystranger';
@@ -210,6 +243,9 @@ export async function syncUnsplashGallery() {
       page: String(page),
       per_page: String(PER_PAGE),
       order_by: 'latest',
+      stats: 'true',
+      resolution: 'days',
+      quantity: '1',
     }) as RemotePhoto[];
     pagesFetched = page;
     for (const photo of photos) candidates.set(photo.id, photo);
@@ -225,6 +261,7 @@ export async function syncUnsplashGallery() {
 
   const insertRows: Record<string, unknown>[] = [];
   const updateRows: Record<string, unknown>[] = [];
+  const statisticsRows: ReturnType<typeof photoStatistics>[] = [];
   let unchanged = 0;
   let pinnedReconciled = 0;
 
@@ -234,10 +271,12 @@ export async function syncUnsplashGallery() {
     const pinnedChanged = Boolean(current) && current!.is_pinned !== PINNED_PHOTO_ID_SET.has(photo.id);
     const changed = !current || !sameTimestamp(current.updated_at_unsplash, photo.updated_at || photo.created_at || null) || pinnedChanged;
     if (!changed) {
+      statisticsRows.push(photoStatistics(candidate));
       unchanged += 1;
       continue;
     }
     photo = await fetchRemote(`/photos/${encodeURIComponent(photo.id)}`, key, username) as RemotePhoto;
+    statisticsRows.push(photoStatistics(candidate, photo));
     const payload = metadataFor(photo, username, current);
     if (pinnedChanged || (!current && PINNED_PHOTO_ID_SET.has(photo.id))) pinnedReconciled += 1;
     (current ? updateRows : insertRows).push(payload);
@@ -250,6 +289,7 @@ export async function syncUnsplashGallery() {
     inserted: insertRows.length,
     updated: updateRows.length,
     unchanged,
+    statistics_written: 0,
     frames_written: insertRows.length + updateRows.length,
     pinned_reconciled: pinnedReconciled,
     stopped_incrementally: false,
@@ -257,6 +297,7 @@ export async function syncUnsplashGallery() {
   };
 
   await upsertPhotos([...insertRows, ...updateRows], report);
+  report.statistics_written = await upsertPhotoStatistics(statisticsRows);
   const frameReport = await syncFrameStories();
   report.frames_written = frameReport.written;
   report.frame_report = frameReport;

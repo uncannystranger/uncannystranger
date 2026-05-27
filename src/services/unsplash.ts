@@ -317,6 +317,8 @@ type GalleryApiPhoto = {
   photographer_name: string | null;
   photographer_url: string | null;
   tags: string[];
+  likes: number | null;
+  downloads: number | null;
   frame?: GalleryFrameStory | null;
 };
 
@@ -348,6 +350,8 @@ const galleryPhotoToUnsplash = (photo: GalleryApiPhoto): UnsplashApiPhoto => ({
   is_pinned: photo.is_pinned,
   is_featured: photo.is_featured,
   is_favorite: photo.is_favorite,
+  likes: photo.likes ?? undefined,
+  downloads: photo.downloads ?? undefined,
   frame_story: photo.frame || null,
   links: {
     html: photo.unsplash_url,
