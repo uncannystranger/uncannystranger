@@ -73,11 +73,25 @@ export interface UnsplashApiPhoto {
   is_pinned?: boolean;
   is_featured?: boolean;
   is_favorite?: boolean;
+  frame_story?: GalleryFrameStory | null;
   user?: {
     name?: string;
     username?: string;
   };
 }
+
+export type GalleryFrameStory = {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle: string | null;
+  story: string;
+  excerpt: string | null;
+  category: string | null;
+  read_time: string | null;
+  views_count: number;
+  likes_count: number;
+};
 
 const fallbackPhotoBases = {
   hero: 'https://images.unsplash.com/photo-1760008780659-6ac16a68e012',
@@ -228,6 +242,7 @@ export interface UnsplashPhoto {
   unsplashUrl: string;
   downloadLocation?: string;
   photographer: string;
+  frameStory?: GalleryFrameStory | null;
 }
 
 export type UnsplashArchiveStatus =
@@ -302,6 +317,7 @@ type GalleryApiPhoto = {
   photographer_name: string | null;
   photographer_url: string | null;
   tags: string[];
+  frame?: GalleryFrameStory | null;
 };
 
 type GalleryPage = {
@@ -332,6 +348,7 @@ const galleryPhotoToUnsplash = (photo: GalleryApiPhoto): UnsplashApiPhoto => ({
   is_pinned: photo.is_pinned,
   is_featured: photo.is_featured,
   is_favorite: photo.is_favorite,
+  frame_story: photo.frame || null,
   links: {
     html: photo.unsplash_url,
   },
@@ -409,7 +426,7 @@ export async function fetchLatestPhotos(limit = 8) {
 
 export async function fetchPhotoDetails(photoId: string) {
   try {
-    const result = await requestGallery<{ photo: GalleryApiPhoto }>(`/api/gallery/${encodeURIComponent(photoId)}`);
+    const result = await requestGallery<{ photo: GalleryApiPhoto }>('/api/gallery/photo', { unsplashId: photoId });
     return galleryPhotoToUnsplash(result.photo);
   } catch {
     const fallback = fallbackPhotos.find((photo) => photo.id === photoId);

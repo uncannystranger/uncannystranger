@@ -64,6 +64,19 @@ export type GalleryPhotoRow = {
   tags?: string[] | null;
 };
 
+export type GalleryFrameRow = {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle: string | null;
+  story: string;
+  excerpt: string | null;
+  category: string | null;
+  read_time: string | null;
+  views_count: number;
+  likes_count: number;
+};
+
 export const publicPhoto = (photo: GalleryPhotoRow) => ({
   id: photo.id,
   unsplash_id: photo.unsplash_id,
@@ -168,7 +181,16 @@ export async function getGalleryPhoto(unsplashId: string) {
   });
   const response = await supabasePublicFetch(`/photos?${params.toString()}`, {}, 'gallery detail');
   const [photo] = (await response.json()) as GalleryPhotoRow[];
-  return photo ? publicPhoto(photo) : null;
+  if (!photo) return null;
+  const frameParams = new URLSearchParams({
+    select: 'id,slug,title,subtitle,story,excerpt,category,read_time,views_count,likes_count',
+    photo_id: `eq.${photo.id}`,
+    is_published: 'eq.true',
+    limit: '1',
+  });
+  const frameResponse = await supabasePublicFetch(`/frames?${frameParams.toString()}`, {}, 'gallery frame detail');
+  const [frame] = (await frameResponse.json()) as GalleryFrameRow[];
+  return { ...publicPhoto(photo), frame: frame || null };
 }
 
 export async function galleryGroups(column: 'album_name' | 'category' | 'collection_name' | 'moment_group') {

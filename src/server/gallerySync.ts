@@ -38,6 +38,7 @@ export type GallerySyncReport = {
   inserted: number;
   updated: number;
   unchanged: number;
+  frames_written: number;
   pinned_reconciled: number;
   stopped_incrementally: boolean;
   completed_at: string;
@@ -260,6 +261,7 @@ export async function syncUnsplashGallery() {
     inserted: insertRows.length,
     updated: updateRows.length,
     unchanged,
+    frames_written: insertRows.length + updateRows.length,
     pinned_reconciled: pinnedReconciled,
     stopped_incrementally: stoppedIncrementally,
     completed_at: new Date().toISOString(),

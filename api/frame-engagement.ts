@@ -1,6 +1,4 @@
-import { backendErrorResponse, supabaseFetch } from '../src/server/supabaseRest.js';
-
-const VIEW_WINDOW_HOURS = 12;
+import { backendErrorResponse, supabasePublicFetch } from '../src/server/supabaseRest.js';
 
 const json = (res: any, status: number, body: unknown) => {
   res.status(status).setHeader('content-type', 'application/json');
@@ -20,36 +18,13 @@ const readJsonBody = async (req: any) => {
   return {};
 };
 
-const fetchFrame = async (unsplashId: string) => {
-  const photoResponse = await supabaseFetch(
-    `/photos?unsplash_id=eq.${encodeURIComponent(unsplashId)}&select=id`,
-    {},
-    'photo lookup'
-  );
-  const [photo] = await photoResponse.json();
-  if (!photo?.id) return null;
-
-  const frameResponse = await supabaseFetch(
-    `/frames?photo_id=eq.${encodeURIComponent(photo.id)}&select=id,views_count,likes_count`,
-    {},
-    'frame lookup'
-  );
-  const [frame] = await frameResponse.json();
-  return frame || null;
-};
-
-const engagementPayload = async (frameId: string, liked: boolean) => {
-  const frameResponse = await supabaseFetch(
-    `/frames?id=eq.${encodeURIComponent(frameId)}&select=views_count,likes_count`,
-    {},
-    'frame summary'
-  );
-  const [frame] = await frameResponse.json();
-  return {
-    views: Number(frame?.views_count || 0),
-    likes: Number(frame?.likes_count || 0),
-    liked,
-  };
+const engagementRpc = async (fn: string, unsplashId: string, sessionId: string) => {
+  const response = await supabasePublicFetch(`/rpc/${fn}`, {
+    method: 'POST',
+    body: JSON.stringify({ p_unsplash_id: unsplashId, p_session_id: sessionId }),
+  }, fn);
+  const [result] = await response.json();
+  return result || null;
 };
 
 export default async function handler(req: any, res: any) {
@@ -66,65 +41,16 @@ export default async function handler(req: any, res: any) {
       return json(res, 400, { error: 'Invalid engagement payload.' });
     }
 
-    const frame = await fetchFrame(unsplashId);
-    if (!frame?.id) return json(res, 404, { error: 'Frame not found.' });
-
-    if (action === 'summary') {
-      const liked = await hasLike(frame.id, sessionId);
-      return json(res, 200, await engagementPayload(frame.id, liked));
-    }
-
-    if (action === 'view') {
-      const since = new Date(Date.now() - VIEW_WINDOW_HOURS * 60 * 60 * 1000).toISOString();
-      const existingView = await supabaseFetch(
-        `/frame_views?frame_id=eq.${encodeURIComponent(frame.id)}&session_id=eq.${encodeURIComponent(sessionId)}&created_at=gte.${encodeURIComponent(since)}&select=id`,
-        {},
-        'view lookup'
-      );
-      const views = await existingView.json();
-      if (!views.length) {
-        const insertView = await supabaseFetch('/frame_views', {
-          method: 'POST',
-          headers: { prefer: 'return=minimal' },
-          body: JSON.stringify({ frame_id: frame.id, session_id: sessionId }),
-        }, 'view insert');
-      }
-      const liked = await hasLike(frame.id, sessionId);
-      return json(res, 200, await engagementPayload(frame.id, liked));
-    }
-
-    const existingLike = await supabaseFetch(
-      `/frame_likes?frame_id=eq.${encodeURIComponent(frame.id)}&anonymous_user_id=eq.${encodeURIComponent(sessionId)}&select=id`,
-      {},
-      'like lookup'
-    );
-    const [like] = await existingLike.json();
-    if (like?.id) {
-      const unlike = await supabaseFetch(`/frame_likes?id=eq.${encodeURIComponent(like.id)}`, {
-        method: 'DELETE',
-        headers: { prefer: 'return=minimal' },
-      }, 'like delete');
-      return json(res, 200, await engagementPayload(frame.id, false));
-    }
-
-    const insertLike = await supabaseFetch('/frame_likes', {
-      method: 'POST',
-      headers: { prefer: 'return=minimal' },
-      body: JSON.stringify({ frame_id: frame.id, anonymous_user_id: sessionId }),
-    }, 'like insert');
-    return json(res, 200, await engagementPayload(frame.id, true));
+    const rpc =
+      action === 'summary'
+        ? 'frame_engagement_summary'
+        : action === 'view'
+          ? 'frame_record_view'
+          : 'frame_toggle_like';
+    const result = await engagementRpc(rpc, unsplashId, sessionId);
+    return result ? json(res, 200, result) : json(res, 404, { error: 'Frame not found.' });
   } catch (error) {
     const failure = backendErrorResponse(error, 'Engagement failed.');
     return json(res, failure.status, failure.body);
   }
 }
-
-const hasLike = async (frameId: string, sessionId: string) => {
-  const response = await supabaseFetch(
-    `/frame_likes?frame_id=eq.${encodeURIComponent(frameId)}&anonymous_user_id=eq.${encodeURIComponent(sessionId)}&select=id`,
-    {},
-    'like state lookup'
-  );
-  const rows = await response.json();
-  return rows.length > 0;
-};

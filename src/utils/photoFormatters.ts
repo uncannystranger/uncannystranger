@@ -99,6 +99,7 @@ export function formatUnsplashPhoto(photo: UnsplashApiPhoto): UnsplashPhoto {
     unsplashUrl: photo.links.html,
     downloadLocation: photo.links.download_location,
     photographer: photo.user?.name || 'Abdullahi Maxamed',
+    frameStory: photo.frame_story || null,
   };
 }
 

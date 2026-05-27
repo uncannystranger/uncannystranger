@@ -23,6 +23,16 @@ const fallbackArticle = (photo: UnsplashPhoto): FrameArticleText => {
 export const loadFrameArticleText = async (
   photo: UnsplashPhoto
 ): Promise<FrameArticleText> => {
+  if (photo.frameStory?.story) {
+    return {
+      quote: 'A photograph can hold more than it explains.',
+      opening: photo.frameStory.subtitle || photo.intro,
+      story: photo.frameStory.story,
+      observation: 'Light, gesture, and distance give this moment its editorial shape.',
+      meaning: 'Held as a Frame, the image becomes a small record of place and memory.',
+      closing: photo.frameStory.excerpt || 'The image stays after the page moves on.',
+    };
+  }
   const { FRAME_STORY_BODIES } = await import('./frameStoryBodies');
   return (
     FRAME_STORY_BODIES[photo.rawId as keyof typeof FRAME_STORY_BODIES] ||
