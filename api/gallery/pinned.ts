@@ -2,7 +2,6 @@ import { PINNED_PHOTO_IDS } from '../../src/gallery/constants.js';
 import { backendErrorResponse } from '../../src/server/supabaseRest.js';
 import { listGalleryPhotos, safeInteger } from '../../src/server/galleryData.js';
 import { PUBLIC_GALLERY_CACHE, sendJson } from '../../src/server/galleryHttp.js';
-import { fallbackPinnedPhotos } from '../../src/server/unsplashReadFallback.js';
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'GET') return sendJson(res, 405, { error: 'Method not allowed', code: 'method-not-allowed' });
@@ -16,10 +15,6 @@ export default async function handler(req: any, res: any) {
     });
     result.pagination.total = result.photos.length;
     result.pagination.has_more = false;
-    if (!result.photos.length) {
-      result.photos = (await fallbackPinnedPhotos()).slice(0, limit);
-      result.pagination.total = result.photos.length;
-    }
     return sendJson(res, 200, result, PUBLIC_GALLERY_CACHE);
   } catch (error) {
     const failure = backendErrorResponse(error, 'Pinned gallery request failed.');

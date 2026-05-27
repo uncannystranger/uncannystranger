@@ -3,7 +3,6 @@ import { syncFrameStories, type FrameSyncReport } from './frameStorySync.js';
 import { supabasePublicFetch } from './supabaseRest.js';
 
 const PER_PAGE = 30;
-const MAX_PAGES = 50;
 
 type RemotePhoto = {
   id: string;
@@ -173,12 +172,17 @@ const fetchRemote = async (path: string, key: string, username: string, params: 
 };
 
 const getExisting = async () => {
-  const response = await supabasePublicFetch(
-    '/photos?source=eq.unsplash&select=id,unsplash_id,updated_at_unsplash,is_pinned,is_featured,is_favorite&limit=1000',
-    {},
-    'sync existing photos'
-  );
-  return (await response.json()) as ExistingPhoto[];
+  const rows: ExistingPhoto[] = [];
+  for (let offset = 0; ; offset += 1000) {
+    const response = await supabasePublicFetch(
+      `/photos?source=eq.unsplash&select=id,unsplash_id,updated_at_unsplash,is_pinned,is_featured,is_favorite&limit=1000&offset=${offset}`,
+      {},
+      'sync existing photos'
+    );
+    const page = (await response.json()) as ExistingPhoto[];
+    rows.push(...page);
+    if (page.length < 1000) return rows;
+  }
 };
 
 const upsertPhotos = async (rows: Record<string, unknown>[], report: GallerySyncReport) => {
@@ -198,12 +202,10 @@ export async function syncUnsplashGallery() {
 
   const existingRows = await getExisting();
   const existing = new Map(existingRows.map((row) => [row.unsplash_id, row]));
-  const initialBackfill = existing.size === 0;
   const candidates = new Map<string, RemotePhoto>();
   let pagesFetched = 0;
-  let stoppedIncrementally = false;
 
-  for (let page = 1; page <= MAX_PAGES; page += 1) {
+  for (let page = 1; ; page += 1) {
     const photos = await fetchRemote('/users/:username/photos', key, username, {
       page: String(page),
       per_page: String(PER_PAGE),
@@ -211,16 +213,6 @@ export async function syncUnsplashGallery() {
     }) as RemotePhoto[];
     pagesFetched = page;
     for (const photo of photos) candidates.set(photo.id, photo);
-
-    const settledPage = photos.length > 0 && photos.every((photo) => {
-      const row = existing.get(photo.id);
-      return row && sameTimestamp(row.updated_at_unsplash, photo.updated_at || photo.created_at || null) &&
-        row.is_pinned === PINNED_PHOTO_ID_SET.has(photo.id);
-    });
-    if (!initialBackfill && settledPage) {
-      stoppedIncrementally = true;
-      break;
-    }
     if (photos.length < PER_PAGE) break;
   }
 
@@ -245,9 +237,7 @@ export async function syncUnsplashGallery() {
       unchanged += 1;
       continue;
     }
-    if (!initialBackfill) {
-      photo = await fetchRemote(`/photos/${encodeURIComponent(photo.id)}`, key, username) as RemotePhoto;
-    }
+    photo = await fetchRemote(`/photos/${encodeURIComponent(photo.id)}`, key, username) as RemotePhoto;
     const payload = metadataFor(photo, username, current);
     if (pinnedChanged || (!current && PINNED_PHOTO_ID_SET.has(photo.id))) pinnedReconciled += 1;
     (current ? updateRows : insertRows).push(payload);
@@ -262,7 +252,7 @@ export async function syncUnsplashGallery() {
     unchanged,
     frames_written: insertRows.length + updateRows.length,
     pinned_reconciled: pinnedReconciled,
-    stopped_incrementally: stoppedIncrementally,
+    stopped_incrementally: false,
     completed_at: new Date().toISOString(),
   };
 

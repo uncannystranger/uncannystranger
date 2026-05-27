@@ -85,7 +85,7 @@ export type GalleryFrameStory = {
   slug: string;
   title: string;
   subtitle: string | null;
-  story: string;
+  story?: string | null;
   excerpt: string | null;
   category: string | null;
   read_time: string | null;

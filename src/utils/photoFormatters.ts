@@ -57,11 +57,11 @@ const unsplashSrcSet = (
 
 export function formatUnsplashPhoto(photo: UnsplashApiPhoto): UnsplashPhoto {
   const story = getFrameStorySummary(photo.id);
-  const title = story?.title || photo.frame_story?.title || generatePoeticTitle(photo);
-  const category = (story?.category || photo.frame_story?.category || photo.category || generateCategory(photo)) as UnsplashCategory;
+  const title = photo.frame_story?.title || story?.title || generatePoeticTitle(photo);
+  const category = (photo.frame_story?.category || story?.category || photo.category || generateCategory(photo)) as UnsplashCategory;
   const description =
-    story?.excerpt ||
     photo.frame_story?.excerpt ||
+    story?.excerpt ||
     photo.description ||
     photo.alt_description ||
     'A quiet archive of faces, light, and unfinished moments.';
@@ -76,7 +76,7 @@ export function formatUnsplashPhoto(photo: UnsplashApiPhoto): UnsplashPhoto {
     source: 'unsplash',
     title,
     description,
-    intro: story?.excerpt || makeIntro(description),
+    intro: photo.frame_story?.excerpt || story?.excerpt || makeIntro(description),
     image: unsplashSizedUrl(photo.urls.raw || photo.urls.regular, 1600, 75, 'max'),
     imageSmall: unsplashSizedUrl(photo.urls.raw || photo.urls.small, 640, 72, 'max'),
     imageSrcSet: unsplashSrcSet(photo.urls.raw || photo.urls.regular, [960, 1280, 1600, 2000], 75, 'max'),
@@ -86,7 +86,7 @@ export function formatUnsplashPhoto(photo: UnsplashApiPhoto): UnsplashPhoto {
     date: formatDate(created),
     year: String(new Date(created).getFullYear()),
     sortTimestamp: new Date(created).getTime(),
-    readingTime: story?.readTime || makeReadingTime(description),
+    readingTime: photo.frame_story?.read_time || story?.readTime || makeReadingTime(description),
     location: formatLocation(photo),
     width,
     height,
