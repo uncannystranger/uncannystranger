@@ -1,4 +1,8 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [
+    { "path": "/api/gallery/sync-unsplash", "schedule": "0 3 * * *" }
+  ],
   "rewrites": [
     { "source": "/projects", "destination": "/projects/index.html" },
     { "source": "/gallery", "destination": "/projects/index.html" },

@@ -22,6 +22,12 @@ const TITLE_BANK = [
   'Wall Shadow, Briefly',
 ];
 
+const makeIntro = (description: string) => description;
+
+const makeReadingTime = (description: string) => {
+  const words = description.trim().split(/\s+/).filter(Boolean).length;
+  return `${Math.max(1, Math.ceil(words / 180))} min read`;
+};
 
 const unsplashSizedUrl = (
   url: string,
@@ -52,7 +58,7 @@ const unsplashSrcSet = (
 export function formatUnsplashPhoto(photo: UnsplashApiPhoto): UnsplashPhoto {
   const story = getFrameStorySummary(photo.id);
   const title = story?.title || generatePoeticTitle(photo);
-  const category = story?.category || generateCategory(photo);
+  const category = story?.category || photo.category || generateCategory(photo);
   const description =
     story?.excerpt ||
     photo.description ||
@@ -69,7 +75,7 @@ export function formatUnsplashPhoto(photo: UnsplashApiPhoto): UnsplashPhoto {
     source: 'unsplash',
     title,
     description,
-    intro: story?.excerpt || makeIntro(description, category),
+    intro: story?.excerpt || makeIntro(description),
     image: unsplashSizedUrl(photo.urls.raw || photo.urls.regular, 1600, 75, 'max'),
     imageSmall: unsplashSizedUrl(photo.urls.raw || photo.urls.small, 640, 72, 'max'),
     imageSrcSet: unsplashSrcSet(photo.urls.raw || photo.urls.regular, [960, 1280, 1600, 2000], 75, 'max'),

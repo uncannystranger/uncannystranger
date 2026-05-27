@@ -1,16 +1,8 @@
-import { isSupabaseConfigured, supabase } from '../lib/supabase';
+import { PINNED_PHOTO_IDS } from '../gallery/constants';
+
+export { PINNED_PHOTO_IDS } from '../gallery/constants';
 
 const UNSPLASH_USERNAME = 'uncannystranger';
-const UNSPLASH_PER_PAGE = 30;
-const UNSPLASH_MAX_PAGES = 50;
-
-export const PINNED_PHOTO_IDS = [
-  'F_lc9t1GwGU',
-  'iJKXnMSZ_qI',
-  'D8wCJg9hEg8',
-  'pyQKxWBvpEM',
-  'jqkZ5P-CHuc',
-] as const;
 
 export type UnsplashCategory =
   | 'Portrait'
@@ -20,7 +12,15 @@ export type UnsplashCategory =
   | 'Black & White'
   | 'Memory'
   | 'Light'
-  | 'Everyday';
+  | 'Everyday'
+  | 'Architecture'
+  | 'Nature'
+  | 'Portraits'
+  | 'Urban Life'
+  | 'Textures'
+  | 'Travel'
+  | 'Documentary'
+  | 'Uncategorized';
 
 export interface UnsplashExif {
   make?: string | null;
@@ -66,34 +66,18 @@ export interface UnsplashApiPhoto {
   };
   exif?: UnsplashExif | null;
   tags?: UnsplashTag[];
+  category?: UnsplashCategory;
+  album_name?: string | null;
+  collection_name?: string | null;
+  moment_group?: string | null;
+  is_pinned?: boolean;
+  is_featured?: boolean;
+  is_favorite?: boolean;
   user?: {
     name?: string;
     username?: string;
   };
 }
-
-type CachedPhotoRow = {
-  unsplash_id: string;
-  unsplash_url: string;
-  image_url_small: string;
-  image_url_regular: string;
-  image_url_full: string | null;
-  title: string;
-  caption: string;
-  description: string;
-  alt_text: string;
-  category: string;
-  location: string | null;
-  author_name: string | null;
-  author_username: string | null;
-  created_at_unsplash: string | null;
-  updated_at_unsplash: string | null;
-  width: number | null;
-  height: number | null;
-  color: string | null;
-  blur_hash: string | null;
-  tags: string[] | null;
-};
 
 const fallbackPhotoBases = {
   hero: 'https://images.unsplash.com/photo-1760008780659-6ac16a68e012',
@@ -262,7 +246,7 @@ export interface UnsplashArchiveProgress {
 export interface UnsplashArchiveResult {
   photos: UnsplashApiPhoto[];
   status: UnsplashArchiveStatus;
-  source: 'live' | 'cache';
+  source: 'cache';
   error?: string;
   pagesFetched: number;
 }
@@ -273,20 +257,7 @@ type FetchUserPhotoArchiveOptions = {
   onProgress?: (progress: UnsplashArchiveProgress) => void;
 };
 
-let liveArchivePromise: Promise<UnsplashArchiveResult> | null = null;
-let liveArchiveResult: UnsplashArchiveResult | null = null;
 let pinnedPhotosPromise: Promise<UnsplashApiPhoto[]> | null = null;
-
-class UnsplashRequestError extends Error {
-  status: number;
-  code: UnsplashArchiveStatus;
-
-  constructor(status: number, code: UnsplashArchiveStatus, message: string) {
-    super(message);
-    this.status = status;
-    this.code = code;
-  }
-}
 
 const sortNewestFirst = (photos: UnsplashApiPhoto[]) =>
   [...photos].sort((a, b) => {
@@ -306,231 +277,140 @@ const uniqueByUnsplashId = (photos: UnsplashApiPhoto[]) => {
 
 const normalizeArchive = (photos: UnsplashApiPhoto[]) => sortNewestFirst(uniqueByUnsplashId(photos));
 
-const classifyStatus = (status: number, code?: string): UnsplashArchiveStatus => {
-  if (status === 429) return 'rate-limited';
-  if (code === 'missing-config') return 'missing-config';
-  return 'network-error';
+type GalleryApiPhoto = {
+  unsplash_id: string;
+  unsplash_url: string;
+  title: string;
+  description: string | null;
+  alt_description: string | null;
+  category: UnsplashCategory;
+  album_name: string | null;
+  collection_name: string | null;
+  moment_group: string | null;
+  location_name: string | null;
+  created_at_unsplash: string | null;
+  image_url_small: string;
+  image_url_regular: string;
+  image_url_thumb: string;
+  width: number | null;
+  height: number | null;
+  blur_hash: string | null;
+  color: string | null;
+  is_pinned: boolean;
+  is_featured: boolean;
+  is_favorite: boolean;
+  photographer_name: string | null;
+  photographer_url: string | null;
+  tags: string[];
 };
 
-async function requestUnsplash<T>(path: string, params?: Record<string, string | number | boolean>) {
-  const url = new URL('/api/unsplash', window.location.origin);
-  url.searchParams.set('path', path);
-  Object.entries(params || {}).forEach(([key, value]) => {
-    url.searchParams.set(key, String(value));
-  });
+type GalleryPage = {
+  photos: GalleryApiPhoto[];
+  pagination: { page: number; limit: number; total: number; has_more: boolean };
+};
 
-  const response = await fetch(url.toString(), { headers: { accept: 'application/json' } });
-  const contentType = response.headers.get('content-type') || '';
-  const payload = contentType.includes('application/json') ? await response.json() : null;
+export type GalleryPhotoPage = {
+  photos: UnsplashApiPhoto[];
+  page: number;
+  total: number;
+  hasMore: boolean;
+};
 
-  if (!response.ok) {
-    const code = typeof payload?.code === 'string' ? payload.code : undefined;
-    if (code === 'missing-config' && !import.meta.env.VITE_UNSPLASH_ACCESS_KEY) {
-      console.warn('Missing VITE_UNSPLASH_ACCESS_KEY in frontend environment.');
-    }
-    throw new UnsplashRequestError(
-      response.status,
-      classifyStatus(response.status, code),
-      typeof payload?.error === 'string' ? payload.error : `Photo request failed with status ${response.status}.`
-    );
-  }
-
-  if (!payload) {
-    throw new UnsplashRequestError(502, 'network-error', 'Photo service returned an unreadable response.');
-  }
-
-  return payload as T;
-}
-
-const cachedPhotoToUnsplash = (photo: CachedPhotoRow): UnsplashApiPhoto => ({
+const galleryPhotoToUnsplash = (photo: GalleryApiPhoto): UnsplashApiPhoto => ({
   id: photo.unsplash_id,
-  alt_description: photo.alt_text || photo.caption || photo.title,
-  description: photo.description || photo.caption || photo.title,
+  alt_description: photo.alt_description || photo.description || photo.title,
+  description: photo.description || photo.alt_description || photo.title,
   created_at: photo.created_at_unsplash || undefined,
-  updated_at: photo.updated_at_unsplash || photo.created_at_unsplash || undefined,
+  updated_at: photo.created_at_unsplash || undefined,
   width: photo.width || undefined,
   height: photo.height || undefined,
   color: photo.color,
+  category: photo.category,
+  album_name: photo.album_name,
+  collection_name: photo.collection_name,
+  moment_group: photo.moment_group,
+  is_pinned: photo.is_pinned,
+  is_featured: photo.is_featured,
+  is_favorite: photo.is_favorite,
   links: {
     html: photo.unsplash_url,
   },
   urls: {
-    raw: photo.image_url_full || photo.image_url_regular,
-    full: photo.image_url_full || photo.image_url_regular,
+    raw: photo.image_url_regular,
+    full: photo.image_url_regular,
     regular: photo.image_url_regular,
     small: photo.image_url_small,
-    thumb: photo.image_url_small,
+    thumb: photo.image_url_thumb,
   },
   location: {
-    name: photo.location,
-    city: photo.location?.includes(',') ? photo.location.split(',')[0]?.trim() : photo.location,
-    country: photo.location?.includes(',') ? photo.location.split(',').slice(1).join(',').trim() : null,
+    name: photo.location_name,
+    city: photo.location_name?.includes(',') ? photo.location_name.split(',')[0]?.trim() : photo.location_name,
+    country: photo.location_name?.includes(',') ? photo.location_name.split(',').slice(1).join(',').trim() : null,
   },
   tags: (photo.tags || []).map((title) => ({ title })),
   user: {
-    name: photo.author_name || 'Abdullahi Maxamed',
-    username: photo.author_username || UNSPLASH_USERNAME,
+    name: photo.photographer_name || 'Abdullahi Maxamed',
+    username: UNSPLASH_USERNAME,
   },
 });
 
-async function fetchCachedPhotos(page = 1, perPage = 12) {
-  if (!isSupabaseConfigured || !supabase) return null;
-  const from = Math.max(0, (page - 1) * perPage);
-  const to = from + perPage - 1;
-  const { data, error } = await supabase
-    .from('photos')
-    .select('*')
-    .eq('is_visible', true)
-    .order('created_at_unsplash', { ascending: false, nullsFirst: false })
-    .range(from, to);
-
-  if (error || !data?.length) return null;
-  return (data as CachedPhotoRow[]).map(cachedPhotoToUnsplash);
+async function requestGallery<T>(path: string, params?: Record<string, string | number>) {
+  const url = new URL(path, window.location.origin);
+  for (const [key, value] of Object.entries(params || {})) url.searchParams.set(key, String(value));
+  const response = await fetch(url.toString(), { headers: { accept: 'application/json' } });
+  if (!response.ok) throw new Error(`Gallery request failed with status ${response.status}.`);
+  return response.json() as Promise<T>;
 }
 
-async function fetchCachedPhotoArchive() {
-  if (!isSupabaseConfigured || !supabase) return null;
-  const { data, error } = await supabase
-    .from('photos')
-    .select('*')
-    .eq('is_visible', true)
-    .order('created_at_unsplash', { ascending: false, nullsFirst: false })
-    .limit(1000);
-
-  if (error || !data?.length) return null;
-  return normalizeArchive((data as CachedPhotoRow[]).map(cachedPhotoToUnsplash));
-}
-
-async function fetchCachedPhotoDetails(photoId: string) {
-  if (!isSupabaseConfigured || !supabase) return null;
-  const { data, error } = await supabase
-    .from('photos')
-    .select('*')
-    .eq('unsplash_id', photoId)
-    .eq('is_visible', true)
-    .maybeSingle();
-
-  if (error || !data) return null;
-  return cachedPhotoToUnsplash(data as CachedPhotoRow);
-}
-
-async function fetchLivePhotoArchive(onProgress?: (progress: UnsplashArchiveProgress) => void): Promise<UnsplashArchiveResult> {
-  const allPhotos: UnsplashApiPhoto[] = [];
-  let pagesFetched = 0;
-
+export async function fetchUserPhotoPage(page = 1, perPage = 24, category?: string): Promise<GalleryPhotoPage> {
   try {
-    for (let page = 1; page <= UNSPLASH_MAX_PAGES; page += 1) {
-      const photos = await requestUnsplash<UnsplashApiPhoto[]>(
-        `/users/${UNSPLASH_USERNAME}/photos`,
-        {
-          page,
-          per_page: UNSPLASH_PER_PAGE,
-          order_by: 'latest',
-          stats: true,
-        }
-      );
-
-      pagesFetched = page;
-      allPhotos.push(...photos);
-      onProgress?.({ page, loaded: allPhotos.length });
-
-      if (photos.length < UNSPLASH_PER_PAGE) {
-        const normalized = normalizeArchive(allPhotos);
-        return {
-          photos: normalized,
-          status: normalized.length ? 'complete' : 'empty',
-          source: 'live',
-          pagesFetched,
-        };
-      }
-    }
-
-    return {
-      photos: normalizeArchive(allPhotos),
-      status: 'partial',
-      source: 'live',
-      error: 'The archive stopped at its safety limit.',
-      pagesFetched,
-    };
-  } catch (error) {
-    const normalized = normalizeArchive(allPhotos);
-    const status = error instanceof UnsplashRequestError ? error.code : 'network-error';
-    return {
-      photos: normalized,
-      status: normalized.length ? 'partial' : status,
-      source: 'live',
-      error: error instanceof Error ? error.message : 'Photo service is unavailable.',
-      pagesFetched,
-    };
-  }
-}
-
-export async function fetchUserPhotoArchive(options: FetchUserPhotoArchiveOptions = {}): Promise<UnsplashArchiveResult> {
-  const cached = await fetchCachedPhotoArchive();
-  if (cached?.length) {
-    options.onCached?.({
-      photos: cached,
-      status: 'partial',
-      source: 'cache',
-      error: 'Refreshing Unsplash archive.',
-      pagesFetched: 0,
+    const result = await requestGallery<GalleryPage>('/api/gallery', {
+      page,
+      limit: perPage,
+      ...(category ? { category } : {}),
     });
-  }
-
-  if (liveArchiveResult && !options.forceRefresh) return liveArchiveResult;
-
-  if (!liveArchivePromise || options.forceRefresh) {
-    liveArchivePromise = fetchLivePhotoArchive(options.onProgress).then((result) => {
-      if (result.status === 'complete' || result.status === 'empty') {
-        liveArchiveResult = result;
-      }
-      if (result.status !== 'complete' && result.status !== 'empty') {
-        liveArchivePromise = null;
-      }
-      return result;
-    });
-  }
-
-  const live = await liveArchivePromise;
-  if ((live.status === 'complete' || live.status === 'empty') || !cached?.length) return live;
-
-  return {
-    photos: cached,
-    status: 'partial',
-    source: 'cache',
-    error: live.error || 'Live Unsplash refresh did not finish.',
-    pagesFetched: live.pagesFetched,
-  };
-}
-
-export async function fetchUserPhotos(page = 1, perPage = 12) {
-  const cached = await fetchCachedPhotos(page, perPage);
-  if (cached) return cached;
-
-  try {
-    const photos = await requestUnsplash<UnsplashApiPhoto[]>(
-      `/users/${UNSPLASH_USERNAME}/photos`,
-      {
+    if (page === 1 && !result.photos.length) {
+      return {
+        photos: category ? [] : fallbackPhotos.slice(0, perPage),
         page,
-        per_page: perPage,
-        order_by: 'latest',
-        stats: true,
-      }
-    );
-
-    return photos;
+        total: category ? 0 : fallbackPhotos.length,
+        hasMore: false,
+      };
+    }
+    return {
+      photos: result.photos.map(galleryPhotoToUnsplash),
+      page: result.pagination.page,
+      total: result.pagination.total,
+      hasMore: result.pagination.has_more,
+    };
   } catch {
     const from = Math.max(0, (page - 1) * perPage);
-    return page === 1 ? fallbackPhotos.slice(from, from + perPage) : [];
+    return {
+      photos: page === 1 ? fallbackPhotos.slice(from, from + perPage) : [],
+      page,
+      total: page === 1 ? fallbackPhotos.length : 0,
+      hasMore: false,
+    };
+  }
+}
+
+export async function fetchUserPhotos(page = 1, perPage = 12, category?: string) {
+  return (await fetchUserPhotoPage(page, perPage, category)).photos;
+}
+
+export async function fetchLatestPhotos(limit = 8) {
+  try {
+    const result = await requestGallery<GalleryPage>('/api/gallery/latest', { limit });
+    return result.photos.map(galleryPhotoToUnsplash);
+  } catch {
+    return fallbackPhotos.slice(0, limit);
   }
 }
 
 export async function fetchPhotoDetails(photoId: string) {
-  const cached = await fetchCachedPhotoDetails(photoId);
-  if (cached) return cached;
-
   try {
-    return await requestUnsplash<UnsplashApiPhoto>(`/photos/${photoId}`);
+    const result = await requestGallery<{ photo: GalleryApiPhoto }>(`/api/gallery/${encodeURIComponent(photoId)}`);
+    return galleryPhotoToUnsplash(result.photo);
   } catch {
     const fallback = fallbackPhotos.find((photo) => photo.id === photoId);
     if (fallback) return fallback;
@@ -540,11 +420,9 @@ export async function fetchPhotoDetails(photoId: string) {
 
 export async function fetchPinnedPhotos() {
   if (!pinnedPhotosPromise) {
-    pinnedPhotosPromise = Promise.all(
-      PINNED_PHOTO_IDS.map((id) =>
-        fetchPhotoDetails(id).catch(() => null)
-      )
-    ).then((photos) => photos.filter(Boolean) as UnsplashApiPhoto[]);
+    pinnedPhotosPromise = requestGallery<GalleryPage>('/api/gallery/pinned', { limit: PINNED_PHOTO_IDS.length })
+      .then((result) => result.photos.map(galleryPhotoToUnsplash))
+      .catch(() => fallbackPhotos.filter((photo) => PINNED_PHOTO_IDS.includes(photo.id as typeof PINNED_PHOTO_IDS[number])));
   }
 
   return pinnedPhotosPromise;

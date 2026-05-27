@@ -4,8 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ProjectView } from '../types';
 import {
   fetchPinnedPhotos,
-  fetchUserPhotoArchive,
-  fetchUserPhotos,
+  fetchUserPhotoPage,
   PINNED_PHOTO_IDS,
   UnsplashApiPhoto,
   UnsplashArchiveStatus,
@@ -98,6 +97,8 @@ const Projects = ({ initialView = 'gallery' }: ProjectsProps) => {
   const [archiveStatus, setArchiveStatus] = useState<UnsplashArchiveStatus | 'loading'>('loading');
   const [archiveWarning, setArchiveWarning] = useState('');
   const [renderLimit, setRenderLimit] = useState(INITIAL_RENDER_LIMIT);
+  const [nextPage, setNextPage] = useState(2);
+  const [hasMore, setHasMore] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -114,44 +115,20 @@ const Projects = ({ initialView = 'gallery' }: ProjectsProps) => {
       setArchiveWarning('');
       setArchiveStatus('loading');
       setRenderLimit(INITIAL_RENDER_LIMIT);
+      setNextPage(2);
       try {
+        const category = filter !== 'All' && filter !== 'Frames' ? filter : undefined;
         const [firstPage, pinnedPhotos] = await Promise.all([
-          fetchUserPhotos(1, INITIAL_RENDER_LIMIT),
-          fetchPinnedPhotos(),
+          fetchUserPhotoPage(1, INITIAL_RENDER_LIMIT, category),
+          filter === 'All' || filter === 'Frames' ? fetchPinnedPhotos() : Promise.resolve([]),
         ]);
 
         if (cancelled) return;
 
-        const initialPhotos = formatAndOrderPhotos([...pinnedPhotos, ...firstPage]);
-        if (initialPhotos.length) {
-          setPhotos(initialPhotos);
-          setIsLoading(false);
-          setIsLoadingMore(true);
-          setArchiveStatus('partial');
-          setArchiveWarning('Refreshing Unsplash archive...');
-        }
-
-        const result = await fetchUserPhotoArchive({
-          onCached: (cached) => {
-            if (cancelled) return;
-            const formatted = formatAndOrderPhotos([...pinnedPhotos, ...cached.photos]);
-            setPhotos(formatted);
-            setIsLoading(false);
-            setIsLoadingMore(true);
-            setArchiveStatus('partial');
-            setArchiveWarning('Refreshing Unsplash archive...');
-          },
-          onProgress: (progress) => {
-            if (cancelled) return;
-            setIsLoadingMore(progress.page > 1);
-          },
-        });
-        if (cancelled) return;
-        const formatted = formatAndOrderPhotos([...pinnedPhotos, ...result.photos]);
+        const formatted = formatAndOrderPhotos([...pinnedPhotos, ...firstPage.photos]);
         setPhotos(formatted);
-        setArchiveStatus(result.status);
-        setArchiveWarning(result.status === 'partial' && formatted.length ? archiveErrorMessage(result.status, result.error) : '');
-        setError(result.status !== 'complete' && result.status !== 'partial' && result.status !== 'empty' ? archiveErrorMessage(result.status, result.error) : '');
+        setHasMore(firstPage.hasMore);
+        setArchiveStatus(formatted.length ? (firstPage.hasMore ? 'partial' : 'complete') : 'empty');
       } catch {
         if (!cancelled) {
           setArchiveStatus('network-error');
@@ -169,7 +146,7 @@ const Projects = ({ initialView = 'gallery' }: ProjectsProps) => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [filter]);
 
   const filteredPhotos = useMemo(() => {
     if (filter === 'All') return photos;
@@ -183,28 +160,47 @@ const Projects = ({ initialView = 'gallery' }: ProjectsProps) => {
   }, [filter, view]);
 
   useEffect(() => {
-    if ((view !== 'gallery' && view !== 'frames') || renderLimit >= filteredPhotos.length) return;
+    if ((view !== 'gallery' && view !== 'frames') || (!hasMore && renderLimit >= filteredPhotos.length)) return;
     const node = loadMoreRef.current;
     if (!node) return;
 
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting) return;
-        setRenderLimit((current) => Math.min(current + RENDER_BATCH_SIZE, filteredPhotos.length));
+      async ([entry]) => {
+        if (!entry?.isIntersecting || isLoadingMore) return;
+        if (renderLimit < filteredPhotos.length) {
+          setRenderLimit((current) => Math.min(current + RENDER_BATCH_SIZE, filteredPhotos.length));
+          return;
+        }
+        if (!hasMore) return;
+        setIsLoadingMore(true);
+        try {
+          const category = filter !== 'All' && filter !== 'Frames' ? filter : undefined;
+          const page = await fetchUserPhotoPage(nextPage, RENDER_BATCH_SIZE, category);
+          setPhotos((current) => formatAndOrderPhotos([...current, ...page.photos]));
+          setNextPage((current) => current + 1);
+          setHasMore(page.hasMore);
+          setRenderLimit((current) => current + page.photos.length);
+          setArchiveStatus(page.hasMore ? 'partial' : 'complete');
+        } catch {
+          setArchiveWarning('More photos could not be loaded.');
+          setHasMore(false);
+        } finally {
+          setIsLoadingMore(false);
+        }
       },
       { rootMargin: '900px 0px 900px 0px' }
     );
 
     observer.observe(node);
     return () => observer.disconnect();
-  }, [filteredPhotos.length, renderLimit, view]);
+  }, [filter, filteredPhotos.length, hasMore, isLoadingMore, nextPage, renderLimit, view]);
 
   const exhibitionPhotos = useMemo(() => filteredPhotos.slice(0, 9), [filteredPhotos]);
   const framePhotos = useMemo(() => filteredPhotos.slice(0, renderLimit), [filteredPhotos, renderLimit]);
   const galleryPhotos = useMemo(() => filteredPhotos.slice(0, renderLimit), [filteredPhotos, renderLimit]);
   const activePhoto = activeIndex >= 0 ? filteredPhotos[activeIndex] : null;
   const canLoadMore =
-    (view === 'gallery' || view === 'frames') && renderLimit < filteredPhotos.length;
+    (view === 'gallery' || view === 'frames') && (hasMore || renderLimit < filteredPhotos.length);
 
   const retry = async () => {
     setError('');
@@ -213,15 +209,16 @@ const Projects = ({ initialView = 'gallery' }: ProjectsProps) => {
     setIsLoading(true);
     setRenderLimit(INITIAL_RENDER_LIMIT);
     try {
+      const category = filter !== 'All' && filter !== 'Frames' ? filter : undefined;
       const [pinnedPhotos, result] = await Promise.all([
-        fetchPinnedPhotos(),
-        fetchUserPhotoArchive({ forceRefresh: true }),
+        filter === 'All' || filter === 'Frames' ? fetchPinnedPhotos() : Promise.resolve([]),
+        fetchUserPhotoPage(1, INITIAL_RENDER_LIMIT, category),
       ]);
       const formatted = formatAndOrderPhotos([...pinnedPhotos, ...result.photos]);
       setPhotos(formatted);
-      setArchiveStatus(result.status);
-      setArchiveWarning(result.status === 'partial' && formatted.length ? archiveErrorMessage(result.status, result.error) : '');
-      setError(result.status !== 'complete' && result.status !== 'partial' && result.status !== 'empty' ? archiveErrorMessage(result.status, result.error) : '');
+      setNextPage(2);
+      setHasMore(result.hasMore);
+      setArchiveStatus(formatted.length ? (result.hasMore ? 'partial' : 'complete') : 'empty');
     } catch {
       setArchiveStatus('network-error');
       setError('Failed to load archive.');
@@ -249,7 +246,7 @@ const Projects = ({ initialView = 'gallery' }: ProjectsProps) => {
     if (filteredPhotos.length === 0 && archiveStatus === 'empty') return 'No photos found';
     if (archiveWarning) return archiveWarning;
     if (canLoadMore) return 'Scroll for more frames...';
-    return archiveStatus === 'complete' ? 'Unsplash archive loaded' : '';
+    return archiveStatus === 'complete' ? 'Gallery loaded' : '';
   }, [archiveStatus, archiveWarning, canLoadMore, error, filteredPhotos.length, isLoading, isLoadingMore]);
 
   return (

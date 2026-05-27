@@ -1,26 +1,11 @@
-const SUPABASE_REST_PATH = '/rest/v1';
+import { backendErrorResponse, supabaseFetch } from '../src/server/supabaseRest.js';
+
 const VIEW_WINDOW_HOURS = 12;
 
 const json = (res: any, status: number, body: unknown) => {
   res.status(status).setHeader('content-type', 'application/json');
   res.setHeader('cache-control', 'no-store');
   res.end(JSON.stringify(body));
-};
-
-const supabaseFetch = async (path: string, init: RequestInit = {}) => {
-  const url = process.env.VITE_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) throw new Error('Missing Supabase server environment.');
-  return fetch(`${url}${SUPABASE_REST_PATH}${path}`, {
-    ...init,
-    headers: {
-      apikey: key,
-      authorization: `Bearer ${key}`,
-      'content-type': 'application/json',
-      prefer: 'return=representation',
-      ...(init.headers || {}),
-    },
-  });
 };
 
 const safeId = (value: unknown) =>
@@ -37,25 +22,28 @@ const readJsonBody = async (req: any) => {
 
 const fetchFrame = async (unsplashId: string) => {
   const photoResponse = await supabaseFetch(
-    `/photos?unsplash_id=eq.${encodeURIComponent(unsplashId)}&select=id`
+    `/photos?unsplash_id=eq.${encodeURIComponent(unsplashId)}&select=id`,
+    {},
+    'photo lookup'
   );
-  if (!photoResponse.ok) throw new Error(`Photo lookup failed: ${await photoResponse.text()}`);
   const [photo] = await photoResponse.json();
   if (!photo?.id) return null;
 
   const frameResponse = await supabaseFetch(
-    `/frames?photo_id=eq.${encodeURIComponent(photo.id)}&select=id,views_count,likes_count`
+    `/frames?photo_id=eq.${encodeURIComponent(photo.id)}&select=id,views_count,likes_count`,
+    {},
+    'frame lookup'
   );
-  if (!frameResponse.ok) throw new Error(`Frame lookup failed: ${await frameResponse.text()}`);
   const [frame] = await frameResponse.json();
   return frame || null;
 };
 
 const engagementPayload = async (frameId: string, liked: boolean) => {
   const frameResponse = await supabaseFetch(
-    `/frames?id=eq.${encodeURIComponent(frameId)}&select=views_count,likes_count`
+    `/frames?id=eq.${encodeURIComponent(frameId)}&select=views_count,likes_count`,
+    {},
+    'frame summary'
   );
-  if (!frameResponse.ok) throw new Error(`Frame refresh failed: ${await frameResponse.text()}`);
   const [frame] = await frameResponse.json();
   return {
     views: Number(frame?.views_count || 0),
@@ -89,33 +77,33 @@ export default async function handler(req: any, res: any) {
     if (action === 'view') {
       const since = new Date(Date.now() - VIEW_WINDOW_HOURS * 60 * 60 * 1000).toISOString();
       const existingView = await supabaseFetch(
-        `/frame_views?frame_id=eq.${encodeURIComponent(frame.id)}&session_id=eq.${encodeURIComponent(sessionId)}&created_at=gte.${encodeURIComponent(since)}&select=id`
+        `/frame_views?frame_id=eq.${encodeURIComponent(frame.id)}&session_id=eq.${encodeURIComponent(sessionId)}&created_at=gte.${encodeURIComponent(since)}&select=id`,
+        {},
+        'view lookup'
       );
-      if (!existingView.ok) throw new Error(`View lookup failed: ${await existingView.text()}`);
       const views = await existingView.json();
       if (!views.length) {
         const insertView = await supabaseFetch('/frame_views', {
           method: 'POST',
           headers: { prefer: 'return=minimal' },
           body: JSON.stringify({ frame_id: frame.id, session_id: sessionId }),
-        });
-        if (!insertView.ok) throw new Error(`View insert failed: ${await insertView.text()}`);
+        }, 'view insert');
       }
       const liked = await hasLike(frame.id, sessionId);
       return json(res, 200, await engagementPayload(frame.id, liked));
     }
 
     const existingLike = await supabaseFetch(
-      `/frame_likes?frame_id=eq.${encodeURIComponent(frame.id)}&anonymous_user_id=eq.${encodeURIComponent(sessionId)}&select=id`
+      `/frame_likes?frame_id=eq.${encodeURIComponent(frame.id)}&anonymous_user_id=eq.${encodeURIComponent(sessionId)}&select=id`,
+      {},
+      'like lookup'
     );
-    if (!existingLike.ok) throw new Error(`Like lookup failed: ${await existingLike.text()}`);
     const [like] = await existingLike.json();
     if (like?.id) {
       const unlike = await supabaseFetch(`/frame_likes?id=eq.${encodeURIComponent(like.id)}`, {
         method: 'DELETE',
         headers: { prefer: 'return=minimal' },
-      });
-      if (!unlike.ok) throw new Error(`Unlike failed: ${await unlike.text()}`);
+      }, 'like delete');
       return json(res, 200, await engagementPayload(frame.id, false));
     }
 
@@ -123,19 +111,20 @@ export default async function handler(req: any, res: any) {
       method: 'POST',
       headers: { prefer: 'return=minimal' },
       body: JSON.stringify({ frame_id: frame.id, anonymous_user_id: sessionId }),
-    });
-    if (!insertLike.ok) throw new Error(`Like insert failed: ${await insertLike.text()}`);
+    }, 'like insert');
     return json(res, 200, await engagementPayload(frame.id, true));
-  } catch {
-    return json(res, 500, { error: 'Engagement failed.' });
+  } catch (error) {
+    const failure = backendErrorResponse(error, 'Engagement failed.');
+    return json(res, failure.status, failure.body);
   }
 }
 
 const hasLike = async (frameId: string, sessionId: string) => {
   const response = await supabaseFetch(
-    `/frame_likes?frame_id=eq.${encodeURIComponent(frameId)}&anonymous_user_id=eq.${encodeURIComponent(sessionId)}&select=id`
+    `/frame_likes?frame_id=eq.${encodeURIComponent(frameId)}&anonymous_user_id=eq.${encodeURIComponent(sessionId)}&select=id`,
+    {},
+    'like state lookup'
   );
-  if (!response.ok) throw new Error(`Like state failed: ${await response.text()}`);
   const rows = await response.json();
   return rows.length > 0;
 };

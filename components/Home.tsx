@@ -5,7 +5,7 @@ import { Section } from '../types';
 import GradualBlur from './GradualBlur';
 import PhotoDetail from './PhotoDetail';
 import ScrambleText from './ScrambleText';
-import { fetchUserPhotos, UnsplashPhoto } from '../src/services/unsplash';
+import { fetchLatestPhotos, UnsplashPhoto } from '../src/services/unsplash';
 import { formatUnsplashPhoto } from '../src/utils/photoFormatters';
 
 const MotionLink = motion.create(Link);
@@ -243,7 +243,7 @@ const Home = ({ setSection }: HomeProps) => {
   useEffect(() => {
     let cancelled = false;
 
-    fetchUserPhotos(1, 6)
+    fetchLatestPhotos(6)
       .then((photos) => {
         if (cancelled) return;
         const formatted = newestFirst(photos.map(formatUnsplashPhoto)).slice(0, 4);
