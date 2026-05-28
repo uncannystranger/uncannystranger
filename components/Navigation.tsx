@@ -67,12 +67,12 @@ const Navigation: React.FC<NavigationProps> = ({
       data-cursor={item.label}
       className={`group relative inline-flex items-center text-ink-primary transition-[opacity,transform,border-color,color] duration-200 hover:text-accent focus:outline-none dark:text-bone-primary ${
         mobile
-          ? 'min-h-[28px] px-1 py-1.5'
+          ? 'min-h-[32px] px-1.5 py-1'
           : 'min-h-[30px] px-1 py-1'
       }`}
     >
       <span
-        className={`font-serif text-[10px] tracking-[0.03em] sm:text-[11px] md:text-[14px] md:tracking-[0.035em] ${
+        className={`font-serif ${mobile ? 'text-[11px] tracking-[0.02em]' : 'text-[10px] tracking-[0.03em] sm:text-[11px] md:text-[14px] md:tracking-[0.035em]'} ${
           isActive(item.id)
             ? 'opacity-100'
             : 'opacity-55'
@@ -110,7 +110,7 @@ const Navigation: React.FC<NavigationProps> = ({
       title={label}
       className={`relative flex items-center justify-center rounded-full text-ink-primary/65 transition-[opacity,transform,border-color,color,background-color] duration-200 hover:text-accent hover:opacity-100 dark:text-bone-primary/65 ${
         mobile
-          ? 'min-h-[28px] min-w-[28px] bg-transparent'
+          ? 'min-h-[32px] min-w-[32px] bg-transparent'
           : 'min-h-[30px] min-w-[30px] bg-transparent'
       }`}
     >
@@ -176,14 +176,14 @@ const Navigation: React.FC<NavigationProps> = ({
 
       {/* ================= MOBILE BOTTOM NAV ================= */}
       <nav className="pointer-events-none fixed inset-x-0 bottom-0 z-[9993] px-3 pb-[max(0.85rem,env(safe-area-inset-bottom))] md:hidden">
-        <div className="nav-material-capsule pointer-events-auto mx-auto flex w-full max-w-[330px] items-center justify-center gap-0.5 rounded-full px-2 py-2">
+        <div className="nav-material-capsule pointer-events-auto mx-auto flex w-full max-w-[302px] items-center justify-center gap-1 rounded-full px-2.5 py-1.5">
           {navItems.map((item, index) => (
             <React.Fragment key={item.id}>
               <NavLink item={item} mobile />
-              {index < navItems.length - 1 && <span className="h-5 w-px bg-accent/35" aria-hidden="true" />}
+              {index < navItems.length - 1 && <span className="h-4 w-px bg-accent/35" aria-hidden="true" />}
             </React.Fragment>
           ))}
-          <span className="h-5 w-px bg-accent/35" aria-hidden="true" />
+          <span className="h-4 w-px bg-accent/35" aria-hidden="true" />
           <FullscreenToggle mobile />
           <ThemeToggle mobile />
         </div>

@@ -11,27 +11,27 @@ export default {
   theme: {
     extend: {
       colors: {
-        beige: '#F3E9DC',
-        black: '#2A1711',
-        white: '#F3E9DC',
-        accent: '#C08552',
+        beige: '#F3E8DB',
+        black: '#0A0A0A',
+        white: '#F3E8DB',
+        accent: '#E86A17',
         orange: {
-          500: '#C08552',
+          500: '#E86A17',
         },
         ink: {
-          primary: '#5E3023',
-          secondary: '#895737',
-          tertiary: '#DAB49D',
+          primary: '#0A0A0A',
+          secondary: '#2B2B2B',
+          tertiary: '#6A625C',
         },
         bone: {
-          primary: '#F3E9DC',
-          secondary: '#DAB49D',
-          tertiary: '#895737',
+          primary: '#F3E8DB',
+          secondary: '#CFC2B5',
+          tertiary: '#8F8378',
         }
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        serif: ['Playfair Display', 'serif'],
+        sans: ['Druto', 'Inter', 'sans-serif'],
+        serif: ['Apoc JP', 'Intermedial Slab', 'Playfair Display', 'serif'],
       },
       fontWeight: {
         light: '300',

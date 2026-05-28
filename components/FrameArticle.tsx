@@ -280,10 +280,11 @@ export const FrameArticle = () => {
             decoding="async"
             width={photo.width}
             height={photo.height}
+            title={`${photo.title} by ${photo.photographer}`}
             className="mx-auto max-h-[82vh] w-full object-contain"
           />
           <figcaption className="mt-4 text-[10px] uppercase tracking-[0.3em] text-ink-primary/42 dark:text-bone-primary/42">
-            Source: Unsplash / {photo.location}
+            {photo.title} by {photo.photographer} / {photo.location}
           </figcaption>
         </figure>
 

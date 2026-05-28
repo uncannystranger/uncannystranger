@@ -104,6 +104,7 @@ export const PhotoDetail = ({
                 decoding="async"
                 width={detail.width}
                 height={detail.height}
+                title={`${detail.title} by ${detail.photographer}`}
                 className="theme-picture max-h-[70dvh] w-full object-contain md:max-h-[76vh]"
               />
             <div className="absolute inset-x-3 bottom-3 hidden justify-between md:inset-x-3 md:top-1/2 md:bottom-auto md:flex md:-translate-y-1/2">

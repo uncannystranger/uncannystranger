@@ -29,6 +29,7 @@ export const EditorialPhotoGrid = ({ photos, onOpen }: EditorialPhotoGridProps) 
               draggable={false}
               width={photo.width}
               height={photo.height}
+              title={`${photo.title} by ${photo.photographer}`}
               style={{ aspectRatio: `${photo.width} / ${photo.height}` }}
               className="theme-picture h-auto max-h-[72vh] w-full object-contain group-hover:brightness-105"
             />

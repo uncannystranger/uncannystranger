@@ -385,6 +385,7 @@ const Projects = ({ initialView = 'gallery' }: ProjectsProps) => {
                       style={{ aspectRatio: `${photo.width} / ${photo.height}` }}
                       width={photo.width}
                       height={photo.height}
+                      title={`${photo.title} by ${photo.photographer}`}
                       className="theme-picture max-h-[74vh] w-full object-contain group-hover:scale-[1.01]"
                     />
                   </div>

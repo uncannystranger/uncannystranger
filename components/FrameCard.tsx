@@ -30,6 +30,7 @@ export const FrameCard: React.FC<FrameCardProps> = ({
             draggable={false}
             width={photo.width}
             height={photo.height}
+            title={`${photo.title} by ${photo.photographer}`}
             className="theme-picture h-auto max-h-[70vh] w-full object-contain group-hover:scale-[1.012]"
           />
         </div>

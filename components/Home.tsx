@@ -202,6 +202,7 @@ const HomePhotoButton = ({
       fetchPriority={eager ? 'high' : 'auto'}
       width={photo.width}
       height={photo.height}
+      title={photo.title}
     />
     <span className="media-protection-overlay" aria-hidden="true" />
   </button>
@@ -410,6 +411,7 @@ const Home = ({ setSection }: HomeProps) => {
                     draggable={false}
                     width={photo.width}
                     height={photo.height}
+                    title={photo.title}
                     style={{ aspectRatio: `${photo.width} / ${photo.height}` }}
                     className="home-gallery-photo"
                   />
