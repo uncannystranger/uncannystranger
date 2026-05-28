@@ -13,7 +13,7 @@ export const EditorialPhotoGrid = ({ photos, onOpen }: EditorialPhotoGridProps) 
         <figure
           key={photo.id}
           onClick={() => onOpen(photo, index)}
-          className="editorial-masonry-item group relative w-full cursor-pointer"
+          className="editorial-masonry-item theme-picture-surface group relative w-full cursor-pointer"
           data-cursor="Open"
         >
           <div
@@ -30,7 +30,7 @@ export const EditorialPhotoGrid = ({ photos, onOpen }: EditorialPhotoGridProps) 
               width={photo.width}
               height={photo.height}
               style={{ aspectRatio: `${photo.width} / ${photo.height}` }}
-              className="h-auto max-h-[72vh] w-full object-contain grayscale transition-[filter,opacity] duration-200 group-hover:grayscale-0 group-hover:brightness-105"
+              className="theme-picture h-auto max-h-[72vh] w-full object-contain group-hover:brightness-105"
             />
             <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/55 via-black/10 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
             <div className="absolute bottom-5 left-5 right-5 translate-y-2 opacity-0 transition-[opacity,transform] duration-200 group-hover:translate-y-0 group-hover:opacity-100">

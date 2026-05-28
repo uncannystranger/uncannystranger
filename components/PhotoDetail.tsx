@@ -93,7 +93,7 @@ export const PhotoDetail = ({
             </button>
           </div>
 
-          <div className="photo-detail-media relative flex min-h-[32vh] items-center justify-center bg-ink-primary/[0.025] p-4 pt-0 dark:bg-bone-primary/[0.035] md:min-h-[42vh] md:p-6">
+          <div className="photo-detail-media theme-picture-surface is-active relative flex min-h-[32vh] items-center justify-center bg-ink-primary/[0.025] p-4 pt-0 dark:bg-bone-primary/[0.035] md:min-h-[42vh] md:p-6">
               <img
                 key={detail.rawId}
                 src={detail.image}
@@ -104,7 +104,7 @@ export const PhotoDetail = ({
                 decoding="async"
                 width={detail.width}
                 height={detail.height}
-                className="max-h-[70dvh] w-full object-contain md:max-h-[76vh]"
+                className="theme-picture max-h-[70dvh] w-full object-contain md:max-h-[76vh]"
               />
             <div className="absolute inset-x-3 bottom-3 hidden justify-between md:inset-x-3 md:top-1/2 md:bottom-auto md:flex md:-translate-y-1/2">
               <button

@@ -11,19 +11,22 @@ export default {
   theme: {
     extend: {
       colors: {
-        beige: '#FBE9D0',
-        black: '#244855',
-        white: '#FBE9D0',
-        accent: '#E64833',
+        beige: '#F3E9DC',
+        black: '#2A1711',
+        white: '#F3E9DC',
+        accent: '#C08552',
+        orange: {
+          500: '#C08552',
+        },
         ink: {
-          primary: '#244855',
-          secondary: '#874F41',
-          tertiary: '#90AEAD',
+          primary: '#5E3023',
+          secondary: '#895737',
+          tertiary: '#DAB49D',
         },
         bone: {
-          primary: '#FBE9D0',
-          secondary: '#90AEAD',
-          tertiary: '#874F41',
+          primary: '#F3E9DC',
+          secondary: '#DAB49D',
+          tertiary: '#895737',
         }
       },
       fontFamily: {

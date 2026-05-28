@@ -370,7 +370,7 @@ const Projects = ({ initialView = 'gallery' }: ProjectsProps) => {
                 <button
                   key={photo.id}
                   onClick={() => setActiveIndex(filteredPhotos.findIndex((item) => item.id === photo.id))}
-                  className={`group grid w-full grid-cols-1 gap-6 border-b border-ink-primary/10 pb-12 text-left dark:border-bone-primary/10 md:grid-cols-12 md:items-end ${
+                  className={`theme-picture-surface group grid w-full grid-cols-1 gap-6 border-b border-ink-primary/10 pb-12 text-left dark:border-bone-primary/10 md:grid-cols-12 md:items-end ${
                     index % 2 === 0 ? '' : 'md:text-right'
                   }`}
                 >
@@ -385,7 +385,7 @@ const Projects = ({ initialView = 'gallery' }: ProjectsProps) => {
                       style={{ aspectRatio: `${photo.width} / ${photo.height}` }}
                       width={photo.width}
                       height={photo.height}
-                      className="max-h-[74vh] w-full object-contain grayscale transition-[filter,transform,opacity] duration-200 group-hover:scale-[1.01] group-hover:grayscale-0"
+                      className="theme-picture max-h-[74vh] w-full object-contain group-hover:scale-[1.01]"
                     />
                   </div>
                   <div className={`${index % 2 === 0 ? 'md:col-span-4' : 'md:col-span-4 md:col-start-1 md:row-start-1'}`}>

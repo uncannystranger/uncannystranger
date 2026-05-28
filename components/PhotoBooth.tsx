@@ -1,4 +1,4 @@
-import { useEffect, useState, type SyntheticEvent } from 'react';
+import { useState, type SyntheticEvent } from 'react';
 import { useDeviceTier } from '../src/hooks/useDeviceTier';
 
 interface BoothImage {
@@ -16,29 +16,6 @@ interface PhotoBoothProps {
 const PhotoBooth = ({ images }: PhotoBoothProps) => {
   const { isLowPower } = useDeviceTier();
   const [activeId, setActiveId] = useState<number | null>(null);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  /* ------------------------------
-     Detect dark mode
-  ------------------------------ */
-  useEffect(() => {
-    if (typeof document === 'undefined') return;
-
-    const updateTheme = () => {
-      setIsDarkMode(document.documentElement.classList.contains('dark'));
-      setActiveId(null);
-    };
-
-    updateTheme();
-
-    const observer = new MutationObserver(updateTheme);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class'],
-    });
-
-    return () => observer.disconnect();
-  }, []);
 
   /* ------------------------------
      Cloudinary helpers
@@ -74,17 +51,6 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
         {images.map((img, index) => {
           const isActive = activeId === img.id;
 
-          /* ------------------------------
-             GRAYSCALE LOGIC (UNCHANGED)
-          ------------------------------ */
-          const imageClass = isDarkMode
-            ? isActive
-              ? 'grayscale-0'
-              : 'grayscale'
-            : isActive
-            ? 'grayscale'
-            : 'grayscale-0';
-
           return (
             <article
               key={img.id}
@@ -102,6 +68,8 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
                 onClick={() => setActiveId(isActive ? null : img.id)}
                 className={`
                   editorial-image-mask
+                  theme-picture-surface
+                  ${isActive ? 'is-active' : ''}
                   relative
                   w-full
                   aspect-[3/4]
@@ -129,11 +97,8 @@ const PhotoBooth = ({ images }: PhotoBoothProps) => {
                       w-full
                       h-full
                       object-cover
-                      transition-transform
-                      duration-[1400ms]
-                      ease-out
+                      theme-picture
                       group-hover:scale-[1.035]
-                      ${imageClass}
                     `}
                   />
                   <div className="media-protection-overlay" aria-hidden="true" />

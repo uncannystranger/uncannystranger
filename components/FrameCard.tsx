@@ -16,7 +16,7 @@ export const FrameCard: React.FC<FrameCardProps> = ({
 
   return (
     <article
-      className={`group ${index % 4 === 0 ? 'md:col-span-7' : index % 4 === 1 ? 'md:col-span-5 md:mt-12' : index % 4 === 2 ? 'md:col-span-5' : 'md:col-span-7 md:mt-10'}`}
+      className={`theme-picture-surface group ${index % 4 === 0 ? 'md:col-span-7' : index % 4 === 1 ? 'md:col-span-5 md:mt-12' : index % 4 === 2 ? 'md:col-span-5' : 'md:col-span-7 md:mt-10'}`}
     >
       <Link to={`/frames/${photo.rawId}`} data-cursor="Read" className="block">
         <div className="editorial-image-mask overflow-hidden bg-ink-primary/[0.035] dark:bg-bone-primary/[0.045]">
@@ -30,7 +30,7 @@ export const FrameCard: React.FC<FrameCardProps> = ({
             draggable={false}
             width={photo.width}
             height={photo.height}
-            className="h-auto max-h-[70vh] w-full object-contain grayscale transition-[filter,transform,opacity] duration-200 group-hover:scale-[1.012] group-hover:grayscale-0"
+            className="theme-picture h-auto max-h-[70vh] w-full object-contain group-hover:scale-[1.012]"
           />
         </div>
         <div className="mt-6 border-t border-ink-primary/12 pt-5 dark:border-bone-primary/12">

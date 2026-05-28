@@ -427,7 +427,7 @@ const App: React.FC = () => {
                   />
                 )}
                 {isKnownPath && isFrameArticlePath && <FrameArticle />}
-                {isKnownPath && !isFrameArticlePath && section === 'artist' && <Artist isDarkMode={isDarkMode} />}
+                {isKnownPath && !isFrameArticlePath && section === 'artist' && <Artist />}
               </Suspense>
             </div>
         </main>

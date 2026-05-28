@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import { IMAGES } from '../src/assets/images/imageRegistry';
 
-type ArtistProps = {
-  isDarkMode: boolean;
-};
-
-const Artist: React.FC<ArtistProps> = ({ isDarkMode }) => {
+const Artist: React.FC = () => {
   const [isPortraitActive, setIsPortraitActive] = useState(false);
 
   const handleFocusLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
@@ -28,7 +24,7 @@ const Artist: React.FC<ArtistProps> = ({ isDarkMode }) => {
         </div>
 
         <div
-          className="editorial-image-mask relative mx-auto aspect-[4/5] w-full cursor-pointer overflow-hidden border border-ink-primary/10 bg-ink-primary/[0.035] dark:border-bone-primary/10 dark:bg-bone-primary/[0.045] md:col-span-4 md:col-start-9 md:row-span-2 md:row-start-1 md:max-h-[78vh]"
+          className={`editorial-image-mask theme-picture-surface relative mx-auto aspect-[4/5] w-full cursor-pointer overflow-hidden border border-ink-primary/10 bg-ink-primary/[0.035] dark:border-bone-primary/10 dark:bg-bone-primary/[0.045] md:col-span-4 md:col-start-9 md:row-span-2 md:row-start-1 md:max-h-[78vh] ${isPortraitActive ? 'is-active' : ''}`}
           data-cursor="Artist"
           onClick={() => setIsPortraitActive(!isPortraitActive)}
         >
@@ -38,15 +34,7 @@ const Artist: React.FC<ArtistProps> = ({ isDarkMode }) => {
             draggable={false}
             data-loaded="false"
             onLoad={handleFocusLoad}
-            className={`w-full h-full object-cover transition-all duration-1000 ease-in-out focus-reveal ${
-              isDarkMode
-                ? isPortraitActive
-                  ? 'grayscale-0'
-                  : 'grayscale'
-                : isPortraitActive
-                ? 'grayscale'
-                : 'grayscale-0'
-            }`}
+            className="theme-picture w-full h-full object-cover focus-reveal"
           />
           <div className="media-protection-overlay" aria-hidden="true" />
           <div className="absolute inset-0 ring-1 ring-inset ring-black/5 pointer-events-none" />

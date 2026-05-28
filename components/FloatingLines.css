@@ -3,7 +3,7 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  color: var(--flow-line-color, rgba(135, 79, 65, 0.38));
+  color: var(--flow-line-color, rgba(137, 87, 55, 0.38));
   opacity: var(--flow-line-opacity, 0.28);
   pointer-events: none;
   user-select: none;
