@@ -11,15 +11,18 @@ import { canonicalFor, DEFAULT_OG_IMAGE, DEFAULT_OG_IMAGE_ALT, pageSeo } from '.
 import { useContentProtection } from './src/hooks/useContentProtection';
 
 const THEME_STORAGE_KEY = 'uncanny-theme-mode';
+const THEME_MANUAL_STORAGE_KEY = 'uncanny-theme-manual';
+type ThemeMode = 'system' | 'dark' | 'light';
 const Home = React.lazy(() => import('./components/Home'));
 const Projects = React.lazy(() => import('./components/Projects'));
 const Artist = React.lazy(() => import('./components/Artist'));
 const FrameArticle = React.lazy(() => import('./components/FrameArticle'));
 
-const readInitialThemeMode = (): 'system' | 'dark' | 'light' => {
+const readInitialThemeMode = (): ThemeMode => {
   if (typeof window === 'undefined') return 'system';
   const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
-  return stored === 'dark' || stored === 'light' || stored === 'system' ? stored : 'system';
+  const hasManualTheme = window.localStorage.getItem(THEME_MANUAL_STORAGE_KEY) === 'true';
+  return hasManualTheme && (stored === 'dark' || stored === 'light') ? stored : 'system';
 };
 
 /* ================= SAFETY: ERROR BOUNDARY ================= */
@@ -74,7 +77,7 @@ const App: React.FC = () => {
       ? document.documentElement.classList.contains('dark')
       : false
   );
-  const [themeOverride, setThemeOverride] = useState<'system' | 'dark' | 'light'>(readInitialThemeMode);
+  const [themeOverride, setThemeOverride] = useState<ThemeMode>(readInitialThemeMode);
   const [recActive, setRecActive] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -168,18 +171,25 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!window.matchMedia) return;
+    if (typeof window === 'undefined') return;
 
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const mq = window.matchMedia?.('(prefers-color-scheme: dark)');
 
-    const applyFromMode = (mode: 'system' | 'dark' | 'light', matches: boolean) => {
+    const applyFromMode = (mode: ThemeMode, matches: boolean) => {
       const nextIsDark = mode === 'system' ? matches : mode === 'dark';
       setIsDarkMode(nextIsDark);
       applyTheme(nextIsDark);
     };
 
-    applyFromMode(themeOverride, mq.matches);
+    applyFromMode(themeOverride, mq?.matches ?? false);
     window.localStorage.setItem(THEME_STORAGE_KEY, themeOverride);
+    if (themeOverride === 'system') {
+      window.localStorage.removeItem(THEME_MANUAL_STORAGE_KEY);
+    } else {
+      window.localStorage.setItem(THEME_MANUAL_STORAGE_KEY, 'true');
+    }
+
+    if (!mq) return;
 
     const onChange = (e: MediaQueryListEvent) => {
       if (themeOverride !== 'system') return;
@@ -417,7 +427,7 @@ const App: React.FC = () => {
                   />
                 )}
                 {isKnownPath && isFrameArticlePath && <FrameArticle />}
-                {isKnownPath && !isFrameArticlePath && section === 'artist' && <Artist />}
+                {isKnownPath && !isFrameArticlePath && section === 'artist' && <Artist isDarkMode={isDarkMode} />}
               </Suspense>
             </div>
         </main>

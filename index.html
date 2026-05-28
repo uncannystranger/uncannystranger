@@ -25,13 +25,18 @@
     (() => {
       try {
         const stored = localStorage.getItem('uncanny-theme-mode');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const dark = stored === 'dark' || ((!stored || stored === 'system') && prefersDark);
+        const hasManualTheme = localStorage.getItem('uncanny-theme-manual') === 'true';
+        const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
+        const dark = hasManualTheme && stored === 'dark'
+          ? true
+          : hasManualTheme && stored === 'light'
+            ? false
+            : prefersDark;
         document.documentElement.classList.toggle('dark', dark);
         document.documentElement.classList.toggle('light', !dark);
         document.documentElement.dataset.theme = dark ? 'dark' : 'light';
       } catch {
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        if (window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
           document.documentElement.classList.add('dark');
           document.documentElement.dataset.theme = 'dark';
         } else {

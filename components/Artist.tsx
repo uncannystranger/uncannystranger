@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { IMAGES } from '../src/assets/images/imageRegistry';
 
-const Artist: React.FC = () => {
+type ArtistProps = {
+  isDarkMode: boolean;
+};
+
+const Artist: React.FC<ArtistProps> = ({ isDarkMode }) => {
   const [isPortraitActive, setIsPortraitActive] = useState(false);
-  const isDarkMode =
-    typeof document !== 'undefined' &&
-    document.documentElement.classList.contains('dark');
 
   const handleFocusLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
     event.currentTarget.setAttribute('data-loaded', 'true');
