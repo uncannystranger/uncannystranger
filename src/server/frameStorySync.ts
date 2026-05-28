@@ -61,6 +61,19 @@ const LEGACY_STORY_MARKERS = [
   'Memory often arrives as a fragment.',
 ];
 
+const GENERATED_STORY_MARKERS = [
+  'keeps a private weather that belongs to this image alone.',
+  'sets the visual temperature of this',
+  'letting its proportion, colour, and recorded detail become an editorial memory.',
+  'stays with the light recorded in',
+  'shaped by pale-lit light and the measured patience of the camera.',
+  'shaped by warm-toned light and the measured patience of the camera.',
+  'shaped by low-toned light and the measured patience of the camera.',
+  'stays close to the moment it preserves',
+  'this image remains in the',
+  'close to the moment it preserves',
+];
+
 const EMOJI_PATTERN = /[\p{Extended_Pictographic}\u2600-\u27BF\uFE0F\u200D]/gu;
 const HAS_EMOJI_PATTERN = /[\p{Extended_Pictographic}\u2600-\u27BF\uFE0F\u200D]/u;
 
@@ -120,12 +133,32 @@ const toneFor = (color: string | null) => {
   return luminance < 70 ? 'low-toned' : luminance > 190 ? 'pale-lit' : 'warm-toned';
 };
 
+const lightFor = (tone: string) => {
+  if (tone === 'low-toned') return 'shadowed';
+  if (tone === 'pale-lit') return 'soft, pale';
+  if (tone === 'warm-toned') return 'warm';
+  return 'muted';
+};
+
 const monthFor = (value: string | null) => {
   const date = value ? new Date(value) : null;
   return date && !Number.isNaN(date.getTime())
     ? new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(date)
     : 'an unmarked hour';
 };
+
+const capitalized = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
+
+const titledSource = (source: string) => {
+  const phrase = source.split(/\s*(?:\u2014|--|;)\s*/)[0].replace(/[,.!?]+$/, '').trim();
+  if (phrase && phrase.length <= 82 && phrase.split(/\s+/).length <= 12) return capitalized(phrase);
+  return '';
+};
+
+const punctuated = (value: string) => (/[.!?]$/.test(value) ? value : `${value}.`);
+
+const styleFor = (id: string) =>
+  [...id].reduce((value, character) => value + character.charCodeAt(0), 0) % 4;
 
 const normalizedUnit = (value: string) =>
   cleanLine(value).toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, '').replace(/\s+/g, ' ').trim();
@@ -147,37 +180,69 @@ const payloadUnits = (frame: Pick<FramePayload, 'title' | 'subtitle' | 'story' |
 const generatedFrame = (photo: CachedPhoto, variation = 0): FramePayload => {
   const orientation = orientationFor(photo);
   const tone = toneFor(photo.color);
+  const light = lightFor(tone);
   const category = categoryFor(photo);
   const source = sourceText(photo);
   const dimensions = photo.width && photo.height ? `${photo.width} by ${photo.height}` : 'unmeasured';
   const month = monthFor(photo.created_at_unsplash);
-  const photographer = cleanLine(photo.photographer_name) || 'the photographer';
+  const photographer = cleanLine(photo.photographer_name) || 'The photographer';
   const location = cleanLine(photo.location_name);
   const reference = photo.unsplash_id.replace(/[^A-Za-z0-9]/g, '').slice(-8) || 'frame';
-  const baseTitle = source
-    ? source.split(' ').slice(0, 6).join(' ')
-    : `${tone.charAt(0).toUpperCase()}${tone.slice(1)} ${orientation.charAt(0).toUpperCase()}${orientation.slice(1)} Study`;
-  const title = variation
-    ? `${baseTitle}, Study ${reference}${variation > 1 ? ` ${variation}` : ''}`
-    : baseTitle;
+  const baseTitle =
+    titledSource(source) ||
+    `${capitalized(light)} Light, ${capitalized(orientation)} ${category}`;
+  const title =
+    variation === 0
+      ? baseTitle
+      : variation === 1
+        ? `${baseTitle}, ${capitalized(light)} Light`
+        : variation === 2
+          ? `${baseTitle}, ${month}`
+          : `${baseTitle}, Study ${reference}${variation > 3 ? ` ${variation - 2}` : ''}`;
   const place = location ? ` in ${location}` : '';
+  const archive = category === 'Black & White' ? 'black-and-white archive' : `${category} archive`;
+  const setting =
+    category === 'Mogadishu'
+      ? `from Mogadishu${location && !/mogadishu/i.test(location) ? `, made in ${location}` : ''}`
+      : `from the ${archive}${location ? `, made in ${location}` : ''}`;
+  const style = styleFor(photo.unsplash_id);
   const scene = source
-    ? `${title} begins with ${source.replace(/[.!?]$/, '')}, held in a ${orientation} composition${place}.`
-    : `${title} begins without a caption, gathering ${tone} light in a ${orientation} composition${place}.`;
-  const quote = `${title} keeps a private weather that belongs to this image alone.`;
-  const observation = `${title} measures ${dimensions} pixels from ${month}; its ${tone} palette sets the visual temperature of this ${category.toLowerCase()} frame.`;
-  const meaning = `${photographer} leaves ${title} open to attention, letting its proportion, colour, and recorded detail become an editorial memory.`;
-  const closing = `${title} stays with the light recorded in ${month}.`;
+    ? variation
+      ? `In frame ${reference}, ${punctuated(source).charAt(0).toLowerCase()}${punctuated(source).slice(1)}`
+      : punctuated(source)
+    : `Without a supplied caption, "${title}" holds ${light} light in a ${orientation} photograph${place}, indexed as frame ${reference}.`;
+  const observations = [
+    `${photographer} made "${title}" as a ${orientation} composition${place}, allowing its ${light} light and detail to remain unforced.`,
+    `In "${title}", ${photographer} lets a ${orientation} composition${place} carry the mood of its ${light} light.`,
+    `For "${title}", ${photographer} holds the ${orientation} frame${place} with patience, leaving its ${light} detail intact.`,
+    `Through a ${orientation} composition${place}, ${photographer} draws ${light} light into "${title}" without crowding the scene.`,
+  ];
+  const meanings = [
+    `Recorded in ${month} at ${dimensions} pixels, "${title}" enters the ${archive} as an intimate record of the scene${variation > 2 ? `, filed as ${reference}` : ''}.`,
+    `Sized at ${dimensions} pixels and dated ${month}, "${title}" belongs to the ${archive} with its atmosphere still intact${variation > 2 ? `, under reference ${reference}` : ''}.`,
+    `The ${dimensions}-pixel frame was recorded in ${month}; within the ${archive}, "${title}" keeps the feeling of its original moment${variation > 2 ? `, indexed as ${reference}` : ''}.`,
+    `With proportions of ${dimensions} pixels from ${month}, "${title}" is kept in the ${archive} for the detail it allows to linger${variation > 2 ? `, as reference ${reference}` : ''}.`,
+  ];
+  const subtitles = [
+    `"${title}" is a ${orientation} photograph ${setting}, held in ${light} light.`,
+    `A ${orientation} frame ${setting} in ${light} light: "${title}".`,
+    `"${title}", a ${orientation} image ${setting}, carries ${light} light.`,
+    `In this ${orientation} photograph ${setting}, "${title}" gathers ${light} light.`,
+  ];
+  const closings = [
+    `The ${light} detail of "${title}", held in the ${archive} since ${month}.`,
+    `"${title}" preserves a ${light} moment from ${month} in the ${archive}.`,
+    `From ${month}, "${title}" keeps its ${light} detail in the ${archive}.`,
+    `The ${archive} holds "${title}" from ${month}, quiet in ${light} light.`,
+  ];
 
   return {
     unsplash_id: photo.unsplash_id,
     slug: slugFor(title, photo.unsplash_id),
     title: cleanLine(title),
-    subtitle: cleanLine(
-      `${title} is a ${orientation} study from ${category}, shaped by ${tone} light and the measured patience of the camera.`
-    ),
-    story: [quote, scene, observation, meaning].map(cleanLine).join('\n\n'),
-    excerpt: cleanLine(closing),
+    subtitle: cleanLine(subtitles[style]),
+    story: [scene, observations[style], meanings[style]].map(cleanLine).join('\n\n'),
+    excerpt: cleanLine(closings[style]),
     category,
     read_time: '2 min read',
   };
@@ -195,7 +260,10 @@ const invalidStory = (
   HAS_EMOJI_PATTERN.test(
     `${frame.title} ${frame.subtitle || ''} ${frame.story} ${frame.excerpt || ''}`
   ) ||
-  LEGACY_STORY_MARKERS.some((marker) => frame.story.includes(marker));
+  LEGACY_STORY_MARKERS.some((marker) => frame.story.includes(marker)) ||
+  GENERATED_STORY_MARKERS.some((marker) =>
+    `${frame.subtitle || ''} ${frame.story} ${frame.excerpt || ''}`.includes(marker)
+  );
 
 const unchanged = (left: CachedFrame, right: FramePayload) =>
   left.title === right.title &&
