@@ -99,7 +99,7 @@ export function formatUnsplashPhoto(photo: UnsplashApiPhoto): UnsplashPhoto {
     tags: (photo.tags || []).map((tag) => tag.title).filter(Boolean).slice(0, 12),
     unsplashUrl: photo.links.html,
     downloadLocation: photo.links.download_location,
-    photographer: photo.user?.name || 'Abdullahi Maxamed',
+    photographer: photo.user?.name || 'Abdullahi Mohamud',
     frameStory: photo.frame_story || null,
   };
 }

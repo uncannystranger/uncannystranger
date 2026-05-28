@@ -14,6 +14,7 @@ const Navigation: React.FC<NavigationProps> = ({
   currentSection,
   setSection,
   isDarkMode,
+  themeMode,
   toggleTheme,
 }) => {
   const [isFullscreen, setIsFullscreen] = useState(
@@ -93,16 +94,20 @@ const Navigation: React.FC<NavigationProps> = ({
     label,
     children,
     mobile = false,
+    pressed,
   }: {
     onClick: () => void;
     label: string;
     children: React.ReactNode;
     mobile?: boolean;
+    pressed?: boolean;
   }) => (
     <button
       onClick={onClick}
       data-cursor={label}
       aria-label={label}
+      aria-pressed={pressed}
+      title={label}
       className={`relative flex items-center justify-center rounded-full text-ink-primary/65 transition-[opacity,transform,border-color,color,background-color] duration-200 hover:text-accent hover:opacity-100 dark:text-bone-primary/65 ${
         mobile
           ? 'min-h-[28px] min-w-[28px] bg-transparent'
@@ -116,8 +121,9 @@ const Navigation: React.FC<NavigationProps> = ({
   /* ------------------------------
      THEME TOGGLE (UNCHANGED)
   ------------------------------ */
+  const themeLabel = `Theme: ${themeMode}`;
   const ThemeToggle = ({ mobile = false }: { mobile?: boolean }) => (
-    <IconButton onClick={toggleTheme} label="Theme" mobile={mobile}>
+    <IconButton onClick={toggleTheme} label={themeLabel} mobile={mobile} pressed={themeMode !== 'system'}>
       <div>
           {isDarkMode ? (
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">

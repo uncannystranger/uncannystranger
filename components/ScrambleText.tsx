@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
 
 interface ScrambleTextProps {
   text: string;
@@ -20,11 +19,13 @@ const ScrambleText = ({
 }: ScrambleTextProps) => {
   const [output, setOutput] = useState(text);
   const hasRun = useRef(false);
-  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     if (hasRun.current) return;
     hasRun.current = true;
+    const shouldReduceMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     if (shouldReduceMotion || completedScrambles.has(text)) {
       setOutput(text);
       return;
@@ -69,18 +70,16 @@ const ScrambleText = ({
       window.clearTimeout(timeoutId);
       cancelAnimationFrame(rafId);
     };
-  }, [durationMs, startDelayMs, text, shouldReduceMotion]);
+  }, [durationMs, startDelayMs, text]);
 
   return (
-    <motion.span
+    <span
       key={text}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
       className={className}
       aria-hidden={ariaHidden}
     >
       {output}
-    </motion.span>
+    </span>
   );
 };
 

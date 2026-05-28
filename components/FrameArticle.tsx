@@ -259,7 +259,7 @@ export const FrameArticle = () => {
           <aside className="grid gap-5 self-end font-serif text-sm leading-[1.9] text-ink-primary/62 dark:text-bone-primary/62 md:col-span-12 md:grid-cols-[minmax(0,560px)_1fr] md:items-end">
             <p className="max-w-xl text-pretty">{photo.intro}</p>
             <div className="flex flex-wrap gap-x-5 gap-y-2 text-[10px] uppercase tracking-[0.28em] text-ink-primary/44 dark:text-bone-primary/44 md:justify-end">
-              <span>Abdullahi Maxamed</span>
+              <span>Abdullahi Mohamud</span>
               <span>Story views: {formatStats(storyStats?.views)}</span>
               <span>Story likes: {formatStats(storyStats?.likes)}</span>
               <span>{photo.date}</span>

@@ -124,7 +124,7 @@ const fallbackPhotos: UnsplashApiPhoto[] = [
     },
     location: { name: 'Mogadishu, Somalia', city: 'Mogadishu', country: 'Somalia' },
     tags: [{ title: 'portrait' }, { title: 'camera' }, { title: 'editorial' }],
-    user: { name: 'Abdullahi Maxamed', username: UNSPLASH_USERNAME },
+    user: { name: 'Abdullahi Mohamud', username: UNSPLASH_USERNAME },
   },
   {
     id: 'XzWkVZKqU0M',
@@ -145,7 +145,7 @@ const fallbackPhotos: UnsplashApiPhoto[] = [
     },
     location: { name: 'Mogadishu, Somalia', city: 'Mogadishu', country: 'Somalia' },
     tags: [{ title: 'Mogadishu' }, { title: 'city' }, { title: 'dusk' }],
-    user: { name: 'Abdullahi Maxamed', username: UNSPLASH_USERNAME },
+    user: { name: 'Abdullahi Mohamud', username: UNSPLASH_USERNAME },
   },
   {
     id: 'iJKXnMSZ_qI',
@@ -166,7 +166,7 @@ const fallbackPhotos: UnsplashApiPhoto[] = [
     },
     location: { name: 'Somalia', country: 'Somalia' },
     tags: [{ title: 'street' }, { title: 'friends' }, { title: 'documentary' }],
-    user: { name: 'Abdullahi Maxamed', username: UNSPLASH_USERNAME },
+    user: { name: 'Abdullahi Mohamud', username: UNSPLASH_USERNAME },
   },
   {
     id: 'xmEupVYRQqw',
@@ -187,7 +187,7 @@ const fallbackPhotos: UnsplashApiPhoto[] = [
     },
     location: { name: 'Somalia', country: 'Somalia' },
     tags: [{ title: 'night' }, { title: 'street' }, { title: 'light' }],
-    user: { name: 'Abdullahi Maxamed', username: UNSPLASH_USERNAME },
+    user: { name: 'Abdullahi Mohamud', username: UNSPLASH_USERNAME },
   },
   {
     id: '_2OdbG4q4Wc',
@@ -208,7 +208,7 @@ const fallbackPhotos: UnsplashApiPhoto[] = [
     },
     location: { name: 'Somalia', country: 'Somalia' },
     tags: [{ title: 'interior' }, { title: 'window' }, { title: 'memory' }],
-    user: { name: 'Abdullahi Maxamed', username: UNSPLASH_USERNAME },
+    user: { name: 'Abdullahi Mohamud', username: UNSPLASH_USERNAME },
   },
 ];
 
@@ -374,7 +374,7 @@ const galleryPhotoToUnsplash = (photo: GalleryApiPhoto): UnsplashApiPhoto => ({
   },
   tags: (photo.tags || []).map((title) => ({ title })),
   user: {
-    name: photo.photographer_name || 'Abdullahi Maxamed',
+    name: photo.photographer_name || 'Abdullahi Mohamud',
     username: UNSPLASH_USERNAME,
   },
 });

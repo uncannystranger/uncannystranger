@@ -1,6 +1,6 @@
 export const SITE_URL = 'https://uncannystranger.com';
 export const SITE_NAME = 'Uncanny Stranger';
-export const PERSON_NAME = 'Abdullahi Maxamed';
+export const PERSON_NAME = 'Abdullahi Mohamud';
 export const DEFAULT_OG_IMAGE =
   'https://uncannystranger.com/og-image.jpg';
 export const DEFAULT_OG_IMAGE_ALT =
@@ -15,15 +15,15 @@ export const pageSeo = {
     description:
       'Official portfolio of Uncanny Stranger, featuring cinematic photography, editorial visuals, Somali travel photography, documentary-style scenes, and creative visual storytelling.',
     keywords:
-      'Uncanny Stranger, Abdullahi Maxamed, Somali photographer, Mogadishu photography, photography portfolio, cinematic photography, documentary photography, editorial photography',
+      'Uncanny Stranger, Abdullahi Mohamud, Somali photographer, Mogadishu photography, photography portfolio, cinematic photography, documentary photography, editorial photography',
   },
   projects: {
     path: '/projects',
     title: 'Photography Projects | Uncanny Stranger',
     description:
-      'Explore photography projects, albums, collections, and exhibitions by Abdullahi Maxamed, the Somali photographer known as Uncanny Stranger.',
+      'Explore photography projects, albums, collections, and exhibitions by Abdullahi Mohamud, the Somali photographer known as Uncanny Stranger.',
     keywords:
-      'Uncanny Stranger projects, Abdullahi Maxamed photography, Somali photography portfolio, editorial photography, travel photography, documentary photography',
+      'Uncanny Stranger projects, Abdullahi Mohamud photography, Somali photography portfolio, editorial photography, travel photography, documentary photography',
   },
   frames: {
     path: '/frames',
@@ -31,15 +31,15 @@ export const pageSeo = {
     description:
       'Read poetic editorial Frames by Uncanny Stranger, where Mogadishu-rooted photography becomes short visual essays, image notes, and cinematic archive stories.',
     keywords:
-      'Uncanny Stranger Frames, Somali photo stories, Mogadishu visual essays, editorial photography stories, Abdullahi Maxamed photography',
+      'Uncanny Stranger Frames, Somali photo stories, Mogadishu visual essays, editorial photography stories, Abdullahi Mohamud photography',
   },
   artist: {
     path: '/artist',
-    title: 'About Abdullahi Maxamed | Uncanny Stranger',
+    title: 'About Abdullahi Mohamud | Uncanny Stranger',
     description:
-      'Learn about Abdullahi Maxamed, the Somali photographer behind Uncanny Stranger, and his approach to visual storytelling, light, memory, and urban photography.',
+      'Learn about Abdullahi Mohamud, the Somali photographer behind Uncanny Stranger, and his approach to visual storytelling, light, memory, and urban photography.',
     keywords:
-      'Abdullahi Maxamed, Uncanny Stranger, Somali photographer, Mogadishu photographer, visual storytelling, artist biography',
+      'Abdullahi Mohamud, Uncanny Stranger, Somali photographer, Mogadishu photographer, visual storytelling, artist biography',
   },
   notFound: {
     path: '',

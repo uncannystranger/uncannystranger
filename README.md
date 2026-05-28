@@ -1,10 +1,10 @@
 <div align="center">
-  <img src="public/readme/readme-banner.svg" alt="Abdullahi Maxamed — uncannystranger cinematic photography and visual storytelling banner" width="100%" />
+  <img src="public/readme/readme-banner.svg" alt="Abdullahi Mohamud — uncannystranger cinematic photography and visual storytelling banner" width="100%" />
 
   <br />
 
   <p>
-    <strong>Abdullahi Maxamed</strong><br />
+    <strong>Abdullahi Mohamud</strong><br />
     <em>uncannystranger</em><br />
     Somali Photographer · Digital Artist · Creative Technologist<br />
     Mogadishu, Somalia
@@ -21,7 +21,7 @@
 
 ## About
 
-I am **Abdullahi Maxamed**, professionally known as **uncannystranger** — a multidisciplinary creative working at the intersection of **visual storytelling, technology, and digital identity**.
+I am **Abdullahi Mohamud**, professionally known as **uncannystranger** — a multidisciplinary creative working at the intersection of **visual storytelling, technology, and digital identity**.
 
 My work focuses on **cinematic photography**, human-centered narratives, and building modern digital platforms that elevate how Somali stories are seen, archived, and discovered globally.
 
@@ -155,5 +155,5 @@ I believe storytelling — when done with honesty and intention — can reshape 
 ---
 
 <div align="center">
-  <sub>© Abdullahi Maxamed · uncannystranger</sub>
+  <sub>© Abdullahi Mohamud · uncannystranger</sub>
 </div>

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Section } from '../types';
 import GradualBlur from './GradualBlur';
 import PhotoDetail from './PhotoDetail';
+import ScrambleText from './ScrambleText';
 import { fetchLatestPhotos, UnsplashPhoto } from '../src/services/unsplash';
 import { formatUnsplashPhoto } from '../src/utils/photoFormatters';
 
@@ -141,7 +142,7 @@ const toFallbackGalleryPhoto = (photo: HomePhoto, index: number): UnsplashPhoto 
   exif: null,
   tags: [],
   unsplashUrl: photo.url,
-  photographer: 'Abdullahi Maxamed',
+  photographer: 'Abdullahi Mohamud',
 });
 
 const newestFirst = (items: UnsplashPhoto[]) =>
@@ -270,9 +271,9 @@ const Home = ({ setSection }: HomeProps) => {
           <div className="home-hero-copy relative z-30 md:col-span-6 md:col-start-2 md:row-start-1">
             <div>
               <p className="home-hero-topline">Portfolio</p>
-              <h1 className="editorial-hero-title home-hero-masthead font-serif text-ink-primary dark:text-bone-primary" aria-label="Abdullahi M.">
-                <span className="block">Abdullahi</span>
-                <span className="block">M.</span>
+              <h1 className="editorial-hero-title home-hero-masthead font-serif text-ink-primary dark:text-bone-primary" aria-label="Abdullahi Mohamud">
+                <ScrambleText text="Abdullahi" className="block" durationMs={720} />
+                <ScrambleText text="Mohamud" className="block" durationMs={720} startDelayMs={140} />
               </h1>
               <p className="home-hero-deck mt-7 max-w-[430px] font-serif text-[clamp(1rem,1.45vw,1.25rem)] leading-[1.75]">
                 Seen once. Remembered Longer.

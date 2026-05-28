@@ -25,7 +25,7 @@ export const IMAGES = {
         id: 3,
         src: cld('IMG_2166_copy_uwf1w2', PUBLIC_IMAGE_WIDTHS.feature),
         title: 'Before The Tide Speaks',
-        alt: 'Cinematic shoreline portrait in Somalia by Abdullahi Maxamed.',
+        alt: 'Cinematic shoreline portrait in Somalia by Abdullahi Mohamud.',
         caption: 'She stands at the shore before the day becomes loud. Water, air, and posture turn the portrait into a quiet beginning.'
       },
       {
@@ -39,7 +39,7 @@ export const IMAGES = {
         id: 5,
         src: cld('21_ianwgj', PUBLIC_IMAGE_WIDTHS.feature),
         title: 'Boats Waiting With The Tide',
-        alt: 'Fishing boats along the Somali shoreline photographed by Abdullahi Maxamed.',
+        alt: 'Fishing boats along the Somali shoreline photographed by Abdullahi Mohamud.',
         caption: 'Boats line the water with the patience of routine. Their stillness suggests labor paused, not finished.'
       },
       {
@@ -60,7 +60,7 @@ export const IMAGES = {
         id: 8,
         src: cld('2023-04-05_151130_jd6w2i', PUBLIC_IMAGE_WIDTHS.feature),
         title: 'Children Facing The Harbor',
-        alt: 'Children watching ships along the water in Somalia, photographed by Abdullahi Maxamed.',
+        alt: 'Children watching ships along the water in Somalia, photographed by Abdullahi Mohamud.',
         caption: 'Children sit at the edge of land and water, looking toward ships and cranes. Childhood and industry share the same horizon.'
       }
     ]
@@ -69,7 +69,7 @@ export const IMAGES = {
   artist: {
     profile: {
       src: cld('profile_vq16nd', PUBLIC_IMAGE_WIDTHS.thumbnail),
-      alt: 'Portrait of Abdullahi Maxamed, the photographer known as Uncanny Stranger.'
+      alt: 'Portrait of Abdullahi Mohamud, the photographer known as Uncanny Stranger.'
     }
   }
 };

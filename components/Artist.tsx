@@ -22,7 +22,7 @@ const Artist: React.FC = () => {
           <h2
             className="max-w-[9ch] break-words font-serif text-[clamp(3.8rem,10vw,9.5rem)] uppercase leading-[0.86] tracking-[-0.075em] text-ink-primary dark:text-bone-primary"
           >
-            Abdullahi Maxamed
+            Abdullahi Mohamud
           </h2>
         </div>
 
