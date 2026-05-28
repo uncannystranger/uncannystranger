@@ -4,8 +4,8 @@
   "description": "Cinematic photography and visual storytelling portfolio.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#121110",
-  "theme_color": "#121110",
+  "background_color": "#244855",
+  "theme_color": "#244855",
   "icons": [
     {
       "src": "/icon-192.png",

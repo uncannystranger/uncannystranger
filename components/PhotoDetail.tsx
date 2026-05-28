@@ -79,7 +79,7 @@ export const PhotoDetail = ({
         onClick={onClose}
       >
         <article
-          className="photo-detail-panel relative grid max-h-[calc(100dvh-1rem)] w-full max-w-[1180px] overflow-y-auto border border-ink-primary/10 bg-beige text-ink-primary shadow-[0_36px_120px_rgba(0,0,0,0.28)] dark:border-bone-primary/12 dark:bg-[#11100f] dark:text-bone-primary md:max-h-[85vh] md:overflow-hidden lg:grid-cols-[minmax(0,1.12fr)_minmax(360px,0.88fr)]"
+          className="photo-detail-panel relative grid max-h-[calc(100dvh-1rem)] w-full max-w-[1180px] overflow-y-auto border border-ink-primary/10 bg-beige text-ink-primary shadow-[0_36px_120px_rgba(0,0,0,0.28)] dark:border-bone-primary/12 dark:bg-black dark:text-bone-primary md:max-h-[85vh] md:overflow-hidden lg:grid-cols-[minmax(0,1.12fr)_minmax(360px,0.88fr)]"
           onClick={(event) => event.stopPropagation()}
         >
           <div className="sticky top-3 z-30 col-span-full flex justify-end px-3 pt-3 md:absolute md:right-3 md:top-3 md:block md:p-0">

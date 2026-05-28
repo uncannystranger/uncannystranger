@@ -11,17 +11,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        beige: '#FDFCF0',
-        accent: '#FF4D00',
+        beige: '#FBE9D0',
+        black: '#244855',
+        white: '#FBE9D0',
+        accent: '#E64833',
         ink: {
-          primary: '#1C1917',
-          secondary: '#78716C',
-          tertiary: '#A8A29E',
+          primary: '#244855',
+          secondary: '#874F41',
+          tertiary: '#90AEAD',
         },
         bone: {
-          primary: '#FAF9F6',
-          secondary: '#A8A29E',
-          tertiary: '#78716C',
+          primary: '#FBE9D0',
+          secondary: '#90AEAD',
+          tertiary: '#874F41',
         }
       },
       fontFamily: {
