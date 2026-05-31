@@ -1,14 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "crons": [
-    { "path": "/api/gallery/sync-unsplash", "schedule": "0 3 * * *" }
-  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/projects", "destination": "/projects/index.html" },
-    { "source": "/gallery", "destination": "/projects/index.html" },
-    { "source": "/frames", "destination": "/frames/index.html" },
-    { "source": "/frames/(.*)", "destination": "/frames/index.html" },
-    { "source": "/artist", "destination": "/artist/index.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [

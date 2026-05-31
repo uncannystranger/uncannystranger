@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "lint": "tsc --noEmit",
-    "build": "vite build && node scripts/generate-seo-pages.mjs",
+    "build": "node scripts/build-antonio.mjs",
     "sync:unsplash": "node --env-file-if-exists=.env.local --import tsx scripts/sync-unsplash-gallery.ts",
     "sync:frames": "node --env-file-if-exists=.env.local --import tsx scripts/sync-frame-stories.ts",
     "preview": "vite preview"
