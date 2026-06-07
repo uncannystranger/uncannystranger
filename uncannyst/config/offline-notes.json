@@ -1,0 +1,15 @@
+{
+  "site": "uncannystranger",
+  "brand": "Uncanny Stranger",
+  "source": "localized static export",
+  "images": {
+    "provider": "Unsplash",
+    "username": "uncannystranger",
+    "downloads": false,
+    "cache": "Supabase Edge Function unsplash-cache"
+  },
+  "prints": {
+    "status": "blocked",
+    "reason": "Print storefront URL, product routes, pricing, sizes, shipping, and policy copy are required before real checkout can be connected."
+  }
+}
