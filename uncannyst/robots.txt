@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Static assets and editorial pages should stay crawlable.
+Allow: /assets/
+Allow: /pages/
+
+Sitemap: https://uncannystranger.com/sitemap.xml
+Sitemap: https://uncannystranger.com/sitemap-images.xml

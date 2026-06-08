@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://uncannystranger.com/</loc>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1780577524963-60db4f08ba42?auto=format&amp;fit=crop&amp;w=1800&amp;q=85</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1780577480820-a156e46a3e0b?auto=format&amp;fit=crop&amp;w=1800&amp;q=85</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1780574779701-be775b5844bb?auto=format&amp;fit=crop&amp;w=1800&amp;q=85</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1780574851829-e048d73e3bb9?auto=format&amp;fit=crop&amp;w=1800&amp;q=85</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1780574851939-9113c2a90064?auto=format&amp;fit=crop&amp;w=1800&amp;q=85</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1780574751868-39b0ffdbac32?auto=format&amp;fit=crop&amp;w=1800&amp;q=85</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1780574851856-d7b16d3e3633?auto=format&amp;fit=crop&amp;w=1800&amp;q=85</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1780574766076-003832fe47cb?auto=format&amp;fit=crop&amp;w=1800&amp;q=85</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1760008780659-6ac16a68e012?auto=format&amp;fit=crop&amp;w=1800&amp;q=85</image:loc>
+    </image:image>
+  </url>
+</urlset>
