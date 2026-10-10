@@ -61,3 +61,39 @@ img[data-photo] { user-select:none; -webkit-user-drag:none; }
   html { scroll-behavior:auto; }
   .has-animation, .caption-timeline { transition:none!important; }
 }
+
+/* Editorial layouts share the portfolio's typography and full-image framing. */
+.collection-intro { max-width:760px; margin:0 auto 70px; padding:0 24px; text-align:center; }
+.collection-intro p { font-size:18px; line-height:1.6; }
+.collection-intro a, .story-connections a, .journal-backlinks a { text-decoration:underline; text-underline-offset:5px; }
+.journal-introduction { max-width:800px; margin:0 auto 80px; }
+.journal-introduction h2, .journal-about h2, .home-journal h2 { font-size:clamp(32px,4.5vw,64px); line-height:1.12; letter-spacing:-.03em; }
+.journal-introduction p, .journal-about p, .home-journal p { font-size:clamp(18px,1.5vw,23px); line-height:1.65; max-width:65ch; }
+.journal-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:80px 48px; }
+.journal-card { min-width:0; }
+.journal-card-image { display:block; background:#171b1c; }
+.journal-card-image .journal-photo { width:100%; height:auto; aspect-ratio:4/5; object-fit:contain; display:block; }
+.journal-card-copy { padding:26px 0; }
+.journal-card h2 { font-size:clamp(27px,2.8vw,42px); line-height:1.15; margin:14px 0 20px; letter-spacing:-.03em; }
+.journal-card p { line-height:1.65; }
+.journal-read { display:inline-block; padding:10px 0; border-bottom:1px solid currentColor; }
+.journal-about { border-top:1px solid #888; margin-top:80px; padding:60px 0 0; }
+.journal-essay { max-width:1200px; margin:0 auto; }
+.journal-byline { font-size:14px; line-height:1.6; margin-bottom:28px; }
+.journal-lead { font-size:clamp(23px,3vw,36px); line-height:1.5; max-width:34ch; margin:0 auto 70px; }
+.journal-figure { margin:50px auto; max-width:900px; }
+.journal-figure a { display:block; background:#171b1c; }
+.journal-figure .journal-photo { width:100%; max-height:85vh; object-fit:contain; display:block; }
+.journal-figure figcaption { font-size:14px; line-height:1.5; margin-top:16px; }
+.journal-figure figcaption, .full-frame figcaption { position:static; color:inherit; background:transparent; padding:0; }
+.journal-prose { max-width:680px; margin:50px auto 75px; }
+.journal-prose h2 { font-size:clamp(28px,3vw,44px); line-height:1.2; margin-bottom:20px; }
+.journal-prose p { font-size:clamp(18px,1.5vw,22px); line-height:1.85; }
+.journal-backlinks, .story-connections { display:flex; justify-content:space-between; flex-wrap:wrap; gap:24px; margin:60px auto; max-width:900px; padding:0 24px; }
+@media(max-width:767px) {
+ .journal-grid { grid-template-columns:1fr; gap:32px; }
+ .journal-introduction { margin-bottom:45px; }
+ .journal-lead { margin-bottom:40px; }
+ .journal-prose { margin:35px auto 50px; }
+ .journal-figure { margin:35px auto; }
+}

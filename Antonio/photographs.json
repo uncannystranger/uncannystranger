@@ -1,5 +1,16 @@
 [
   {
+    "id": 10,
+    "slug": "between-the-pages",
+    "title": "Between the Pages",
+    "category": "Portrait Studies",
+    "alt": "A person in a black mask holding a book in strong sunlight.",
+    "width": 1759,
+    "height": 2200,
+    "page": "frame-between-the-pages.html",
+    "source": "images/uncanny-stranger/us-photo-01.jpg"
+  },
+  {
     "id": 1,
     "slug": "holding-what-remains",
     "title": "Holding What Remains",
@@ -8,6 +19,17 @@
     "width": 1920,
     "height": 2559,
     "page": "project01.html"
+  },
+  {
+    "id": 11,
+    "slug": "the-person-behind-the-camera",
+    "title": "The Person Behind the Camera",
+    "category": "Portrait Studies",
+    "alt": "Abdullahi Mohamud holding a camera in a colourful self-portrait.",
+    "width": 1650,
+    "height": 2200,
+    "page": "frame-the-person-behind-the-camera.html",
+    "source": "images/uncanny-stranger/us-photo-02.jpg"
   },
   {
     "id": 2,
@@ -20,6 +42,17 @@
     "page": "project02.html"
   },
   {
+    "id": 12,
+    "slug": "two-steps-warm-light",
+    "title": "Two Steps, Warm Light",
+    "category": "Light Studies",
+    "alt": "Shoes on patterned steps with a diagonal strip of sunlight.",
+    "width": 1650,
+    "height": 2200,
+    "page": "frame-two-steps-warm-light.html",
+    "source": "images/uncanny-stranger/us-photo-03.jpg"
+  },
+  {
     "id": 3,
     "slug": "light-through-the-courtyard",
     "title": "Light Through the Courtyard",
@@ -28,6 +61,17 @@
     "width": 1920,
     "height": 2560,
     "page": "project03.html"
+  },
+  {
+    "id": 13,
+    "slug": "a-quiet-self-portrait",
+    "title": "A Quiet Self-Portrait",
+    "category": "Portrait Studies",
+    "alt": "A black-and-white self-portrait with one arm raised behind the head.",
+    "width": 1468,
+    "height": 2200,
+    "page": "frame-a-quiet-self-portrait.html",
+    "source": "images/uncanny-stranger/us-photo-04.jpg"
   },
   {
     "id": 4,
@@ -40,6 +84,17 @@
     "page": "project04.html"
   },
   {
+    "id": 14,
+    "slug": "arena-after-dark",
+    "title": "Arena After Dark",
+    "category": "Everyday Life",
+    "alt": "Illuminated Arena lettering above a dark entrance at night.",
+    "width": 1467,
+    "height": 2200,
+    "page": "frame-arena-after-dark.html",
+    "source": "images/uncanny-stranger/us-photo-05.jpg"
+  },
+  {
     "id": 5,
     "slug": "upward-lines",
     "title": "Upward Lines",
@@ -48,6 +103,17 @@
     "width": 1920,
     "height": 2560,
     "page": "project05.html"
+  },
+  {
+    "id": 15,
+    "slug": "a-small-visitor",
+    "title": "A Small Visitor",
+    "category": "Everyday Life",
+    "alt": "A butterfly resting on a textured blue wall.",
+    "width": 1650,
+    "height": 2200,
+    "page": "frame-a-small-visitor.html",
+    "source": "images/uncanny-stranger/us-photo-06.jpg"
   },
   {
     "id": 6,
@@ -60,6 +126,17 @@
     "page": "project06.html"
   },
   {
+    "id": 16,
+    "slug": "in-good-company",
+    "title": "In Good Company",
+    "category": "Portrait Studies",
+    "alt": "Two people standing beside bright windows in a black-and-white photograph.",
+    "width": 1650,
+    "height": 2200,
+    "page": "frame-in-good-company.html",
+    "source": "images/uncanny-stranger/us-photo-07.jpg"
+  },
+  {
     "id": 7,
     "slug": "frames-and-time",
     "title": "Frames and Time",
@@ -68,6 +145,17 @@
     "width": 1920,
     "height": 2560,
     "page": "project07.html"
+  },
+  {
+    "id": 17,
+    "slug": "tea-and-company",
+    "title": "Tea and Company",
+    "category": "Everyday Life",
+    "alt": "Two cups of Somali tea and snacks on a white plate.",
+    "width": 1650,
+    "height": 2200,
+    "page": "frame-tea-and-company.html",
+    "source": "images/uncanny-stranger/us-photo-08.jpg"
   },
   {
     "id": 8,
@@ -80,6 +168,17 @@
     "page": "project08.html"
   },
   {
+    "id": 18,
+    "slug": "between-steel-and-tide",
+    "title": "Between Steel and Tide",
+    "category": "Architecture",
+    "alt": "Harbour cranes beyond buildings and rooftops.",
+    "width": 1546,
+    "height": 2200,
+    "page": "frame-between-steel-and-tide.html",
+    "source": "images/uncanny-stranger/us-photo-09.jpg"
+  },
+  {
     "id": 9,
     "slug": "where-colour-grows",
     "title": "Where Colour Grows",
@@ -88,5 +187,258 @@
     "width": 1920,
     "height": 2400,
     "page": "project09.html"
+  },
+  {
+    "id": 19,
+    "slug": "the-edge-of-evening",
+    "title": "The Edge of Evening",
+    "category": "Street Photography",
+    "alt": "A pink evening sky above the ocean and a rooftop terrace.",
+    "width": 1650,
+    "height": 2200,
+    "page": "frame-the-edge-of-evening.html",
+    "source": "images/uncanny-stranger/us-photo-10.jpg"
+  },
+  {
+    "id": 20,
+    "slug": "through-blue-glass",
+    "title": "Through Blue Glass",
+    "category": "Light Studies",
+    "alt": "Warm sunlight seen through blue-tinted glass.",
+    "width": 1741,
+    "height": 2560,
+    "page": "frame-through-blue-glass.html",
+    "source": "images/uncanny-stranger/us-photo-11.jpg"
+  },
+  {
+    "id": 21,
+    "slug": "soft-blue-white-cotton",
+    "title": "Soft Blue, White Cotton",
+    "category": "Portrait Studies",
+    "alt": "A close crop of a white shirt beside pale blue curtains.",
+    "width": 1920,
+    "height": 2560,
+    "page": "frame-soft-blue-white-cotton.html",
+    "source": "images/uncanny-stranger/us-photo-12.jpg"
+  },
+  {
+    "id": 22,
+    "slug": "looking-through",
+    "title": "Looking Through",
+    "category": "Architecture",
+    "alt": "A view down through a square opening and surrounding structure.",
+    "width": 1650,
+    "height": 2200,
+    "page": "frame-looking-through.html",
+    "source": "images/uncanny-stranger/us-photo-13.jpg"
+  },
+  {
+    "id": 23,
+    "slug": "under-the-palms",
+    "title": "Under the Palms",
+    "category": "Everyday Life",
+    "alt": "Palm fronds framing a green garden and blue chairs.",
+    "width": 1650,
+    "height": 2200,
+    "page": "frame-under-the-palms.html",
+    "source": "images/uncanny-stranger/us-photo-14.jpg"
+  },
+  {
+    "id": 24,
+    "slug": "pictures-within-pictures",
+    "title": "Pictures Within Pictures",
+    "category": "Still Life",
+    "alt": "Two framed photographs hanging on a pale wall.",
+    "width": 1650,
+    "height": 2200,
+    "page": "frame-pictures-within-pictures.html",
+    "source": "images/uncanny-stranger/us-photo-15.jpg"
+  },
+  {
+    "id": 25,
+    "slug": "on-the-stairs",
+    "title": "On the Stairs",
+    "category": "Portrait Studies",
+    "alt": "A group looking up from a curved stairwell in black and white.",
+    "width": 1650,
+    "height": 2200,
+    "page": "frame-on-the-stairs.html",
+    "source": "images/uncanny-stranger/us-photo-16.jpg"
+  },
+  {
+    "id": 26,
+    "slug": "a-caf-at-dusk",
+    "title": "A Caf\u00e9 at Dusk",
+    "category": "Everyday Life",
+    "alt": "A warmly lit caf\u00e9 exterior with a glowing entrance at dusk.",
+    "width": 1650,
+    "height": 2200,
+    "page": "frame-a-caf-at-dusk.html",
+    "source": "images/uncanny-stranger/us-photo-17.jpg"
+  },
+  {
+    "id": 27,
+    "slug": "when-the-wall-holds-light",
+    "title": "When the Wall Holds Light",
+    "category": "Light Studies",
+    "alt": "Golden sunlight and tree shadows falling across a wall.",
+    "width": 1650,
+    "height": 2200,
+    "page": "frame-when-the-wall-holds-light.html",
+    "source": "images/uncanny-stranger/us-photo-18.jpg"
+  },
+  {
+    "id": 28,
+    "slug": "the-street-opens",
+    "title": "The Street Opens",
+    "category": "Street Photography",
+    "alt": "Buildings and traffic along a sunlit urban street.",
+    "width": 1650,
+    "height": 2200,
+    "page": "frame-the-street-opens.html",
+    "source": "images/uncanny-stranger/us-photo-19.jpg"
+  },
+  {
+    "id": 29,
+    "slug": "evening-under-leaves",
+    "title": "Evening Under Leaves",
+    "category": "Light Studies",
+    "alt": "Evening light shining through palm leaves above a garden.",
+    "width": 1650,
+    "height": 2200,
+    "page": "frame-evening-under-leaves.html",
+    "source": "images/uncanny-stranger/us-photo-20.jpg"
+  },
+  {
+    "id": 30,
+    "slug": "screens-after-sunset",
+    "title": "Screens After Sunset",
+    "category": "Everyday Life",
+    "alt": "A person working at a computer in blue and purple light.",
+    "width": 1920,
+    "height": 1282,
+    "page": "frame-screens-after-sunset.html",
+    "source": "images/uncanny-stranger/us-photo-21.jpg"
+  },
+  {
+    "id": 31,
+    "slug": "an-orange-horizon",
+    "title": "An Orange Horizon",
+    "category": "Light Studies",
+    "alt": "A low sun beneath an orange sky beside a building.",
+    "width": 1650,
+    "height": 2200,
+    "page": "frame-an-orange-horizon.html",
+    "source": "images/uncanny-stranger/us-photo-22.jpg"
+  },
+  {
+    "id": 32,
+    "slug": "where-i-stand",
+    "title": "Where I Stand",
+    "category": "Everyday Life",
+    "alt": "A downward view of black trousers and shoes on pale floor tiles.",
+    "width": 1650,
+    "height": 2200,
+    "page": "frame-where-i-stand.html",
+    "source": "images/uncanny-stranger/us-photo-23.jpg"
+  },
+  {
+    "id": 33,
+    "slug": "red-almost-silent",
+    "title": "Red, Almost Silent",
+    "category": "Portrait Studies",
+    "alt": "A person covering their face with their hands under red light.",
+    "width": 1650,
+    "height": 2200,
+    "page": "frame-red-almost-silent.html",
+    "source": "images/uncanny-stranger/us-photo-24.jpg"
+  },
+  {
+    "id": 34,
+    "slug": "the-rooftop-listener",
+    "title": "The Rooftop Listener",
+    "category": "Architecture",
+    "alt": "A satellite dish above a sunlit rooftop against a turquoise sky.",
+    "width": 1467,
+    "height": 2200,
+    "page": "frame-the-rooftop-listener.html",
+    "source": "images/uncanny-stranger/us-photo-25.jpg"
+  },
+  {
+    "id": 35,
+    "slug": "blue-in-motion",
+    "title": "Blue in Motion",
+    "category": "Everyday Life",
+    "alt": "A blue Somali flag with a white star against the sky.",
+    "width": 1650,
+    "height": 2200,
+    "page": "frame-blue-in-motion.html",
+    "source": "images/uncanny-stranger/us-photo-26.jpg"
+  },
+  {
+    "id": 36,
+    "slug": "a-room-for-ideas",
+    "title": "A Room for Ideas",
+    "category": "Still Life",
+    "alt": "A guitar, headphones and desk objects beneath a Mogadishu poster.",
+    "width": 1851,
+    "height": 2200,
+    "page": "frame-a-room-for-ideas.html",
+    "source": "images/uncanny-stranger/us-photo-27.jpg"
+  },
+  {
+    "id": 37,
+    "slug": "a-corridor-of-light",
+    "title": "A Corridor of Light",
+    "category": "Architecture",
+    "alt": "A shaded corridor opening towards sunlight and palm leaves.",
+    "width": 1650,
+    "height": 2200,
+    "page": "frame-a-corridor-of-light.html",
+    "source": "images/uncanny-stranger/us-photo-28.jpg"
+  },
+  {
+    "id": 38,
+    "slug": "moving-through-the-city",
+    "title": "Moving Through the City",
+    "category": "Street Photography",
+    "alt": "A busy street with vehicles and a tall building under a blue sky.",
+    "width": 1650,
+    "height": 2200,
+    "page": "frame-moving-through-the-city.html",
+    "source": "images/uncanny-stranger/us-photo-29.jpg"
+  },
+  {
+    "id": 39,
+    "slug": "at-the-edge-of-the-day",
+    "title": "At the Edge of the Day",
+    "category": "Portrait Studies",
+    "alt": "A person sitting on rocks against a softly lit evening sky.",
+    "width": 1650,
+    "height": 2200,
+    "page": "frame-at-the-edge-of-the-day.html",
+    "source": "images/uncanny-stranger/us-photo-30.jpg"
+  },
+  {
+    "id": 40,
+    "slug": "mogadishu-from-above",
+    "title": "Mogadishu from Above",
+    "category": "Architecture",
+    "alt": "A wide city view across the rooftops of Mogadishu beneath a blue sky.",
+    "width": 1760,
+    "height": 2200,
+    "page": "frame-mogadishu-from-above.html",
+    "source": "images/uncanny-stranger/mogadishu-city-view.jpg"
+  },
+  {
+    "id": 41,
+    "slug": "a-camera-and-a-little-light",
+    "title": "A Camera and a Little Light",
+    "category": "Portrait Studies",
+    "alt": "A photographer holding a camera across their face in warm, low light.",
+    "width": 1466,
+    "height": 2200,
+    "page": "frame-a-camera-and-a-little-light.html",
+    "source": "images/uncanny-stranger/profile-camera-portrait.jpg"
   }
 ]

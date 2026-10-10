@@ -4,7 +4,7 @@ import path from 'node:path';
 const root = path.resolve(import.meta.dirname, '..');
 const source = path.join(root, 'Antonio');
 const target = path.join(root, 'dist');
-const pages = (await fs.readdir(source)).filter(name => /^(index(?:-portfolio|-playground|-highlights)?|about|contact|resources|multimedia|shortcodes|project0[1-9])\.html$/.test(name));
+const pages = (await fs.readdir(source)).filter(name => /^(index(?:-portfolio|-playground|-highlights)?|about|contact|resources|rights|multimedia|shortcodes|project0[1-9]|frame-[a-z-]+|journal-[a-z-]+)\.html$/.test(name));
 const pending = [...pages, 'robots.txt', 'sitemap.xml', 'favicon.ico'];
 const included = new Set();
 const allowed = /\.(?:html|css|js|jpe?g|png|webp|svg|gif|ico|woff2?|ttf|eot|xml|txt)$/i;
