@@ -34,6 +34,7 @@ a:focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
 
 /* Highlights uses a WebGL canvas, so size its stage to the photographs. */
 body:has(.highlights-gallery) #canvas-slider { width: min(75vh, 100vw); left: 50%; transform: translateX(-50%); }
+.highlights-gallery .external-titles .slide-title { font-size:clamp(22px,4vw,64px); white-space:nowrap; max-width:94vw; }
 
 /* Biography and social destinations remain readable on narrow screens. */
 .bio-grid { display:grid; grid-template-columns:1fr 1.5fr; gap:clamp(24px,6vw,100px); }
