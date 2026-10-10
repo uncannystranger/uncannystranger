@@ -8,15 +8,25 @@ permissions:
   contents: read
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: npm
+      # This public repository allows actions owned by uncannystranger only.
+      # Use the runner's Git and cached Node instead of relaxing that policy.
+      - name: Check out the exact public event commit without credentials
+        shell: bash
+        run: |
+          git init .
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --no-tags --depth=1 origin "$GITHUB_SHA"
+          git checkout --detach FETCH_HEAD
+      - name: Select the runner's cached Node 24
+        shell: bash
+        run: |
+          node_bins=("$RUNNER_TOOL_CACHE"/node/24.*/x64/bin)
+          test -x "${node_bins[0]}/node"
+          printf '%s\n' "${node_bins[0]}" >> "$GITHUB_PATH"
+      - run: node --version
       - run: npm ci --ignore-scripts
       - run: npm run lint
       - run: node --import tsx --test tests/security.test.ts
