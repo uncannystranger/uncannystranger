@@ -32,4 +32,5 @@ jobs:
       - run: node --import tsx --test tests/security.test.ts
       - run: npm run build
       - run: node scripts/security-check.mjs
+      - run: node scripts/verify-seo.mjs
       - run: npm audit --omit=dev --audit-level=moderate

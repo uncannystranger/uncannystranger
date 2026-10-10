@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version='1.0' encoding='UTF-8'?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://uncannystranger.com/about.html</loc>
@@ -223,6 +223,18 @@
     </image:image>
     <image:image>
       <image:loc>https://uncannystranger.com/images/photographs/where-colour-grows-1280.webp</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://uncannystranger.com/images/photographs/red-almost-silent-1280.webp</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://uncannystranger.com/images/photographs/upward-lines-1280.webp</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://uncannystranger.com/images/photographs/blue-in-motion-1280.webp</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://uncannystranger.com/images/photographs/light-through-the-courtyard-1280.webp</image:loc>
     </image:image>
   </url>
   <url>
