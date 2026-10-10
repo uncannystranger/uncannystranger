@@ -393,11 +393,11 @@ Function Scroll Effects
 		
 			var imgLogoWhite = document.querySelector('.white-logo');
 			var originalSrcWhite = 'images/logo-white.png';
-			var updatedSrcWhite = 'images/logo-white-symbol.png';
+			var updatedSrcWhite = 'images/logo-white.png';
 			
 			var imgLogoBlack = document.querySelector('.black-logo');
 			var originalSrcBlack = 'images/logo.png';
-			var updatedSrcBlack = 'images/logo-symbol.png';
+			var updatedSrcBlack = 'images/logo.png';
 			
 			// Create a scroll trigger
 			
@@ -5009,6 +5009,10 @@ Function Core
 					newPageHead = document.createElement('head');
 					
 					newPageHead.innerHTML = newPageRawHead;
+                    // Keep canonical URLs and social metadata in sync with animated navigation.
+                    var seoSelector = 'link[rel="canonical"], meta[name="description"], meta[name="robots"], meta[property^="og:"], meta[name^="twitter:"], script[type="application/ld+json"]';
+                    head.querySelectorAll(seoSelector).forEach(function(node) { node.remove(); });
+                    newPageHead.querySelectorAll(seoSelector).forEach(function(node) { head.appendChild(node.cloneNode(true)); });
 
 					var oldHeadTags = head.querySelectorAll(headTags);
 					var newHeadTags = newPageHead.querySelectorAll(headTags);

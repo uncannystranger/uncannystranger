@@ -41,3 +41,6 @@ photos-private/
 *.njsproj
 *.sln
 *.sw?
+
+# Local build inventory, never served
+production-assets.json

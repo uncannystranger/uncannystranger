@@ -132,7 +132,7 @@ export const publicPhoto = (photo: GalleryPhotoRow) => ({
   likes: photo.unsplash_likes_count,
   downloads: photo.unsplash_downloads_count,
   views: photo.unsplash_views_count,
-  exif: photo.unsplash_exif,
+  exif: photo.unsplash_exif ? Object.fromEntries(Object.entries(photo.unsplash_exif).filter(([key]) => ['make','model','exposure_time','aperture','focal_length','iso'].includes(key))) : null,
   frame: publicFrame(photo),
 });
 
@@ -173,7 +173,7 @@ export async function listGalleryPhotos(query: Record<string, unknown>) {
   if (String(query.pinned) === 'true') params.set('is_pinned', 'eq.true');
   if (String(query.featured) === 'true') params.set('is_featured', 'eq.true');
 
-  const search = stringParam(query.q).replace(/[%(),]/g, ' ').replace(/\s+/g, ' ').trim();
+  const search = stringParam(query.q).replace(/[^\p{L}\p{N}\s'-]/gu, ' ').replace(/\s+/g, ' ').trim();
   if (search) {
     const term = `*${search}*`;
     params.set('or', `(title.ilike.${term},description.ilike.${term},search_text.ilike.${term})`);

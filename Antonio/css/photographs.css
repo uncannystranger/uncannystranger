@@ -1,0 +1,63 @@
+/* Preserve the original compositions inside the existing animated layouts. */
+img[data-photo] { object-position: center; }
+.snap-slide .section-image img[data-photo],
+.showcase-portfolio .section-image img[data-photo],
+.showcase-gallery .section-image img[data-photo],
+.section-thumb img[data-photo],
+.thumb-slide-img img[data-photo] { object-fit: contain; }
+.snap-slide .section-image { transform: none; }
+.snap-slide { background: #131719; }
+.snap-slide .section-image img[data-photo] { padding: 36px 0; box-sizing: border-box; }
+.showcase-portfolio .img-mask,
+.showcase-gallery .img-mask,
+.section-thumb,
+.thumb-slide-img { background: #171b1c; }
+.showcase-portfolio .clapat-item::before { padding-top: 133.333%; }
+.showcase-portfolio .section-image { transform: none; }
+.showcase-portfolio .section-image img[data-photo] { height: 100%; }
+.col-img-wrapper img[data-photo] { object-fit: contain; background: #171b1c; }
+.landing-video .content-video-wrapper img[data-photo] { object-fit: contain; position: relative; width: 100%; height: auto; }
+#hero-bg-image[role="img"] { background-size: contain; background-repeat: no-repeat; background-color: #171b1c; }
+.full-frame { margin: 0 auto; max-width: 960px; }
+.full-frame a { display: block; }
+.full-frame-image { display: block; width: 100%; height: auto; object-fit: contain; }
+.full-frame figcaption { font-size: 14px; margin-top: 20px; line-height: 1.5; }
+.photo-description { margin: 28px auto; max-width: 640px; text-align: center; }
+.photograph-story .button-box { text-align: center; }
+.photo-archive-link { display: inline-block; padding: 14px 0; border-bottom: 1px solid currentColor; }
+a:focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
+@media (max-width: 767px) {
+  .snap-slide .section-image img[data-photo] { padding: 72px 0 100px; }
+  .photograph-story { padding-left: 20px; padding-right: 20px; }
+  .snap-slider-captions .slide-title { max-width: 65vw; line-height: 1.25; }
+}
+
+/* Highlights uses a WebGL canvas, so size its stage to the photographs. */
+body:has(.highlights-gallery) #canvas-slider { width: min(75vh, 100vw); left: 50%; transform: translateX(-50%); }
+
+/* Biography and social destinations remain readable on narrow screens. */
+.bio-grid { display:grid; grid-template-columns:1fr 1.5fr; gap:clamp(24px,6vw,100px); }
+.biography p { font-size:clamp(17px,1.35vw,22px); line-height:1.75; max-width:65ch; }
+.biography h3 { margin:36px 0 16px; }
+.bio-kicker { font-size:14px!important; letter-spacing:.08em; text-transform:uppercase; }
+.profile-links { display:flex; flex-wrap:wrap; gap:12px 24px; margin:0; list-style:none; }
+.profile-links a { text-decoration:underline; text-underline-offset:5px; }
+footer .socials-wrap { width:auto; max-width:65%; height:auto; }
+footer .socials { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px 18px; opacity:1; height:auto; top:auto; transform:none; position:relative; }
+footer .socials li { opacity:1; transform:none; margin:0; height:auto; }
+footer .socials li a { font-size:12px; }
+footer .socials-icon, footer .socials-text { display:none; }
+img[data-photo] { user-select:none; -webkit-user-drag:none; }
+.slide-link:focus-visible { position:absolute; inset:0; z-index:15; outline:3px solid #fff; outline-offset:-5px; }
+#message { margin:20px 0; }
+@media(max-width:767px) { .bio-grid {grid-template-columns:1fr;} footer .socials-wrap {max-width:100%;} footer .socials {justify-content:center;} }
+@media(max-width:1024px) {
+  .showcase-portfolio .section-thumb { display:none; }
+  .showcase-portfolio .slide-caption { padding:14px 18px; background:linear-gradient(transparent,rgba(0,0,0,.72)); color:#fff; }
+  .showcase-portfolio .slide-caption .slide-title { max-width:65%; line-height:1.25; }
+  .showcase-portfolio .slide-caption .slide-cat { font-size:13px; line-height:1.4; text-align:right; }
+}
+@media(prefers-reduced-motion:reduce) {
+  html { scroll-behavior:auto; }
+  .has-animation, .caption-timeline { transition:none!important; }
+}

@@ -1,0 +1,11 @@
+.git
+.github
+node_modules
+dist
+public
+uncannyst
+Antonio/_external
+Antonio/photographs.json
+production-assets.json
+tests
+*.md
