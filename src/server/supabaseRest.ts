@@ -25,7 +25,7 @@ const serverConfig = () => {
 
   try {
     const parsedUrl = new URL(url);
-    if (parsedUrl.protocol !== 'https:') throw new Error('Supabase URL must use HTTPS.');
+    if (parsedUrl.protocol !== 'https:' || parsedUrl.username || parsedUrl.password || parsedUrl.search || parsedUrl.hash || parsedUrl.pathname !== '/') throw new Error('Supabase URL must use HTTPS.');
   } catch {
     throw new MissingServerConfigError();
   }
@@ -42,6 +42,10 @@ const publicConfig = () => {
 
   if (!url || !key) throw new MissingServerConfigError();
 
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'https:' || parsed.username || parsed.password || parsed.search || parsed.hash || parsed.pathname !== '/') throw new Error();
+  } catch { throw new MissingServerConfigError(); }
   return { key, url: url.replace(/\/$/, '') };
 };
 
@@ -56,6 +60,8 @@ const databaseFetch = async (
   try {
     response = await fetch(`${config.url}${SUPABASE_REST_PATH}${path}`, {
       ...init,
+      signal: AbortSignal.timeout(8000),
+      redirect: 'error',
       headers: {
         apikey: config.key,
         ...(includeBearer ? { authorization: `Bearer ${config.key}` } : {}),

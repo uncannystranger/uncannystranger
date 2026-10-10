@@ -197,6 +197,8 @@ const fetchRemote = async (path: string, key: string, username: string, params: 
   const url = new URL(`https://api.unsplash.com${path.replace(':username', encodeURIComponent(username))}`);
   for (const [name, value] of Object.entries(params)) url.searchParams.set(name, value);
   const response = await fetch(url, {
+    signal: AbortSignal.timeout(8000),
+    redirect: 'error',
     headers: { authorization: `Client-ID ${key}`, accept: 'application/json' },
   }).catch(() => null);
   if (!response?.ok) throw new UnsplashRequestError(response?.status);

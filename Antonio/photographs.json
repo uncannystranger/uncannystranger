@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "slug": "holding-what-remains",
+    "title": "Holding What Remains",
+    "category": "Portrait Studies",
+    "alt": "A woman holding a smiling child, photographed in black and white.",
+    "width": 1920,
+    "height": 2559,
+    "page": "project01.html"
+  },
+  {
+    "id": 2,
+    "slug": "suuqa-beerta",
+    "title": "Suuqa Beerta",
+    "category": "Street Photography",
+    "alt": "Warm sunlight entering a covered market passage at Suuqa Beerta.",
+    "width": 1920,
+    "height": 2400,
+    "page": "project02.html"
+  },
+  {
+    "id": 3,
+    "slug": "light-through-the-courtyard",
+    "title": "Light Through the Courtyard",
+    "category": "Light Studies",
+    "alt": "Sunlight passing through patterned screens above blue prayer carpets.",
+    "width": 1920,
+    "height": 2560,
+    "page": "project03.html"
+  },
+  {
+    "id": 4,
+    "slug": "curves-in-blue",
+    "title": "Curves in Blue",
+    "category": "Architecture",
+    "alt": "Curved balconies and blue glass across the facade of a high-rise building.",
+    "width": 1920,
+    "height": 2560,
+    "page": "project04.html"
+  },
+  {
+    "id": 5,
+    "slug": "upward-lines",
+    "title": "Upward Lines",
+    "category": "Architecture",
+    "alt": "An upward view of the Dahabshiil Bank International building and rooftop antenna.",
+    "width": 1920,
+    "height": 2560,
+    "page": "project05.html"
+  },
+  {
+    "id": 6,
+    "slug": "after-hours",
+    "title": "After Hours",
+    "category": "Everyday Life",
+    "alt": "A laptop glowing on a table in a dimly lit room with empty shelves.",
+    "width": 1920,
+    "height": 2560,
+    "page": "project06.html"
+  },
+  {
+    "id": 7,
+    "slug": "frames-and-time",
+    "title": "Frames and Time",
+    "category": "Still Life",
+    "alt": "Three overlapping wall shelves holding a boxing-glove trophy and a small hourglass.",
+    "width": 1920,
+    "height": 2560,
+    "page": "project07.html"
+  },
+  {
+    "id": 8,
+    "slug": "a-pause-above",
+    "title": "A Pause Above",
+    "category": "Architecture",
+    "alt": "A bird perched above a building facade with vertical metal fins.",
+    "width": 1920,
+    "height": 2560,
+    "page": "project08.html"
+  },
+  {
+    "id": 9,
+    "slug": "where-colour-grows",
+    "title": "Where Colour Grows",
+    "category": "Street Photography",
+    "alt": "Green branches hanging above a colourful portrait mural with musical notes.",
+    "width": 1920,
+    "height": 2400,
+    "page": "project09.html"
+  }
+]
