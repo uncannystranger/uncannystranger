@@ -1,6 +1,10 @@
 # Website versions
 
-## V3.6.0-rc.1 — Latest review version
+## V3.6.0-rc.2 — Latest review version
+
+Completes the real localhost Resend/Turnstile integration, with verified provider delivery, preview-only secret configuration and a production-guarded local test mode. Improves mobile footer contrast and repeats ten-width contact/footer checks. All 41 photographs, four essays and 53 indexable URLs remain. The `v3.6.0-rc.2` tag supplies the latest downloadable source ZIP. Production remains unchanged; public contact activation still requires a distributed quota and separate release approval. See [REVIEW-V3.6.md](REVIEW-V3.6.md).
+
+## V3.6.0-rc.1 — Earlier review version
 
 The dedicated `codex/enhanced-v3-6` branch refines the existing Antonio portfolio. Orange accents, a scroll-controlled photographic composition, mobile photograph links, an automatic-height social footer and accessible menu controls preserve the original structure and typography. All 41 photograph stories and four essays remain.
 

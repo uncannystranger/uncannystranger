@@ -16,19 +16,20 @@ All 41 photographs have their matching story pages and a complete archive link. 
 
 Local review responses deliberately use `X-Robots-Tag: noindex, nofollow`; production HTML keeps its original indexing directives. The two retained demonstration pages remain noindex. Google rankings/indexing are not guaranteed. No Search Console access or confirmed Google crawl was available. Submit/inspect the sitemap in the owner's verified Search Console after an approved release.
 
-## Contact: implemented, not activated
+## Contact: implemented and tested locally; public activation gated
 
 `POST /api/contact` delivers plain-text enquiries only to **abdallahmadm@gmail.com**, from `Uncanny Stranger <contact@uncannystranger.com>`, with validated visitor Reply-To. The browser no longer submits a mailto form. It displays sending, provider-accepted and failure states, preserving text on failure. It never claims inbox delivery.
 
 The endpoint enforces explicit origins, JSON, a 24KB body limit, bounded fields, no recipient overrides, safe errors, provider timeouts, honeypot, server-side Turnstile hostname/action verification and stable provider idempotency keys. Server credentials never enter the static build. No message database, persistent browser draft or message-content logging is introduced. A bounded, hashed-IP per-instance quota supplements a required hosting rule; it is not a distributed rate limiter.
 
-**External setup required before real sending:**
+**Provider setup and remaining release gates:**
 
-1. Verify `uncannystranger.com` in Resend using only its specified DNS records. Preserve existing Gmail/MX routing. Use a scoped sending API key in hosting environment variables.
-2. Configure a Turnstile widget for approved hostnames with action `contact`; store the secret server-side. The public widget site key may be returned by GET configuration. A localhost-capable widget or official test keys are required for controlled local integration testing; never deploy test keys.
-3. Add a narrowly scoped Vercel firewall rule for POST `/api/contact`: five requests per IP per ten minutes. Confirm account availability/pricing; preserve existing rules. Only after verifying the rule set `CONTACT_RATE_LIMIT_READY=true`.
-4. Set the fields documented in `.env.example`, then `CONTACT_ENABLED=true`. Keep secrets out of Git. An exact optional `CONTACT_PREVIEW_ORIGIN` may authorize one Vercel preview; no wildcards.
-5. Perform an owner-approved inbox and Reply-To test. This has **not** been executed because the domain is verified but scoped provider/challenge credentials and the contact hosting quota are not yet configured. Until setup, the form honestly stays unavailable and exposes an email fallback.
+1. Resend confirms `uncannystranger.com` verified. Its DNS records match Vercel and public DNS; existing Google MX routing was preserved. A domain-scoped sending key is stored privately for localhost and as a Vercel Secret limited to Preview branch `codex/enhanced-v3-6`.
+2. A real Managed Turnstile widget was created with owner approval for `uncannystranger.com`, `localhost` and `127.0.0.1`, with no pre-clearance/security-rule bypass. Both keys are configured locally and in that branch's Preview environment. No production credentials were changed.
+3. The controlled localhost form test passed real Turnstile validation and Resend accepted the message. Resend reports delivery to Gmail's mail server, with the configured sender, fixed recipient and visitor Reply-To. The UI displayed its acceptance confirmation and cleared the form. This does not establish inbox placement, reading or an actual reply from Gmail.
+4. Public activation still requires the contact-specific hosting quota: five requests per IP per ten minutes. Vercel shows the Hobby plan; its existing rate-limit slot is occupied by the retained portfolio rule. Resolve rule capacity or an approved distributed alternative before setting `CONTACT_RATE_LIMIT_READY=true`. No paid upgrade or existing-rule replacement was made.
+5. `CONTACT_ENABLED=false` and `CONTACT_RATE_LIMIT_READY=false` remain on Vercel Preview. Local testing uses `CONTACT_LOCAL_TEST=true` only on the loopback-bound single-process server; the exception is rejected in production and all Vercel environments. Real Turnstile, validation, Resend and the five-request local quota remain enforced. Never use this mode on a public development server.
+6. Any future public preview origin must be explicitly authorized in both configuration and Turnstile. Production release requires the owner's separate approval and the remaining release checks.
 
 Official setup references: [Resend](https://resend.com/docs/api-reference/emails/send-email), [Turnstile server verification](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/), [Vercel rate limiting](https://vercel.com/docs/vercel-firewall/vercel-waf/rate-limiting).
 
@@ -51,7 +52,7 @@ The active firewall was read on 18 October: its existing rule limits /images/ an
 ## Executed verification
 
 - TypeScript: `npm run lint` passed.
-- `npm test`: 21 passed (14 contact tests with mocked provider transports; seven retained security tests).
+- `npm test`: 22 passed (15 contact tests with mocked provider transports; seven retained security tests).
 - Production build: 55 HTML pages, 252 referenced assets, 307 public files.
 - SEO validation: 53 indexable pages, 41 photograph stories, 12 Highlights images.
 - Site integrity: 55 pages and 2,768 local resources/links resolved; all 41 archive-to-story identities matched.
@@ -62,7 +63,7 @@ The active firewall was read on 18 October: its existing rule limits /images/ an
 - Actual in-app Chromium checks: homepage widths 320/360/375/390/414/430/768/1024/1440/1920 showed zero horizontal overflow and zero footer links outside their container, with minimum 44px social link heights. Eight mobile page templates also passed bounds checks. 844x390 landscape selects a static photograph field without horizontal overflow.
 - Mobile zoom/return, menu Escape/focus restoration, mobile story opening and desktop keyboard hero-to-story navigation were exercised. The destination showed the correct visible title and canonical; browser Back returned to the homepage.
 
-**Not verified:** real provider/inbox delivery; actual distributed hosting rate limits; Safari/Firefox/Edge or physical devices; OS reduced-motion execution and JavaScript-disabled browser rendering; slow-device/network performance; Lighthouse or real-user LCP/INP/CLS; Google indexing. Source-level reduced-motion/static fallbacks are included but are not proof of device behavior. Remaining checks are release gates, not silently reported passes.
+**Not verified:** Gmail inbox placement or an actual reply (provider delivery is verified); actual distributed hosting rate limits; Safari/Firefox/Edge or physical devices; OS reduced-motion execution and JavaScript-disabled browser rendering; slow-device/network performance; Lighthouse or real-user LCP/INP/CLS; Google indexing. Source-level reduced-motion/static fallbacks are included but are not proof of device behavior. Remaining checks are release gates, not silently reported passes.
 
 ## Files changed and purpose
 
@@ -80,11 +81,11 @@ Run `npm ci --ignore-scripts`, then `npm run dev:site`; open http://127.0.0.1:41
 
 Review this candidate before authorizing a production release. Main remains at the existing production source. If later approved, complete external email setup and the remaining browser/performance checks before merging/deploying. Preserve `0bf300c` as the rollback source and the existing V3.5 release; no destructive changes are required.
 
-Priority next steps: (1) owner visual review; (2) email/domain/challenge/rate-limit activation and inbox test; (3) Safari/Android/Firefox/Edge and measured mobile performance; (4) separately recover legacy database APIs and migrate or remove archived frontend dependencies. A framework rewrite is not necessary for these repairs.
+Priority next steps: (1) owner visual review; (2) hosted contact quota and Gmail inbox/reply confirmation; (3) Safari/Android/Firefox/Edge and measured mobile performance; (4) separately recover legacy database APIs and migrate or remove archived frontend dependencies. A framework rewrite is not necessary for these repairs.
 
 ## 18 October identity and delivery update
 
-Resend dashboard confirms uncannystranger.com Verified in eu-west-1. Vercel and public DNS agree on resend._domainkey TXT, send CNAME and rsend CNAME. No unrelated DNS records were modified; Google MX remains intact. No Resend or Turnstile credentials were present in Vercel at inspection.
+Resend dashboard confirms uncannystranger.com Verified in eu-west-1. Vercel and public DNS agree on resend._domainkey TXT, send CNAME and rsend CNAME. No unrelated DNS records were modified; Google MX remains intact. No Resend or Turnstile credentials were present at initial inspection; both are now stored as Secrets for the development branch Preview only.
 
 Sender policy now accepts only Uncanny Stranger <contact@uncannystranger.com>. Turnstile verification gets a fresh request identity when a browser retries with a refreshed token; Resend deduplication remains stable. Local callers cannot spoof Vercel forwarded IP headers.
 
@@ -93,3 +94,10 @@ All page Person entities now use the existing self-portrait and stable About pro
 Google indexing and a Knowledge Panel are external outcomes. ProfilePage/Person markup, consistent public profiles, crawlable photo pages and image sitemap improve discoverability but cannot create or guarantee a public figure panel. After approved deployment, use the owner verified Search Console to submit sitemap.xml and inspect the About page and representative photograph URLs. The existing googleconsole-subdomain TXT record alone does not establish verified Search Console ownership of the apex domain. Do not change verification DNS without the exact token Google provides.
 
 All 41 live public 1280px WebP derivatives returned HTTP 200 on 18 October without X-Robots-Tag exclusion. This is an accessibility-to-crawlers check, not proof of Google indexing. Preview-only CONTACT_FROM and disabled activation flags are configured for the development branch; production environment variables remain unchanged. Source is available in draft PR #7.
+
+## Final 18 October contact verification
+
+- Real form-generated email: `01a14df1-674c-71d6-8915-1741c3975e34`; Resend status Delivered, 18 October. Earlier provider-only test also delivered. No message content or credentials are committed.
+- Contact/footer browser checks repeated at 320, 360, 375, 390, 414, 430, 768, 1024, 1440 and 1920px: no horizontal page overflow, no footer link outside its container, minimum 44px link height and 16px form inputs. This run uses in-app Chromium, not physical devices or other engines.
+- At 390px, menu Escape closed it and returned focus to the trigger. Footer link opacity increased from the inherited 0.3 to 0.8 for readable neutral text while preserving orange hover/focus states.
+- Local private environment file is ignored by Git and mode 0600. Downloadable source is built using `git archive`, which excludes it. Public hosting activation stays disabled until the distributed quota is resolved.

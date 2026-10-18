@@ -65,3 +65,9 @@ test('HTTP malformed JSON and request-size limits enforced',async()=>{
  assert.equal((await invoke('POST',valid(),{...headers,'content-length':String(MAX_CONTACT_BYTES+1)})).status,413);
  assert.equal((await invoke('POST','a'.repeat(MAX_CONTACT_BYTES+1),headers)).status,413);
 });
+
+test('local test quota exception cannot activate on production or Vercel',()=>{
+ assert.equal(contactConfig({CONTACT_LOCAL_TEST:'true'}).rateLimitReady,true);
+ for(const env of [{NODE_ENV:'production'},{VERCEL:'1'},{VERCEL_ENV:'preview'}])
+  assert.equal(contactConfig({...env,CONTACT_LOCAL_TEST:'true'}).rateLimitReady,false);
+});

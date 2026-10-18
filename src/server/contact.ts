@@ -9,10 +9,13 @@ export type ContactConfig = {
 };
 export function contactConfig(env = process.env): ContactConfig {
   const origins = ['https://uncannystranger.com', 'https://www.uncannystranger.com'];
+  // The loopback-only development server has one process, so its local quota is sufficient for a controlled test.
+  // This exception cannot activate on any Vercel or production runtime.
+  const localTest = env.CONTACT_LOCAL_TEST === 'true' && env.NODE_ENV !== 'production' && !env.VERCEL && !env.VERCEL_ENV;
   // Add one explicitly authorized preview; never trust a caller-supplied host.
   if (env.CONTACT_PREVIEW_ORIGIN && /^https:\/\/[a-z0-9-]+\.vercel\.app$/.test(env.CONTACT_PREVIEW_ORIGIN)) origins.push(env.CONTACT_PREVIEW_ORIGIN);
   if (env.NODE_ENV !== 'production' && !env.VERCEL_ENV) origins.push('http://127.0.0.1:4192', 'http://localhost:4192');
-  return { enabled: env.CONTACT_ENABLED === 'true', rateLimitReady: env.CONTACT_RATE_LIMIT_READY === 'true',
+  return { enabled: env.CONTACT_ENABLED === 'true', rateLimitReady: env.CONTACT_RATE_LIMIT_READY === 'true' || localTest,
     resendKey: env.RESEND_API_KEY, turnstileSecret: env.TURNSTILE_SECRET_KEY,
     siteKey: env.TURNSTILE_SITE_KEY, sender: env.CONTACT_FROM, origins };
 }
