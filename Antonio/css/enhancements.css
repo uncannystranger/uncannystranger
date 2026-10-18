@@ -28,7 +28,7 @@ a:focus-visible, button:focus-visible, [role="button"]:focus-visible, input:focu
 .clapat-footer:not(.showcase-footer) .socials-wrap { display:block; float:none; width:100%; max-width:none; height:auto; transform:none!important; grid-column:3; grid-row:1; }
 .clapat-footer:not(.showcase-footer) .socials { display:flex; height:auto; width:auto; flex-wrap:wrap; justify-content:flex-end; gap:0 18px; margin:0; transform:none; }
 .clapat-footer:not(.showcase-footer) .socials li { float:none; width:auto; min-width:0; height:auto; margin:0; transform:none!important; opacity:1; }
-.clapat-footer:not(.showcase-footer) .socials li a { display:flex; align-items:center; width:auto; min-height:44px; height:auto; line-height:1.4; padding:0 3px; font-size:12px; }
+.clapat-footer:not(.showcase-footer) .socials li a { display:flex; align-items:center; width:auto; min-width:44px; min-height:44px; height:auto; line-height:1.4; padding:0 3px; font-size:12px; }
 .clapat-footer:not(.showcase-footer) #backtotop { position:relative; top:auto; bottom:auto; left:auto; width:max-content; grid-column:1; grid-row:1; float:none; margin:0; pointer-events:auto; }
 
 @media(max-width:1200px) {
