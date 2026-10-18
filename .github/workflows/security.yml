@@ -29,8 +29,9 @@ jobs:
       - run: node --version
       - run: npm ci --ignore-scripts
       - run: npm run lint
-      - run: node --import tsx --test tests/security.test.ts
+      - run: npm test
       - run: npm run build
       - run: node scripts/security-check.mjs
       - run: node scripts/verify-seo.mjs
+      - run: node scripts/verify-site.mjs
       - run: npm audit --omit=dev --audit-level=moderate

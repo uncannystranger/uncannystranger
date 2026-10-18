@@ -1,0 +1,112 @@
+/*! Copyright (c) 2026 Abdullahi Mohamud / Uncanny Stranger. Original photography, writing and custom enhancements reserved. Third-party components retain their respective licenses. */
+/* Photographic exhibition: one photographic field, three complementary influences.
+   Original Poppins/Playfair, page hierarchy, scrolling and button forms are retained. */
+.visual-field { clear:both; overflow:visible!important; }
+.field-stage { position:relative; height:100svh; min-height:680px; overflow:hidden; isolation:isolate; color:#0c0c0c; }
+.field-backdrop { position:absolute; inset:0; background:#111313; opacity:0; z-index:0; pointer-events:none; }
+.field-heading { position:absolute; left:5.5%; top:40.3%; z-index:4; pointer-events:none; }
+.field-kicker { font-size:11px; color:var(--signature-on-paper); display:block; margin-bottom:25px; }
+.field-heading h2 { font-size:clamp(40px,5.2vw,84px); line-height:.99; letter-spacing:-.045em; margin:0; }
+.field-heading .secondary-font { font-weight:400; }
+.field-location { position:absolute; right:5.5%; top:11%; font-size:11px; line-height:1.6; z-index:4; text-align:right; }
+.field-plates { position:absolute; inset:0; z-index:2; }
+.field-plates figure { position:absolute; margin:0; }
+.field-plates a, .field-plates img { display:block; width:100%; height:auto; }
+.field-plates img { object-fit:contain; }
+.field-plates figcaption { position:static; padding:8px 0 0; color:inherit; background:none; font-size:10px; line-height:1.5; white-space:nowrap; }
+.field-plates figcaption span { color:var(--signature-on-paper); margin-right:8px; }
+.field-main { width:min(32vw,48svh); left:50%; top:48%; transform:translate(-50%,-50%); transform-origin:50% 58%; z-index:3; }
+.field-main::before, .field-main::after { content:""; position:absolute; pointer-events:none; width:18px; height:18px; border-style:solid; border-color:var(--signature); }
+.field-main::before { left:-10px; top:-10px; border-width:2px 0 0 2px; }
+.field-main::after { right:-10px; bottom:28px; border-width:0 2px 2px 0; }
+.field-main figcaption { text-align:right; }
+.field-northwest { width:12%; left:11%; top:10%; }
+.field-northeast { width:11%; right:8%; top:23%; }
+.field-southwest { width:10%; left:24%; top:65%; }
+.field-southeast { width:12%; right:19%; top:62%; }
+.field-companion a { outline:1px solid transparent; outline-offset:6px; transition:outline-color .18s; }
+.field-companion a:hover, .field-companion a:focus-visible { outline-color:var(--signature); }
+.field-ui { position:absolute; left:5.5%; right:5.5%; bottom:28px; z-index:5; display:flex; align-items:flex-end; justify-content:space-between; gap:20px; }
+.field-status { display:flex; flex-direction:column; gap:9px; font-size:12px; line-height:1.5; }
+.field-step { font-size:10px; letter-spacing:.045em; }
+.field-is-focused .field-status { background:#111313; color:#f5f0e9; padding:10px 14px; }
+.field-status .secondary-font { margin-left:12px; }
+.field-controls { display:flex; gap:32px; align-items:center; }
+.field-controls .button-icon-link { display:flex; align-items:center; gap:8px; height:auto; min-height:44px; color:inherit; }
+.field-controls .button-text { margin:0; font-size:12px; line-height:1.5; }
+.field-controls .button-icon { position:relative; flex-shrink:0; width:38px; height:38px; line-height:38px; border-radius:50%; font-size:12px; background:transparent; color:inherit; }
+.field-focus { background:none; border:0; padding:0; cursor:pointer; font:inherit; }
+.field-focus:hover .button-icon { color:var(--signature); }
+.field-story .button-icon { background:var(--signature); color:#0c0c0c; }
+.field-progress { height:2px; position:absolute; bottom:0; left:5.5%; right:5.5%; z-index:5; background:rgba(128,128,128,.3); pointer-events:none; }
+.field-progress span { display:block; height:100%; width:100%; background:var(--signature); transform:scaleX(0); transform-origin:left; }
+.touch-hero-prints { display:none; }
+/* The existing four-essay journal stays intact; its pairs receive an editorial offset. */
+.journal-card:nth-child(even) { padding-top:100px; }
+.journal-card:nth-child(even) .journal-card-image { width:84%; margin-left:auto; }
+.journal-card .bio-kicker, .journal-read:hover, .journal-read:focus-visible { color:var(--signature-on-paper); }
+.journal-read { border-bottom-color:var(--signature-on-paper); transition:color .18s; }
+.photograph-story .photo-archive-link:hover { color:var(--signature-on-paper); }
+/* Original page transition lifecycle; a brief orange shutter gives it a signature. */
+.cd-cover-layer { pointer-events:none; transition:opacity .24s,visibility 0s .24s; }
+.cd-cover-layer::before { content:""; position:absolute; inset:0; background:var(--signature); transform:scaleX(0); transform-origin:right; transition:transform .3s cubic-bezier(.76,0,.24,1); }
+.page-is-changing .cd-cover-layer { transition:opacity .26s .04s,visibility 0s; }
+.page-is-changing .cd-cover-layer::before { transform:scaleX(1); transform-origin:left; }
+.field-reduced .field-focus { display:none; }
+@media(max-width:1024px) and (min-width:768px) {
+ .field-heading { top:40%; left:4%; }
+ .field-heading h2 { font-size:44px; }
+ .field-main { width:35%; }
+ .field-northwest { left:6%; }
+ .field-southwest { left:15%; }
+ .field-northeast { right:5%; }
+ .field-southeast { right:12%; }
+}
+@media(max-width:767px) {
+ .field-stage { min-height:660px; }
+ .field-heading { left:24px; top:92px; }
+ .field-kicker { font-size:9px; margin-bottom:14px; }
+ .field-heading h2 { font-size:36px; line-height:.95; }
+ .field-location { display:none; }
+ .field-main { width:74%; top:48%; }
+ .field-plates figcaption { font-size:9px; padding-top:6px; white-space:normal; line-height:1.4; }
+ .field-companion figcaption { font-size:0; }
+ .field-companion figcaption span { font-size:10px; }
+ .field-northwest { width:15%; left:4%; top:23%; }
+ .field-northeast { width:18%; right:6%; top:15%; }
+ .field-southwest { width:19%; left:8%; top:72%; }
+ .field-southeast { width:20%; right:7%; top:70%; }
+ .field-ui { left:24px; right:24px; bottom:22px; align-items:flex-end; gap:10px; }
+ .field-status { font-size:10px; max-width:155px; gap:5px; }
+ .field-status .secondary-font { display:block; margin:0; }
+ .field-step { font-size:9px; }
+ .field-controls { gap:4px; flex-direction:column; align-items:flex-start; }
+ .field-controls .button-text { font-size:10px; }
+ .field-controls .button-icon { width:28px; height:28px; line-height:28px; font-size:10px; }
+ .field-controls .button-icon-link { min-height:44px; gap:4px; }
+ .field-story { flex-direction:row-reverse; }
+ .field-progress { left:24px; right:24px; }
+ /* Mobile receives the same four photographic subjects as the existing desktop hero. */
+ #hero-interaction { display:none; }
+ .touch-hero-prints { display:block; position:absolute; inset:0; z-index:2; pointer-events:none; }
+ .touch-print { position:absolute; display:block; width:19vw; max-width:90px; pointer-events:auto; }
+ .touch-print img { width:100%; height:auto; display:block; }
+ .touch-print span { display:block; color:var(--signature-on-paper); font-size:9px; margin-top:4px; }
+ .touch-print-1 { left:9%; top:16%; transform:rotate(-5deg); }
+ .touch-print-2 { right:8%; top:21%; transform:rotate(4deg); }
+ .touch-print-3 { left:11%; top:61%; transform:rotate(3deg); }
+ .touch-print-4 { right:10%; top:59%; transform:rotate(-4deg); }
+ .journal-card:nth-child(even) { padding-top:0; }
+ .journal-card:nth-child(even) .journal-card-image { width:100%; }
+}
+@media(max-height:650px) and (min-width:768px) {
+ .field-main { width:35vh; }
+ .field-northwest,.field-northeast,.field-southwest,.field-southeast { width:9%; }
+ .field-heading h2 { font-size:42px; }
+}
+@media(prefers-reduced-motion:reduce) {
+ .field-backdrop { opacity:0!important; }
+ .field-progress span { transform:none!important; }
+ .cd-cover-layer, .cd-cover-layer::before { transition-duration:.01ms!important; }
+ .field-companion a { transition:none; }
+}

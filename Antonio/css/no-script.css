@@ -1,0 +1,9 @@
+/*! Copyright (c) 2026 Abdullahi Mohamud / Uncanny Stranger. Original photography, writing and custom enhancements reserved. Third-party components retain their respective licenses. */
+/* Static, readable fallback when scripting is disabled. */
+body { display:block; opacity:1!important; overflow:auto!important; }
+body .preloader-wrap,body #magic-cursor,body .cd-cover-layer { display:none!important; }
+body #content-scroll { height:auto!important; overflow:visible!important; }
+body #main,body #main-page-content,body .caption-timeline span,body .has-animation { opacity:1!important; transform:none!important; visibility:visible!important; }
+body #hero-interaction { display:none; }
+body .touch-hero-prints { display:block; }
+body .field-focus { display:none; }

@@ -89,10 +89,25 @@ The site combines:
 - editorial-style composition, serif typography, and glass-like interface details
 - structured data, metadata, and sitemap support for search visibility
 - responsive layouts across desktop and mobile
-- performance-focused image delivery through transformed Cloudinary assets
-- a modern React/Vite architecture deployed for a polished public portfolio experience
+- self-hosted WebP/JPEG display derivatives with responsive image markup
+- an active static HTML/CSS/JavaScript portfolio using GSAP and smooth-scrollbar on Vercel
 
-## Tech Stack
+The React/Vite source is retained as an archived frontend and is not the production build. The active source is `Antonio/`; only its allowlisted output in `dist/` is published.
+
+## V3.6 review version
+
+This branch contains the orange visual field, improved mobile footer/menu, faster original transitions and links to all 41 photograph stories. It is a review candidate, not a production release. See [REVIEW-V3.6.md](REVIEW-V3.6.md) for verified results, limitations and contact setup.
+
+```sh
+npm ci --ignore-scripts
+npm run dev:site
+```
+
+Open http://127.0.0.1:4192/. This server serves the actual production build and contact handler locally, with noindex headers. Direct message delivery stays disabled until verified Resend, Turnstile and hosting rate limits are configured. Never put credentials in the public repository.
+
+Run `npm run lint`, `npm test`, `npm run build`, `npm run check:site` and `npm audit --omit=dev`.
+
+## Retained frontend tooling
 
 <p>
   <img src="https://img.shields.io/badge/React-19-1C1917?style=flat-square&logo=react&logoColor=61DAFB" alt="React" />

@@ -1,6 +1,16 @@
 # Website versions
 
-## V3.5 — Latest Version
+## V3.6.0-rc.2 — Latest review version
+
+Completes the real localhost Resend/Turnstile integration, with verified provider delivery, preview-only secret configuration and a production-guarded local test mode. Improves mobile footer contrast and repeats ten-width contact/footer checks. All 41 photographs, four essays and 53 indexable URLs remain. The `v3.6.0-rc.2` tag supplies the latest downloadable source ZIP. Production remains unchanged; public contact activation still requires a distributed quota and separate release approval. See [REVIEW-V3.6.md](REVIEW-V3.6.md).
+
+## V3.6.0-rc.1 — Earlier review version
+
+The dedicated `codex/enhanced-v3-6` branch refines the existing Antonio portfolio. Orange accents, a scroll-controlled photographic composition, mobile photograph links, an automatic-height social footer and accessible menu controls preserve the original structure and typography. All 41 photograph stories and four essays remain.
+
+The repository tag `v3.6.0-rc.1` provides a downloadable source ZIP. This candidate is not deployed to production. Direct email delivery code is included but remains disabled until provider/domain, Turnstile and distributed rate-limit setup is completed. See [REVIEW-V3.6.md](REVIEW-V3.6.md).
+
+## V3.5 — Previous production version
 
 The current cinematic portfolio brings together 32 earlier photographs and nine new photographs, with 41 individual photo stories, four illustrated journal essays, the artist biography and six social profiles. Existing routes and gallery animations are preserved.
 
