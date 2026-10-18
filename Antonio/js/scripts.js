@@ -34,7 +34,7 @@ Function CustomFunction
 
 	function CustomFunction() {
 
-		//Add here your custom js code
+		if (window.SiteEnhancements) window.SiteEnhancements();
 
 	}// End CustomFunction
 
@@ -44,6 +44,7 @@ Function Shuffle Elements Function
 ---------------------------------------------------*/
 
 	function ShuffleElementsFunction() {
+        if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
 		function shuffle(o) {
 			for (var j, x, i = o.length; i; j = parseInt(Math.random() * i, 10), x = o[--i], o[i] = o[j], o[j] = x);
@@ -183,6 +184,7 @@ Function Shuffle Elements Function
 
 
 	function InitShuffleElements() {
+        if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
 		shuffleFunctions.applyShuffleEffect(".fullscreen-menu .menu-timeline", {
 			velocity: 50,
@@ -431,7 +433,7 @@ Function Page Load
 		function initOnFirstLoad() {
 
 
-			imagesLoaded('body', function() {
+			imagesLoaded(document.querySelector('#hero') || document.body, function() {
 
 				//Animate Preloader
 
@@ -445,7 +447,7 @@ Function Page Load
 
 				gsap.set($(".hero-title.caption-timeline span"), {yPercent:50, opacity:0});
 
-				gsap.to($(".hero-title.caption-timeline span"), {duration: 0.5, yPercent:0, opacity:1, stagger:0.05, delay:0.6, ease:Power3.easeOut, onComplete: function() {
+				gsap.to($(".hero-title.caption-timeline span"), {duration: 0.5, yPercent:0, opacity:1, stagger:0.025, delay:0.15, ease:Power3.easeOut, onComplete: function() {
 					gsap.to($(".hero-footer-left, .hero-footer-right"), {duration: 0.3, y:0, opacity:1, ease:Power2.easeOut});
 					gsap.set($(".page-nav-caption .caption-timeline span"), { yPercent:0, opacity:1});
 					$("#hero-caption").addClass("caption-animated");
@@ -497,7 +499,7 @@ Function Page Load
 
 				gsap.set($("#main-page-content"), {opacity:0});
 
-				gsap.to($("#main-page-content, #page-nav"), {duration: 1.7, opacity:1, delay:0.5, ease:Power3.easeOut, onComplete: function() {
+				gsap.to($("#main-page-content, #page-nav"), {duration: 0.55, opacity:1, delay:0.1, ease:Power3.easeOut, onComplete: function() {
 					gsap.set($("#main-page-content"), { clearProps: "y" });
 					gsap.set($(".page-nav-caption .caption-timeline span"), { yPercent:0, opacity:1});
 					gsap.set($(".next-caption .caption-timeline span"), { yPercent:0, opacity:1});
@@ -513,8 +515,8 @@ Function Page Load
 
 			var perfData = performance.getEntriesByType('navigation')[0] || performance.timing;
 			var EstimatedTime = -(perfData.loadEventEnd - perfData.startTime);
-			var time = Math.min(Math.max(((EstimatedTime / 100) % 50) * 1000, 5000), 20000);
-			var timeSeconds = time/1000 - 1.5
+			var time = 650; // Retain the original entrance, remove artificial waiting.
+			var timeSeconds = 0.25
 			window.preloaderTimeout = time;
 
 			var tl = gsap.timeline({
@@ -526,20 +528,20 @@ Function Page Load
 				duration: 1.5,
 				ease: 'expo.out',
 
-			}, timeSeconds - 1)
+			}, 0.02)
 
 			tl.to('.number_2', {
 				yPercent: -900,
-				duration: timeSeconds - 1,
+				duration: 0.4,
 				ease: 'expo.inOut'
-			}, .75)
+			}, .02)
 
 			tl.to('.number_3', {
 				yPercent: -900,
-				duration: timeSeconds - 1,
+				duration: 0.4,
 				ease: 'expo.inOut'
 
-			}, 1)
+			}, .04)
 
 			tl.play()
 
@@ -736,7 +738,7 @@ Page Load Actions
 							}
 						});
 						window.ReachBottomArr.push(ReachBottom);
-						imagesLoaded('body', function() {
+						imagesLoaded(document.querySelector('#hero') || document.body, function() {
 							setTimeout( function(){
 								ReachBottom.refresh()
 							} , 1200 );
@@ -896,7 +898,7 @@ Page Load Actions
 
 				if (changeMainColor) {
 
-					imagesLoaded('body', function() {
+					imagesLoaded(document.querySelector('#hero') || document.body, function() {
 
 						if (pageContent.classList.contains('light-content')) {
 
@@ -1049,7 +1051,7 @@ Page Load Actions
 
 			//Clean Temporary Color Styles
 			setTimeout( function(){
-				imagesLoaded('body', function() {
+				imagesLoaded(document.querySelector('#hero') || document.body, function() {
 					var styleElements = document.querySelectorAll('style[data-js-added]');
 					styleElements.forEach(function(styleElement) {
 						styleElement.parentNode.removeChild(styleElement);
@@ -1070,7 +1072,7 @@ Function Lazy Load
 
 	function LazyLoad() {
 
-		imagesLoaded('body', function() {
+		imagesLoaded(document.querySelector('#hero') || document.body, function() {
 			$('body').removeClass('loading hidden scale-up scale-none');
 		});
 
@@ -1118,7 +1120,14 @@ Function Lazy Load
 
 				gsap.to($(".hero-footer-left, .hero-footer-right"), {duration: 0.7, y:0, opacity:1, stagger:0.2, delay:0.5, ease:Power2.easeOut});
 
-			} //End Hero Image and Caption Animations
+			} else {
+                // Plain photograph links have no WebGL thumbnail handoff. Reveal their normal hero.
+                gsap.fromTo('#hero-bg-image',{scale:1.025,opacity:0},{scale:1,opacity:1,duration:.55,ease:'power2.out'});
+                gsap.fromTo('#hero-caption .hero-title.caption-timeline span',{yPercent:30,opacity:0},{yPercent:0,opacity:1,duration:.45,ease:'power3.out'});
+                gsap.to('.hero-subtitle.caption-timeline span, .hero-footer-left, .hero-footer-right',{opacity:1,y:0,duration:.35});
+                gsap.to('#main-page-content, #page-nav',{opacity:1,y:0,duration:.4});
+                gsap.to('.hero-pixels-cover .pixel',{opacity:0,duration:.15});
+            } //End Hero Image and Caption Animations
 
 		} else {
 
@@ -1260,7 +1269,7 @@ Function Lazy Load
 			$('.clapat-header').removeClass('white-header');
 			$('body').removeClass("load-project-thumb load-project-thumb-with-title load-project-thumb-from-slider load-next-page grid-open from-webgl")
 			setTimeout( function(){
-				imagesLoaded('body', function() {
+				imagesLoaded(document.querySelector('#hero') || document.body, function() {
 					$('body').removeClass("show-loader disable-scroll");
 				});
 			} , 300 );
@@ -1677,7 +1686,7 @@ Function Showcase Highlights
 
 						if ($('body').hasClass("show-loader")) {
 
-							imagesLoaded('body', function() {
+							imagesLoaded(document.querySelector('#hero') || document.body, function() {
 
 								gsap.to($('#canvas-slider'), {duration: 0.7, delay:0.2, opacity:1, scale:1, ease: "circ.out"});
 								gsap.set($(".fade-slide-element"), { y: 20, opacity: 0 });
@@ -2015,7 +2024,7 @@ Function Showcase Gallery
 
 						if ($('body').hasClass("show-loader")) {
 
-							imagesLoaded('body', function() {
+							imagesLoaded(document.querySelector('#hero') || document.body, function() {
 
 								gsap.to($(".showcase-gallery .clapat-slide .slide-effects"), { duration: 0.5, opacity: 1, delay: 0.7, ease: Power4.easeIn, onComplete: function() {
 									$(".showcase-gallery").addClass("active");

@@ -23,7 +23,12 @@ for (const url of urls) {
   assert(/<meta name="description" content="[^"]+"/.test(html), `${name}: description required`);
   assert(/<meta name="robots" content="index, follow, max-image-preview:large"/.test(html), `${name}: crawl/preview policy`);
   const graph = JSON.parse(html.match(/id="site-structured-data">([^]*?)<\/script>/)[1])['@graph'];
-  assert(graph.some(n => n['@type'] === 'Person' && n.alternateName.includes('uncannystranger')), `${name}: photographer identity`);
+  const person = graph.find(n => n['@type'] === 'Person');
+  assert(person?.name === 'Abdullahi Mohamud' && person.alternateName.includes('Uncanny Stranger') && person.alternateName.includes('uncannystranger'), `${name}: photographer identity`);
+  assert(person.image && person.mainEntityOfPage?.['@id'] === base + 'about.html#webpage', `${name}: consistent profile identity`);
+  await fs.access(path.join(dist, new URL(person.image).pathname.slice(1)));
+  assert(html.includes('Original photography, writing and custom enhancements reserved.'), `${name}: ownership notice`);
+  if (name === 'about.html') assert(graph.some(n => n['@type'] === 'ProfilePage' && n.mainEntity?.['@id'] === person['@id']), 'About profile main entity');
   for (const match of html.matchAll(/href="([^"]+)"/g)) links.add(new URL(match[1], url).href.split('#')[0]);
   for (const match of html.matchAll(/<img\b[^>]*data-photo="[^"]+"[^>]*>/g)) {
     assert(/\bsrc="[^"]+"/.test(match[0]) && /\balt="[^"]+"/.test(match[0]), `${name}: crawlable photo src and alt`);

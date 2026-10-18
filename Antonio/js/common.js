@@ -34,14 +34,16 @@ Function Scroll Effects
 
 		setTimeout(function(){
 			var threeapp = document.getElementById("app");
-			threeapp.className += "active";
+			if (!threeapp) return;
+            threeapp.className += " active";
 			$("body").append(threeapp)
 		} , 1500 );
 
 		if( $('.highlights-gallery').length > 0 ){
 			setTimeout(function(){
 				var threeSlider = document.getElementById("canvas-slider");
-				threeSlider.className += " active";
+				if (!threeSlider) return;
+                threeSlider.className += " active";
 				$("body").append(threeSlider)
 			} , 1500 );
 		}
@@ -104,7 +106,7 @@ Function Scroll Effects
 
 				var ScrollbarOptions = {
 					damping:0.1,
-					renderByPixel: true,
+					renderByPixels: false,
 					continuousScrolling: true,
 					syncCallbacks: true,
 				};
@@ -114,14 +116,14 @@ Function Scroll Effects
 
 				var ScrollbarOptions = {
 					damping:0.2,
-					renderByPixel: true,
+					renderByPixels: false,
 					continuousScrolling: true,
 					syncCallbacks: true,
 				};
 			}
 
 			// Initialise
-			var scrollbar = Scrollbar.init(ScrollArea, /*ScrollbarOptions*/);
+			var scrollbar = Scrollbar.init(ScrollArea, ScrollbarOptions);
 
 
 			ScrollTrigger.scrollerProxy("#content-scroll", {
@@ -140,7 +142,7 @@ Function Scroll Effects
 
 		// Anchor Link
 		$( "a[href*='#']" ).on('click', function( e ){
-			if( e.currentTarget && e.currentTarget.hash ) {
+			if( e.currentTarget && e.currentTarget.hash && e.currentTarget.pathname === location.pathname && document.getElementById(decodeURIComponent(e.currentTarget.hash.substring(1))) ) {
 				e.preventDefault();
 				var hash = e.currentTarget.hash.substring(1);
 
@@ -461,7 +463,7 @@ Function Scroll Effects
 		// Back To Top
 		$('#backtotop').on('click', function() {
 			if ($("body").hasClass("smooth-scroll")) {
-				gsap.to(scrollbar, {duration: 1.5, scrollTop:0, delay:0.1, ease:Power4.easeInOut});
+				gsap.to(scrollbar, {duration: 0.75, scrollTop:0, delay:0.1, ease:Power4.easeInOut});
 				gsap.to('#ball', {duration: 0.3, borderWidth: '4px', scale:0.5, borderColor:'#999999', delay:0.15});
 			} else {
 				$("html,body").animate({scrollTop: 0}, 800);
@@ -478,7 +480,7 @@ Function Scroll Effects
 			}, 1000);
 			var heroheight = $("#hero").height();
 			if ($("body").hasClass("smooth-scroll")) {
-				gsap.to(scrollbar, {duration: 1.5, scrollTop:heroheight, ease:Power4.easeInOut});
+				gsap.to(scrollbar, {duration: 0.75, scrollTop:heroheight, ease:Power4.easeInOut});
 				gsap.to('#ball', {duration: 0.3, borderWidth: '4px', scale:0.5, borderColor:'#999999', delay:0.15});
 			} else {
 				$("html,body").animate({scrollTop: heroheight}, 800);
@@ -867,8 +869,8 @@ Function Scroll Effects
 					duration: 0.3,
 					borderWidth: '2px',
 					scale: 1.4,
-					borderColor: "#fa821d",
-					backgroundColor: "#fa821d"
+					borderColor: "#E96A2C",
+					backgroundColor: "#E96A2C"
 				});
 				gsap.to('#ball-loader', {
 					duration: 0.2,
@@ -919,7 +921,10 @@ Function Scroll Effects
 				gsap.to('#ball-loader', {duration: 0.3, borderWidth: '4px', top: 0, left: 0});
 				$("#ball").removeClass("with-icon color-cursor");
 				$("#ball").find('img').remove();
-				$("#hero-interaction").removeClass("active");
+				setTimeout(function () {
+                    const field=document.getElementById("hero-interaction");
+                    if (field && !field.matches(":hover, :focus-within")) field.classList.remove("active");
+                },150);
 			});
 
 			if ($(".hero-title-placeholder div").length) {
@@ -3050,7 +3055,7 @@ Function First Load
 					gsap.set($(".clapat-nav-wrapper ul ul li"), {y: 0, opacity:1});
 					//Fade In Navigation Lists
 					gsap.set($(".menu-timeline .before-span"), {y: 160, opacity:0});
-					gsap.to($(".menu-timeline .before-span"), {duration: 0.7, y:0, opacity:1, delay:0.4, stagger:0.1, ease:Power2.easeOut});
+					gsap.to($(".menu-timeline .before-span"), {duration: 0.3, y:0, opacity:1, delay:0.05, stagger:0.035, ease:Power2.easeOut});
 
 					$('.menu-timeline > .touch-button').click(function(e, bIndirect) {
 						if( bIndirect == true ){
@@ -3066,10 +3071,10 @@ Function First Load
 
 				} else {
 
-					gsap.to('.clapat-nav-wrapper', {duration: 0.3, opacity:0, delay:0.6, ease:Power2.easeInOut});
+					gsap.to('.clapat-nav-wrapper', {duration: 0.25, opacity:0, delay:0.1, ease:Power2.easeInOut});
 
 					//Fade Out Navigation Lists
-					gsap.to($(".menu-timeline .before-span"), {duration: 0.5, y:-200, opacity:1, delay:0, stagger:0.05, ease:Power2.easeIn});
+					gsap.to($(".menu-timeline .before-span"), {duration: 0.25, y:-120, opacity:1, delay:0, stagger:0.02, ease:Power2.easeIn});
 					gsap.to($(".clapat-nav-wrapper ul ul li"), {duration: 0.5, y:-120, opacity:0, delay:0, stagger:0.03, ease:Power2.easeIn});
 
 					if (!$('#page-content').hasClass("light-content")) {
@@ -4944,6 +4949,7 @@ Function Core
 
 			  //trigger smooth transition from the actual page to the new one
 			  $('main').on('click', '[data-type="page-transition"]', function(event){
+                if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.which === 2) return;
 				event.preventDefault();
 				//detect which page has been selected
 				var newPage = $(this).attr('href');
@@ -4971,14 +4977,17 @@ Function Core
 				isAnimating = true;
 				// trigger page animation
 				$('body').addClass('page-is-changing');
-				$('.cd-cover-layer').one('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(){
-					loadNewContent(url, bool);
+				var loaded=false;
+                var startLoad=function(){ if(loaded)return; loaded=true; loadNewContent(url, bool); };
+                setTimeout(startLoad,matchMedia('(prefers-reduced-motion: reduce)').matches?0:400);
+                $('.cd-cover-layer').one('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(){
+					startLoad();
 				  newLocation = url;
 				  $('.cd-cover-layer').off('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend');
 				});
 				//if browser doesn't support CSS transitions
 				if( !transitionsSupported() ) {
-				  loadNewContent(url, bool);
+				  startLoad();
 				  newLocation = url;
 				}
 				}
@@ -4989,7 +4998,8 @@ Function Core
 				var section = $('<div class="cd-main-content "></div>');
 
 
-				section.load(url+' .cd-main-content > *', function(event){
+				section.load(url+' .cd-main-content > *', function(event,status){
+                  if (status === 'error' || !event || !event.includes('<title')) { window.location.assign(url); return; }
 				  // load new content and replace <main> content with the new one
 
 				  	$('main').html(section);
@@ -5034,6 +5044,7 @@ Function Core
 				  setTimeout(function(){
 					//wait for the end of the transition on the loading bar before revealing the new content
 					$('body').removeClass('page-is-changing');
+                    setTimeout(function(){isAnimating=false;},350);
 					$('.cd-cover-layer').one('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(){
 					  isAnimating = false;
 					  $('.cd-cover-layer').off('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend');

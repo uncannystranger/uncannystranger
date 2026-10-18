@@ -1,6 +1,12 @@
 # Website versions
 
-## V3.5 — Latest Version
+## V3.6.0-rc.1 — Latest review version
+
+The dedicated `codex/enhanced-v3-6` branch refines the existing Antonio portfolio. Orange accents, a scroll-controlled photographic composition, mobile photograph links, an automatic-height social footer and accessible menu controls preserve the original structure and typography. All 41 photograph stories and four essays remain.
+
+The repository tag `v3.6.0-rc.1` provides a downloadable source ZIP. This candidate is not deployed to production. Direct email delivery code is included but remains disabled until provider/domain, Turnstile and distributed rate-limit setup is completed. See [REVIEW-V3.6.md](REVIEW-V3.6.md).
+
+## V3.5 — Previous production version
 
 The current cinematic portfolio brings together 32 earlier photographs and nine new photographs, with 41 individual photo stories, four illustrated journal essays, the artist biography and six social profiles. Existing routes and gallery animations are preserved.
 

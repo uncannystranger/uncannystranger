@@ -4,7 +4,7 @@ The public portfolio is built from `Antonio/` into `dist/` by an asset-reference
 
 Public photographs are resized, metadata-stripped display derivatives. They remain downloadable and screenshot-able. The original uploaded files remain outside this repository. Public GitHub history cannot be hidden by website headers. Keep sensitive future projects and original archives in private repositories/storage.
 
-CSP permits self-hosted scripts and local fonts/images, with inline styles retained for GSAP's animations. Frame embedding is restricted to the existing video/art destinations. Production HTTPS uses HSTS for this hostname; subdomain/preload expansion requires separate verification. `Cross-Origin-Resource-Policy: same-origin` limits browser hotlink embedding, not direct downloads.
+CSP permits self-hosted scripts and local fonts/images, with inline styles retained for GSAP's animations. V3.6 additionally permits the official Cloudflare Turnstile challenge origin for scripts and frames; no other script origin is added. Frame embedding is restricted to the existing video/art destinations. Production HTTPS uses HSTS for this hostname; subdomain/preload expansion requires separate verification. `Cross-Origin-Resource-Policy: same-origin` limits browser hotlink embedding, not direct downloads.
 
 Vercel custom firewall rule `Portfolio delivery quota`: `/images/` OR `/api/`, 180 requests per IP per 60-second fixed window, response 429 when exceeded. Counters are regional, shared networks share a quota, distributed scraping can evade IP limits. Review traffic before tightening. Do not challenge all visitors or block search engines indiscriminately.
 
@@ -15,3 +15,7 @@ The legacy Supabase API remains for compatibility. Engagement mutations require 
 Checks: `npm run build`, `npm run lint`, `node --import tsx --test tests/security.test.ts`, `node scripts/security-check.mjs`, `npm audit --omit=dev`. CI runs these checks on pushes, pull requests and weekly. The pattern scanner is a lightweight safeguard, not a replacement for GitHub's secret-scanning service. Enable repository push protection where the account plan permits it; confirm MFA and deployment access in the hosting dashboard.
 
 The unused Tailwind 3 development dependency chain still reports high-severity braces-related advisories; the registry's current braces release has no compatible patched version. These packages are not shipped to the browser or used by the static production build. Remove the archived frontend in a separately scoped cleanup or upgrade it deliberately; do not use `npm audit fix --force` as an unreviewed migration.
+
+## V3.6 contact review boundary
+
+See [REVIEW-V3.6.md](REVIEW-V3.6.md) for contact protections, external rate-limit/domain setup, actual verification and release gates. Delivery fails closed without complete provider configuration and the hosting-rate-limit readiness flag. No account/DNS/WAF changes or inbox tests were performed. The review branch is excluded from automatic Vercel deployment.
